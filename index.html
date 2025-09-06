@@ -18,42 +18,42 @@
       overflow: hidden;
     }
     #game-container {
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      border-radius: 8px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
       overflow: hidden;
       position: relative;
     }
     .ui-overlay {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      top: 5px;
+      left: 5px;
       color: white;
-      font-size: 18px;
+      font-size: 14px;
       font-weight: bold;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
       z-index: 1000;
     }
     .leaderboard {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 5px;
+      right: 5px;
       background: rgba(0,0,0,0.6);
       color: white;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 14px;
-      min-width: 120px;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 10px;
+      min-width: 80px;
       z-index: 1000;
     }
     .leaderboard h3 {
-      margin: 0 0 5px 0;
-      font-size: 14px;
+      margin: 0 0 4px 0;
+      font-size: 11px;
       text-align: center;
     }
     .leaderboard-item {
       display: flex;
       justify-content: space-between;
-      padding: 2px 0;
+      padding: 1px 0;
     }
   </style>
 </head>
@@ -64,7 +64,7 @@
       <div>جان: <span id="lives">3</span></div>
     </div>
     <div class="leaderboard">
-      <h3>🏆 برترین‌ها</h3>
+      <h3>🏆</h3>
       <div id="leaderboard-list"></div>
     </div>
   </div>
@@ -104,11 +104,11 @@
     function loadLeaderboard() {
       const saved = localStorage.getItem('carGameLeaderboard');
       leaderboard = saved ? JSON.parse(saved) : [
-        { name: 'علی', score: 2500 },
-        { name: 'فاطمه', score: 2000 },
-        { name: 'محمد', score: 1800 },
-        { name: 'زهرا', score: 1500 },
-        { name: 'حسین', score: 1200 }
+        { name: 'A', score: 2500 },
+        { name: 'B', score: 2000 },
+        { name: 'C', score: 1800 },
+        { name: 'D', score: 1500 },
+        { name: 'E', score: 1200 }
       ];
       updateLeaderboardDisplay();
     }
@@ -126,7 +126,7 @@
       leaderboard.slice(0, 5).forEach((entry, i) => {
         const div = document.createElement('div');
         div.className = 'leaderboard-item';
-        div.innerHTML = `<span>${i + 1}. ${entry.name}</span><span>${entry.score}</span>`;
+        div.innerHTML = `<span>${i + 1}.${entry.name}</span><span>${entry.score}</span>`;
         list.appendChild(div);
       });
     }
@@ -151,12 +151,12 @@
       this.wasd = this.input.keyboard.addKeys('A,D');
       this.physics.add.overlap(player, obstacles, hitObstacle, null, this);
 
-      // swipe controls
+      // swipe fix برای موبایل
       let startX = 0;
-      this.input.on('pointerdown', pointer => startX = pointer.x);
+      this.input.on('pointerdown', pointer => { startX = pointer.x; });
       this.input.on('pointerup', pointer => {
         let diff = pointer.x - startX;
-        if (Math.abs(diff) > 50) {
+        if (Math.abs(diff) > 40) {
           if (diff < 0) moveLeft.call(this);
           else moveRight.call(this);
         }
@@ -228,15 +228,12 @@
       obstacles.setVelocityY(0);
 
       gameOverContainer = this.add.container(width / 2, height / 2);
-
-      let bg = this.add.graphics().fillStyle(0x000000, 0.7).fillRoundedRect(-150, -100, 300, 200, 15);
-      let title = this.add.text(0, -50, 'بازی تمام شد!', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
-      let finalScore = this.add.text(0, 0, `امتیاز: ${score}`, { fontSize: '24px', fill: '#f39c12' }).setOrigin(0.5);
-      let restart = this.add.text(0, 60, '🔄 شروع مجدد', { fontSize: '20px', fill: '#2ecc71', backgroundColor: '#34495e', padding: { x: 15, y: 5 } })
+      let bg = this.add.graphics().fillStyle(0x000000, 0.7).fillRoundedRect(-120, -80, 240, 160, 10);
+      let title = this.add.text(0, -30, 'بازی تمام شد!', { fontSize: '20px', fill: '#fff' }).setOrigin(0.5);
+      let finalScore = this.add.text(0, 0, `امتیاز: ${score}`, { fontSize: '16px', fill: '#f39c12' }).setOrigin(0.5);
+      let restart = this.add.text(0, 40, '🔄 شروع مجدد', { fontSize: '14px', fill: '#2ecc71', backgroundColor: '#34495e', padding: { x: 8, y: 4 } })
         .setOrigin(0.5).setInteractive();
-
       restart.on('pointerdown', () => { saveScore(score); restartGame.call(this); });
-
       gameOverContainer.add([bg, title, finalScore, restart]);
     }
 
