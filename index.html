@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Car Obstacle Game</title>
+  <title>Car Game</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
   <style>
     body {
@@ -18,41 +18,42 @@
       overflow: hidden;
     }
     #game-container {
-      border-radius: 15px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       overflow: hidden;
       position: relative;
     }
     .ui-overlay {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: 10px;
+      left: 10px;
       color: white;
-      font-size: 24px;
+      font-size: 18px;
       font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
       z-index: 1000;
     }
     .leaderboard {
       position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(0,0,0,0.8);
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.6);
       color: white;
-      padding: 15px;
-      border-radius: 10px;
-      min-width: 200px;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 14px;
+      min-width: 120px;
       z-index: 1000;
     }
     .leaderboard h3 {
-      margin: 0 0 10px 0;
+      margin: 0 0 5px 0;
+      font-size: 14px;
       text-align: center;
     }
     .leaderboard-item {
       display: flex;
       justify-content: space-between;
-      padding: 5px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding: 2px 0;
     }
   </style>
 </head>
@@ -63,60 +64,43 @@
       <div>جان: <span id="lives">3</span></div>
     </div>
     <div class="leaderboard">
-      <h3>🏆 Leaderboard</h3>
+      <h3>🏆 برترین‌ها</h3>
       <div id="leaderboard-list"></div>
     </div>
   </div>
 
   <script>
-    // Responsive size
     function getGameSize() {
-      const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-      if (isMobile) {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        const ratio = 9 / 16;
-        let gameWidth = w;
-        let gameHeight = Math.floor(w / ratio);
-        if (gameHeight > h) {
-          gameHeight = h;
-          gameWidth = Math.floor(h * ratio);
-        }
-        return { width: gameWidth, height: gameHeight };
-      } else {
-        return { width: window.innerWidth, height: window.innerHeight };
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const ratio = 9 / 16;
+      let gameWidth = w;
+      let gameHeight = Math.floor(w / ratio);
+      if (gameHeight > h) {
+        gameHeight = h;
+        gameWidth = Math.floor(h * ratio);
       }
+      return { width: gameWidth, height: gameHeight };
     }
 
     let { width, height } = getGameSize();
 
-    // Phaser config
     const config = {
       type: Phaser.AUTO,
       parent: 'game-container',
       backgroundColor: '#2c3e50',
       physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
       scene: { preload, create, update },
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: width,
-        height: height
-      }
+      scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: width, height: height }
     };
 
-    // Variables
     let player, obstacles, cursors, score = 0, lives = 3;
     let gameSpeed = 200, obstacleTimer = 0, gameOver = false;
-    let gameOverText, restartButton;
+    let gameOverContainer;
     let leaderboard = [];
+    let lanes = [], currentLane = 2, moveCooldown = false;
 
-    // Lane system
-    let lanes = []; // filled in create()
-    let currentLane = 2; // start in the middle lane
-    let moveCooldown = false;
-
-    // Leaderboard
+    // leaderboard
     function loadLeaderboard() {
       const saved = localStorage.getItem('carGameLeaderboard');
       leaderboard = saved ? JSON.parse(saved) : [
@@ -147,39 +131,36 @@
       });
     }
 
-    // Phaser Scenes
     function preload() {
       this.add.graphics().fillStyle(0x3498db).fillRect(0, 0, 60, 100).generateTexture('car', 60, 100);
       this.add.graphics().fillStyle(0xe74c3c).fillRect(0, 0, 50, 80).generateTexture('obstacle', 50, 80);
       this.add.graphics().fillStyle(0x34495e).fillRect(0, 0, 800, 600)
-        .lineStyle(4, 0xf39c12)
-        .lineBetween(200, 0, 200, 600)
-        .lineBetween(400, 0, 400, 600)
-        .lineBetween(600, 0, 600, 600)
+        .lineStyle(4, 0xf39c12).lineBetween(200, 0, 200, 600)
+        .lineBetween(400, 0, 400, 600).lineBetween(600, 0, 600, 600)
         .generateTexture('road', 800, 600);
     }
 
     function create() {
       this.add.image(width / 2, height / 2, 'road').setDisplaySize(width, height);
 
-      // Define lanes dynamically (5 lanes evenly spaced)
-      lanes = [
-        width * 0.2,
-        width * 0.35,
-        width * 0.5,
-        width * 0.65,
-        width * 0.8
-      ];
-
-      // Player
-      player = this.physics.add.sprite(lanes[currentLane], height - 100, 'car');
-      player.setCollideWorldBounds(true).setTint(0x2ecc71);
+      lanes = [width * 0.2, width * 0.35, width * 0.5, width * 0.65, width * 0.8];
+      player = this.physics.add.sprite(lanes[currentLane], height - 100, 'car').setCollideWorldBounds(true).setTint(0x2ecc71);
 
       obstacles = this.physics.add.group();
       cursors = this.input.keyboard.createCursorKeys();
       this.wasd = this.input.keyboard.addKeys('A,D');
-
       this.physics.add.overlap(player, obstacles, hitObstacle, null, this);
+
+      // swipe controls
+      let startX = 0;
+      this.input.on('pointerdown', pointer => startX = pointer.x);
+      this.input.on('pointerup', pointer => {
+        let diff = pointer.x - startX;
+        if (Math.abs(diff) > 50) {
+          if (diff < 0) moveLeft.call(this);
+          else moveRight.call(this);
+        }
+      });
 
       loadLeaderboard();
       updateUI();
@@ -187,34 +168,16 @@
 
     function update() {
       if (gameOver) return;
-
-      // Handle lane change
       if (!moveCooldown) {
-        if (cursors.left.isDown || this.wasd.A.isDown) {
-          if (currentLane > 0) {
-            currentLane--;
-            moveCooldown = true;
-            player.x = lanes[currentLane];
-            this.time.delayedCall(150, () => moveCooldown = false);
-          }
-        } else if (cursors.right.isDown || this.wasd.D.isDown) {
-          if (currentLane < lanes.length - 1) {
-            currentLane++;
-            moveCooldown = true;
-            player.x = lanes[currentLane];
-            this.time.delayedCall(150, () => moveCooldown = false);
-          }
-        }
+        if (cursors.left.isDown || this.wasd.A.isDown) moveLeft.call(this);
+        else if (cursors.right.isDown || this.wasd.D.isDown) moveRight.call(this);
       }
 
-      // Spawn obstacles
       obstacleTimer += this.game.loop.delta;
       if (obstacleTimer > 1500) {
         spawnObstacle.call(this);
         obstacleTimer = 0;
       }
-
-      // Move obstacles
       obstacles.children.each(obstacle => {
         obstacle.y += gameSpeed / 60;
         if (obstacle.y > height + 50) {
@@ -223,9 +186,24 @@
           updateUI();
         }
       });
-
-      // Increase difficulty
       if (score > 0 && score % 200 === 0) gameSpeed += 0.5;
+    }
+
+    function moveLeft() {
+      if (currentLane > 0) {
+        currentLane--;
+        moveCooldown = true;
+        player.x = lanes[currentLane];
+        this.time.delayedCall(150, () => moveCooldown = false);
+      }
+    }
+    function moveRight() {
+      if (currentLane < lanes.length - 1) {
+        currentLane++;
+        moveCooldown = true;
+        player.x = lanes[currentLane];
+        this.time.delayedCall(150, () => moveCooldown = false);
+      }
     }
 
     function spawnObstacle() {
@@ -248,25 +226,24 @@
     function endGame() {
       gameOver = true;
       obstacles.setVelocityY(0);
-      this.add.graphics().fillStyle(0x000000, 0.8).fillRect(0, 0, width, height);
-      gameOverText = this.add.text(width / 2, height / 2 - 50, 'بازی تمام شد!', {
-        fontSize: '48px', fill: '#fff'
-      }).setOrigin(0.5);
-      this.add.text(width / 2, height / 2, `امتیاز نهایی: ${score}`, {
-        fontSize: '32px', fill: '#f39c12'
-      }).setOrigin(0.5);
-      restartButton = this.add.text(width / 2, height / 2 + 80, '🔄 شروع مجدد', {
-        fontSize: '24px', fill: '#2ecc71', backgroundColor: '#34495e',
-        padding: { x: 20, y: 10 }
-      }).setOrigin(0.5).setInteractive();
-      restartButton.on('pointerdown', () => { saveScore(score); restartGame.call(this); });
+
+      gameOverContainer = this.add.container(width / 2, height / 2);
+
+      let bg = this.add.graphics().fillStyle(0x000000, 0.7).fillRoundedRect(-150, -100, 300, 200, 15);
+      let title = this.add.text(0, -50, 'بازی تمام شد!', { fontSize: '32px', fill: '#fff' }).setOrigin(0.5);
+      let finalScore = this.add.text(0, 0, `امتیاز: ${score}`, { fontSize: '24px', fill: '#f39c12' }).setOrigin(0.5);
+      let restart = this.add.text(0, 60, '🔄 شروع مجدد', { fontSize: '20px', fill: '#2ecc71', backgroundColor: '#34495e', padding: { x: 15, y: 5 } })
+        .setOrigin(0.5).setInteractive();
+
+      restart.on('pointerdown', () => { saveScore(score); restartGame.call(this); });
+
+      gameOverContainer.add([bg, title, finalScore, restart]);
     }
 
     function restartGame() {
       score = 0; lives = 3; gameSpeed = 200; obstacleTimer = 0; gameOver = false;
       obstacles.clear(true, true);
-      if (gameOverText) gameOverText.destroy();
-      if (restartButton) restartButton.destroy();
+      if (gameOverContainer) gameOverContainer.destroy();
       currentLane = 2;
       player.setPosition(lanes[currentLane], height - 100).setTint(0x2ecc71);
       updateUI();
