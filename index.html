@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Obstacle Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .ui-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        .leaderboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 200px;
+        }
+        .leaderboard h3 {
+            margin: 0 0 10px 0;
+            text-align: center;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div class="ui-overlay">
+            <div>امتیاز: <span id="score">0</span></div>
+            <div>جان: <span id="lives">3</span></div>
+        </div>
+        <div class="leaderboard">
+            <h3>🏆 Leaderboard</h3>
+            <div id="leaderboard-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // Game Configuration
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game-container',
+            backgroundColor: '#2c3e50',
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        // Game Variables
+        let player;
+        let obstacles;
+        let cursors;
+        let score = 0;
+        let lives = 3;
+        let gameSpeed = 200;
+        let obstacleTimer = 0;
+        let gameOver = false;
+        let scoreText;
+        let livesText;
+        let gameOverText;
+        let restartButton;
+        let leaderboard = [];
+
+        // Load fake leaderboard data
+        function loadLeaderboard() {
+            const savedLeaderboard = localStorage.getItem('carGameLeaderboard');
+            if (savedLeaderboard) {
+                leaderboard = JSON.parse(savedLeaderboard);
+            } else {
+                leaderboard = [
+                    { name: 'علی', score: 2500 },
+                    { name: 'فاطمه', score: 2000 },
+                    { name: 'محمد', score: 1800 },
+                    { name: 'زهرا', score: 1500 },
+                    { name: 'حسین', score: 1200 }
+                ];
+            }
+            updateLeaderboardDisplay();
+        }
+
+        function saveScore(playerScore) {
+            const playerName = prompt('نام خود را وارد کنید:') || 'بازیکن';
+            leaderboard.push({ name: playerName, score: playerScore });
+            leaderboard.sort((a, b) => b.score - a.score);
+            leaderboard = leaderboard.slice(0, 10); // Top 10 only
+            localStorage.setItem('carGameLeaderboard', JSON.stringify(leaderboard));
+            updateLeaderboardDisplay();
+        }
+
+        function updateLeaderboardDisplay() {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            leaderboardList.innerHTML = '';
+            leaderboard.slice(0, 5).forEach((entry, index) => {
+                const div = document.createElement('div');
+                div.className = 'leaderboard-item';
+                div.innerHTML = `<span>${index + 1}. ${entry.name}</span><span>${entry.score}</span>`;
+                leaderboardList.appendChild(div);
+            });
+        }
+
+        function preload() {
+            // Create simple colored rectangles for sprites
+            this.add.graphics()
+                .fillStyle(0x3498db)
+                .fillRect(0, 0, 60, 100)
+                .generateTexture('car', 60, 100);
+            
+            this.add.graphics()
+                .fillStyle(0xe74c3c)
+                .fillRect(0, 0, 50, 80)
+                .generateTexture('obstacle', 50, 80);
+
+            // Create road texture
+            this.add.graphics()
+                .fillStyle(0x34495e)
+                .fillRect(0, 0, 800, 600)
+                .lineStyle(4, 0xf39c12)
+                .lineBetween(200, 0, 200, 600)
+                .lineBetween(400, 0, 400, 600)
+                .lineBetween(600, 0, 600, 600)
+                .generateTexture('road', 800, 600);
+        }
+
+        function create() {
+            // Add road background
+            this.add.image(400, 300, 'road');
+
+            // Create animated road lines
+            this.roadLines = this.add.group();
+            for (let i = 0; i < 15; i++) {
+                const line = this.add.graphics()
+                    .lineStyle(6, 0xf1c40f)
+                    .lineBetween(0, 0, 0, 40);
+                line.x = 400;
+                line.y = i * 50 - 100;
+                this.roadLines.add(line);
+            }
+
+            // Create player car
+            player = this.physics.add.sprite(400, 500, 'car');
+            player.setCollideWorldBounds(true);
+            player.setTint(0x2ecc71);
+
+            // Create obstacles group
+            obstacles = this.physics.add.group();
+
+            // Create cursors for input
+            cursors = this.input.keyboard.createCursorKeys();
+
+            // Add WASD keys
+            this.wasd = this.input.keyboard.addKeys('W,S,A,D');
+
+            // Collision detection
+            this.physics.add.overlap(player, obstacles, hitObstacle, null, this);
+
+            // Load leaderboard
+            loadLeaderboard();
+
+            // Update UI
+            updateUI();
+        }
+
+        function update() {
+            if (gameOver) return;
+
+            // Animate road lines
+            this.roadLines.children.entries.forEach(line => {
+                line.y += gameSpeed / 30;
+                if (line.y > 650) {
+                    line.y = -50;
+                }
+            });
+
+            // Player movement
+            if (cursors.left.isDown || this.wasd.A.isDown) {
+                player.setVelocityX(-300);
+            } else if (cursors.right.isDown || this.wasd.D.isDown) {
+                player.setVelocityX(300);
+            } else {
+                player.setVelocityX(0);
+            }
+
+            // Keep player in lanes
+            player.x = Phaser.Math.Clamp(player.x, 150, 650);
+
+            // Spawn obstacles
+            obstacleTimer += this.game.loop.delta;
+            if (obstacleTimer > 1500) {
+                spawnObstacle.call(this);
+                obstacleTimer = 0;
+            }
+
+            // Move obstacles
+            obstacles.children.entries.forEach(obstacle => {
+                obstacle.y += gameSpeed / 60;
+                if (obstacle.y > 650) {
+                    obstacle.destroy();
+                    score += 10;
+                    updateUI();
+                }
+            });
+
+            // Increase difficulty
+            if (score > 0 && score % 200 === 0) {
+                gameSpeed += 0.5;
+            }
+        }
+
+        function spawnObstacle() {
+            const lanes = [175, 300, 425, 550, 625];
+            const randomLane = Phaser.Utils.Array.GetRandom(lanes);
+            const obstacle = obstacles.create(randomLane, -50, 'obstacle');
+            obstacle.setVelocityY(gameSpeed);
+            
+            // Random obstacle colors
+            const colors = [0xe74c3c, 0x9b59b6, 0xf39c12, 0xe67e22];
+            obstacle.setTint(Phaser.Utils.Array.GetRandom(colors));
+        }
+
+        function hitObstacle(player, obstacle) {
+            obstacle.destroy();
+            lives--;
+            
+            // Screen shake effect
+            this.cameras.main.shake(200, 0.02);
+            
+            // Flash player red
+            player.setTint(0xff0000);
+            this.time.delayedCall(200, () => {
+                player.setTint(0x2ecc71);
+            });
+
+            updateUI();
+
+            if (lives <= 0) {
+                endGame.call(this);
+            }
+        }
+
+        function endGame() {
+            gameOver = true;
+            
+            // Stop all obstacles
+            obstacles.children.entries.forEach(obstacle => {
+                obstacle.setVelocity(0, 0);
+            });
+
+            // Create game over overlay
+            const overlay = this.add.graphics()
+                .fillStyle(0x000000, 0.8)
+                .fillRect(0, 0, 800, 600);
+
+            gameOverText = this.add.text(400, 250, 'بازی تمام شد!', {
+                fontSize: '48px',
+                fill: '#fff',
+                fontWeight: 'bold'
+            }).setOrigin(0.5);
+
+            const finalScore = this.add.text(400, 320, `امتیاز نهایی: ${score}`, {
+                fontSize: '32px',
+                fill: '#f39c12'
+            }).setOrigin(0.5);
+
+            restartButton = this.add.text(400, 400, '🔄 شروع مجدد', {
+                fontSize: '24px',
+                fill: '#2ecc71',
+                backgroundColor: '#34495e',
+                padding: { x: 20, y: 10 }
+            }).setOrigin(0.5).setInteractive();
+
+            restartButton.on('pointerdown', () => {
+                saveScore(score);
+                restartGame.call(this);
+            });
+
+            restartButton.on('pointerover', () => {
+                restartButton.setStyle({ backgroundColor: '#2ecc71', fill: '#fff' });
+            });
+
+            restartButton.on('pointerout', () => {
+                restartButton.setStyle({ backgroundColor: '#34495e', fill: '#2ecc71' });
+            });
+        }
+
+        function restartGame() {
+            // Reset game state
+            score = 0;
+            lives = 3;
+            gameSpeed = 200;
+            obstacleTimer = 0;
+            gameOver = false;
+
+            // Clean up
+            obstacles.clear(true, true);
+            if (gameOverText) gameOverText.destroy();
+            if (restartButton) restartButton.destroy();
+
+            // Reset player position
+            player.setPosition(400, 500);
+            player.setTint(0x2ecc71);
+
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('lives').textContent = lives;
+        }
+
+        // Start the game
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>
