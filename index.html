@@ -63,8 +63,8 @@
     /* UI elements */
 .ui-top-left {
   position: absolute;
-  left: 60px;
-  top: 8%; /* تغییر از 10px به 70% برای پایین‌تر آوردن */
+  left: 40px;
+  top: 60px; /* تغییر از 10px به 70% برای پایین‌تر آوردن */
   color: #FFA500;
   font-weight: 700;
   z-index: 50;
@@ -74,7 +74,7 @@
 
 .ui-top-right {
   position: absolute;
-  right: 60px;
+  right: 40px;
   top: 8%; /* تغییر از 10px به 70% برای پایین‌تر آوردن */
   z-index: 50;
   background: rgba(0,0,0,0.45);
@@ -92,12 +92,12 @@
     .hearts{display:flex;gap:3px}
     .heart{width:20px;height:20px;background:url('assets/images/ui/heart_vz.png') center/contain no-repeat;}
     .heart.empty{opacity:0.8;filter:grayscale(100%);}
-    .ui-speed{position:absolute;left:12px;bottom:20px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
+    .ui-speed{position:absolute;left:20px;bottom:80px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
 .ui-powerup {
   position: absolute;
   left: 50%;
   top: 8%; /* تغییر از 15px به 75% برای پایین‌تر آوردن */
-  transform: translateX(-50%);
+  transform: translateX(-60%);
   z-index: 60;
   background: linear-gradient(135deg,#f1c40f,#f39c12);
   color: #fff;
@@ -400,18 +400,24 @@
         loadLeaderboard();
       }
       createBackground(w, h) {
-        this.bg = this.add.graphics();
-        this.bg.fillGradientStyle(0x87CEEB, 0x87CEEB, 0x228B22, 0x228B22, 1);
-        this.bg.fillRect(0, 0, w, h);
-        const roadMargin = Math.max(40, w * 0.1);
-        this.roadGraphics = this.add.graphics();
-        this.roadGraphics.fillStyle(0x2c3e50, 1);
-        this.roadGraphics.fillRect(roadMargin, 0, w - roadMargin * 2, h);
-        this.roadGraphics.fillStyle(0xffffff, 1);
-        this.roadGraphics.fillRect(roadMargin - 6, 0, 6, h);
-        this.roadGraphics.fillRect(w - roadMargin, 0, 6, h);
-        this.roadMargin = roadMargin;
-      }
+  // Sky gradient background
+  this.bg = this.add.graphics();
+  this.bg.fillGradientStyle(0x87CEEB, 0x87CEEB, 0x228B22, 0x228B22, 1);
+  this.bg.fillRect(0, 0, w, h);
+  
+  // Road base - تنظیم عرض جاده به کل عرض صفحه
+  const roadMargin = 0; // حاشیه رو صفر می‌کنیم تا جاده کل عرض رو بگیره
+  this.roadGraphics = this.add.graphics();
+  this.roadGraphics.fillStyle(0x2c3e50, 1);
+  this.roadGraphics.fillRect(0, 0, w, h); // جاده کل عرض و ارتفاع صفحه رو می‌گیره
+  
+  // خطوط کناری جاده (اختیاری، می‌تونی حذف کنی یا تنظیم کنی)
+  this.roadGraphics.fillStyle(0xffffff, 1);
+  this.roadGraphics.fillRect(0, 0, 6, h); // خط سمت چپ
+  this.roadGraphics.fillRect(w - 6, 0, 6, h); // خط سمت راست
+  
+  this.roadMargin = roadMargin;
+}
       createAnimatedRoad(w, h) {
         this.laneLines = this.add.graphics();
         this.laneLines.setDepth(1);
