@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>بازی ماشین سواری - سه خط</title>
-  <link rel="icon" type="image/png" href="assets/ui/logo_002_vz.png">
-  <link rel="shortcut icon" type="image/png" href="assets/ui/logo_002_vz.png">
+  <titleپچ پچ</title>
+  <link rel="icon" type="image/png" href="assets/images/ui/logo_002_vz.png">
+  <link rel="shortcut icon" type="image/png" href="assets/images/ui/logo_002_vz.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.88.2/phaser.min.js"></script>
   <style>
     html,body{height:100%;margin:0;padding:0;overflow:hidden}
@@ -61,15 +61,54 @@
       font-size:14px;opacity:0.8;text-align:center;max-width:400px;line-height:1.6;
     }
     /* UI elements */
-    .ui-top-left{position:absolute;left:12px;top:10px;color:#fff;font-weight:700;z-index:50;text-shadow:1px 1px 2px rgba(0,0,0,0.6);font-size:16px}
-    .ui-top-right{position:absolute;right:10px;top:10px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
-    .ui-top-right .row{display:flex;align-items:center;min-width:96px;gap:5px}
+.ui-top-left {
+  position: absolute;
+  left: 60px;
+  top: 8%; /* تغییر از 10px به 70% برای پایین‌تر آوردن */
+  color: #FFA500;
+  font-weight: 700;
+  z-index: 50;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  font-size: 16px;
+}
+
+.ui-top-right {
+  position: absolute;
+  right: 60px;
+  top: 8%; /* تغییر از 10px به 70% برای پایین‌تر آوردن */
+  z-index: 50;
+  background: rgba(0,0,0,0.45);
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: #FFA500;
+  font-size: 12px;
+}
+.ui-top-right .row {
+  display: flex;
+  align-items: center;
+  min-width: 96px;
+  gap: 5px;
+}
     .hearts{display:flex;gap:3px}
     .heart{width:20px;height:20px;background:url('assets/images/ui/heart_vz.png') center/contain no-repeat;}
     .heart.empty{opacity:0.8;filter:grayscale(100%);}
     .ui-speed{position:absolute;left:12px;bottom:20px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
-    .ui-powerup{position:absolute;left:50%;top:15px;transform:translateX(-50%);z-index:60;
-      background:linear-gradient(135deg,#f1c40f,#f39c12);color:#fff;padding:8px 16px;
+.ui-powerup {
+  position: absolute;
+  left: 50%;
+  top: 8%; /* تغییر از 15px به 75% برای پایین‌تر آوردن */
+  transform: translateX(-50%);
+  z-index: 60;
+  background: linear-gradient(135deg,#f1c40f,#f39c12);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  display: none;
+  animation: powerupPulse 0.5s ease-in-out infinite alternate;
+  box-shadow: 0 4px 15px rgba(241,196,15,0.4);
+}      background:linear-gradient(135deg,#f1c40f,#f39c12);color:#fff;padding:8px 16px;
       border-radius:20px;font-size:14px;font-weight:bold;
       display:none;animation:powerupPulse 0.5s ease-in-out infinite alternate;
       box-shadow:0 4px 15px rgba(241,196,15,0.4);}
