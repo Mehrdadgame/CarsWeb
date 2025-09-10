@@ -2,31 +2,32 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <titleپچ پچ</title>
   <link rel="icon" type="image/png" href="assets/images/ui/logo_002_vz.png">
-   <link rel="shortcut icon" type="image/png" href="assets/images/ui/logo_002_vz.png">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.88.2/phaser.min.js"></script>
+  <link rel="shortcut icon" type="image/png" href="assets/images/ui/logo_002_vz.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.88.2/phaser.min.js"></script>
   <style>
     html,body{height:100%;margin:0;padding:0;overflow:hidden}
-    #game-wrapper {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 1920px;
-      height: 1080px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+    #game-wrapper{
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%, -50%);
+      width:600px;
+      height:800px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
     }
-    #game-container {
-      width: 1920px;
-      height: 1080px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-      border-radius: 8px;
-      overflow: hidden;
-      position: relative;
+    #game-container{
+      width:600px;
+      height:800px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.35);
+      border-radius:8px;
+      overflow:hidden;
+      position:relative;
     }
     /* Loading Screen */
     #loading-screen{
@@ -151,28 +152,28 @@
       #game-over p { font-size: 16px; }
       .btn { padding: 10px 16px; font-size: 14px; }
     }
-   @media (orientation: portrait) {
-      #game-wrapper {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 1920px;
-        height: 1080px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-      }
-      #game-container {
-        width: 1920px;
-        height: 1080px;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-        border-radius: 8px;
-        overflow: hidden;
-        position: relative;
-      }
-    }
+    @media (orientation: portrait) {
+#game-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* مطمئن شو که هیچ‌چیز از کناره‌ها بیرون نزنه */
+}
+
+#game-container {
+  width: 600px;
+  height: 800px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
     }
   </style>
 </head>
@@ -381,7 +382,7 @@
 
     // --- Game size calculation ---
     function getGameSize() {
-     return { width: 1920, height: 1080 };
+      return { width: 600, height: 800 };
     }
 
     // --- Enhanced Phaser Scene ---
@@ -794,40 +795,35 @@
 
     async function initializeGame() {
       const isFirstLoad = !localStorage.getItem('gameLoaded');
-       const loadingManager = new LoadingManager();
-       await loadingManager.start(isFirstLoad);
-  
-     const size = getGameSize();
-     const config = {
-    type: Phaser.AUTO,
-    parent: 'game-container',
-    width: size.width,
-    height: size.height,
-    backgroundColor: '#000000',
-    physics: { default: 'arcade', arcade: { debug: false, gravity: { y: 0 } } },
-    scene: MainScene,
-    scale: { 
-      mode: Phaser.Scale.FIT, 
-      autoCenter: Phaser.Scale.CENTER_BOTH, 
-      width: size.width, 
-      height: size.height 
+      const loadingManager = new LoadingManager();
+      await loadingManager.start(isFirstLoad);
+      
+      const size = getGameSize();
+      const config = {
+        type: Phaser.AUTO,
+        parent: 'game-container',
+        width: size.width,
+        height: size.height,
+        backgroundColor: '#000000',
+        physics: { default: 'arcade', arcade: { debug: false, gravity: { y: 0 } } },
+        scene: MainScene,
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
+      };
+
+      game = new Phaser.Game(config);
+      setupResizeHandler();
     }
-  };
 
-  game = new Phaser.Game(config);
-  setupResizeHandler();
-}
-
-function setupResizeHandler() {
-  window.addEventListener('resize', () => {
-    const gameWrapper = document.getElementById('game-wrapper');
-    gameWrapper.style.width = '1920px';
-    gameWrapper.style.height = '1080px';
-    gameWrapper.style.top = '50%';
-    gameWrapper.style.left = '50%';
-    gameWrapper.style.transform = 'translate(-50%, -50%)';
-  });
-}
+    function setupResizeHandler() {
+      window.addEventListener('resize', () => {
+        const gameWrapper = document.getElementById('game-wrapper');
+        gameWrapper.style.width = '600px';
+        gameWrapper.style.height = '800px';
+        gameWrapper.style.top = '50%';
+        gameWrapper.style.left = '50%';
+        gameWrapper.style.transform = 'translate(-50%, -50%)';
+      });
+    }
 
     const gameOverModal = document.getElementById('game-over');
     const finalScoreEl = document.getElementById('final-score');
