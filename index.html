@@ -1,333 +1,840 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Lane Car Game — 3 Lanes</title>
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+  <title>بازی ماشین سواری - سه خط</title>
+  <link rel="icon" type="image/png" href="assets/ui/logo_002_vz.png">
+  <link rel="shortcut icon" type="image/png" href="assets/ui/logo_002_vz.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.88.2/phaser.min.js"></script>
   <style>
-    html,body{height:100%;margin:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);font-family:Tahoma, Arial, Helvetica, sans-serif}
-    #game-wrapper{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-    #game-container{width:100%;height:100%;max-width:100%;max-height:100%;box-shadow:0 12px 30px rgba(0,0,0,0.35);border-radius:8px;overflow:hidden;position:relative}
-
-    /* کوچک و مینیمال: score + lives */
+    html,body{height:100%;margin:0;padding:0;overflow:hidden}
+    #game-wrapper{
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%, -50%);
+      width:600px;
+      height:800px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    #game-container{
+      width:600px;
+      height:800px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.35);
+      border-radius:8px;
+      overflow:hidden;
+      position:relative;
+    }
+    /* Loading Screen */
+    #loading-screen{
+      position:fixed;
+      top:0;left:0;width:100%;height:100%;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      z-index:1000;color:#fff;
+    }
+    .loading-logo{
+      width:100px;height:100px;margin-bottom:30px;
+      background:url('assets/ui/logo_002_vz.png') center/contain no-repeat;
+      animation:pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform:scale(1); opacity:1; }
+      50% { transform:scale(1.1); opacity:0.8; }
+    }
+    .loading-bar{
+      width:300px;height:6px;background:rgba(255,255,255,0.3);border-radius:10px;overflow:hidden;margin-bottom:20px;
+    }
+    .loading-progress{
+      width:0%;height:100%;background:linear-gradient(90deg,#00ff88,#00ccff);
+      transition:width 0.3s ease;border-radius:10px;
+      box-shadow:0 0 20px rgba(0,255,136,0.5);
+    }
+    .loading-text{
+      font-size:18px;margin-bottom:10px;text-shadow:0 2px 4px rgba(0,0,0,0.5);
+    }
+    .loading-tip{
+      font-size:14px;opacity:0.8;text-align:center;max-width:400px;line-height:1.6;
+    }
+    /* UI elements */
     .ui-top-left{position:absolute;left:12px;top:10px;color:#fff;font-weight:700;z-index:50;text-shadow:1px 1px 2px rgba(0,0,0,0.6);font-size:16px}
     .ui-top-right{position:absolute;right:10px;top:10px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
-    .ui-top-right .row{display:flex;justify-content:space-between;min-width:96px}
-
-    /* Game over modal (DOM) */
-    #game-over{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;display:none;min-width:220px;background:rgba(0,0,0,0.8);color:#fff;padding:14px;border-radius:10px;text-align:center}
-    #game-over h2{margin:4px 0 8px 0;font-size:18px}
-    #game-over p{margin:4px 0;font-size:16px}
-    .btn{display:inline-block;padding:8px 12px;border-radius:6px;margin:8px 6px;cursor:pointer;border:none}
-    .btn-primary{background:#2ecc71;color:#063;}
+    .ui-top-right .row{display:flex;align-items:center;min-width:96px;gap:5px}
+    .hearts{display:flex;gap:3px}
+    .heart{width:20px;height:20px;background:url('assets/images/ui/heart_vz.png') center/contain no-repeat;}
+    .heart.empty{opacity:0.8;filter:grayscale(100%);}
+    .ui-speed{position:absolute;left:12px;bottom:20px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
+    .ui-powerup{position:absolute;left:50%;top:15px;transform:translateX(-50%);z-index:60;
+      background:linear-gradient(135deg,#f1c40f,#f39c12);color:#fff;padding:8px 16px;
+      border-radius:20px;font-size:14px;font-weight:bold;
+      display:none;animation:powerupPulse 0.5s ease-in-out infinite alternate;
+      box-shadow:0 4px 15px rgba(241,196,15,0.4);}
+    @keyframes powerupPulse{
+      from{transform:translateX(-50%) scale(1);}
+      to{transform:translateX(-50%) scale(1.05);}
+    }
+    #game-over{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      z-index:60;display:none;min-width:90%;max-width:450px;
+      background:rgba(0,0,0,0.95);color:#fff;padding:30px;border-radius:15px;
+      text-align:center;border:3px solid #3498db;
+      box-shadow:0 10px 30px rgba(0,0,0,0.7);
+    }
+    #game-over h2{margin:10px 0 20px 0;font-size:24px;color:#e74c3c}
+    #game-over p{margin:8px 0;font-size:18px}
+    .btn{display:inline-block;padding:12px 20px;border-radius:8px;margin:10px 8px;cursor:pointer;border:none;font-size:16px;transition:all 0.3s;font-weight:bold}
+    .btn-primary{background:#2ecc71;color:#fff}
+    .btn-primary:hover{background:#27ae60;transform:scale(1.05)}
     .btn-muted{background:#34495e;color:#fff}
-
-    /* leaderboard very small */
-    #leaderboard{position:absolute;right:10px;bottom:10px;z-index:50;background:rgba(0,0,0,0.45);padding:8px;border-radius:8px;color:#fff;font-size:12px;min-width:110px}
-    #leaderboard h4{margin:0 0 6px 0;font-size:12px;text-align:center}
-    #leaderboard .entry{display:flex;justify-content:space-between;padding:2px 0}
-
-    /* make sure canvas doesn't get pointer-events blocked by overlays */
+    .btn-muted:hover{background:#2c3e50;transform:scale(1.05)}
+    #game-over-leaderboard{
+      margin:20px 0;background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;
+      max-height:300px;overflow-y:auto;
+    }
+    #game-over-leaderboard h4{margin:0 0 15px 0;font-size:16px;color:#f1c40f;text-shadow:0 1px 2px rgba(0,0,0,0.8)}
+    #game-over-leaderboard .entry{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:14px}
+    #game-over-leaderboard .entry:last-child{border-bottom:none}
+    #game-over-leaderboard .entry.current-player{background:rgba(241,196,15,0.3);border-radius:6px;padding:8px 12px;font-weight:bold}
+    .player-rank{font-weight:bold;color:#f1c40f;min-width:40px}
+    .entry-score{color:#3498db;font-weight:bold}
+    .player-name{flex:1;text-align:center}
+    #leaderboard{display:none}
     canvas{touch-action:manipulation}
+    @media (max-width: 480px) {
+      .ui-top-left, .ui-top-right, .ui-speed { font-size: 10px; }
+      .loading-bar { width: 250px; }
+      .loading-text { font-size: 16px; }
+      #game-over { min-width: 95%; padding: 20px; }
+      #game-over h2 { font-size: 20px; }
+      #game-over p { font-size: 16px; }
+      .btn { padding: 10px 16px; font-size: 14px; }
+    }
+    @media (orientation: portrait) {
+      #game-wrapper { width: 600px; height: 800px; }
+      #game-container { width: 600px; height: 800px; }
+    }
   </style>
 </head>
 <body>
-  <div id="game-wrapper">
-    <div id="game-container"></div>
-
-    <div class="ui-top-left" id="ui-score">امتیاز: 0</div>
-    <div class="ui-top-right" id="ui-lives"><div class="row">جان: <span id="lives">3</span></div></div>
-
-    <div id="leaderboard">
-      <h4>🏆 رکوردها</h4>
-      <div id="leaderboard-list"></div>
+  <div id="loading-screen">
+    <div class="loading-logo"></div>
+    <div class="loading-text">در حال بارگذاری...</div>
+    <div class="loading-bar">
+      <div class="loading-progress" id="loading-progress"></div>
     </div>
+    <div class="loading-tip">
+      💡 نکته: از کلیدهای A/D یا فلش‌ها برای کنترل استفاده کنید
+    </div>
+  </div>
 
+  <div id="game-wrapper" style="display:none;">
+    <div id="game-container"></div>
+    <div class="ui-top-left" id="ui-score">امتیاز: 0</div>
+    <div class="ui-top-right" id="ui-lives">
+      <div class="row">
+        جان: <span id="lives-count">3</span>
+        <div class="hearts" id="hearts-container">
+          <div class="heart"></div>
+          <div class="heart"></div>
+          <div class="heart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-powerup" id="ui-powerup">⭐ امتیاز دوبرابر فعال!</div>
+    <div class="ui-speed" id="ui-speed">سرعت: 1.0</div>
     <div id="game-over">
-      <h2>بازی تمام شد!</h2>
-      <p id="final-score">امتیاز: 0</p>
+      <h2>🏁 بازی تمام شد!</h2>
+      <p id="final-score">امتیاز نهایی: 0</p>
+      <p id="player-rank-display"></p>
+      <div id="game-over-leaderboard">
+        <h4>🏆 جدول امتیازات برتر</h4>
+        <div id="game-over-leaderboard-list"></div>
+      </div>
       <div>
-        <button class="btn btn-primary" id="save-btn">ذخیره امتیاز</button>
-        <button class="btn btn-muted" id="restart-btn">شروع مجدد</button>
+        <button class="btn btn-primary" id="save-btn">💾 ذخیره امتیاز</button>
+        <button class="btn btn-muted" id="restart-btn">🔄 شروع مجدد</button>
       </div>
     </div>
   </div>
 
   <script>
-    // --- helpers: leaderboard DOM functions ---
-    const LB_KEY = 'laneCarLeaderboard_v1';
+    // --- Loading System ---
+    class LoadingManager {
+      constructor() {
+        this.progress = 0;
+        this.loadingSteps = [
+          { name: 'بارگذاری موتور بازی...', duration: 500 },
+          { name: 'بارگذاری تصاویر ماشین‌ها...', duration: 800 },
+          { name: 'بارگذاری پاورآپ‌ها...', duration: 600 },
+          { name: 'بارگذاری رابط کاربری...', duration: 400 },
+          { name: 'آماده‌سازی جاده...', duration: 300 },
+          { name: 'تنظیم بازی...', duration: 400 }
+        ];
+        this.currentStep = 0;
+      }
+
+      async start(isFirstLoad) {
+        if (!isFirstLoad) {
+          document.getElementById('loading-screen').style.display = 'none';
+          document.getElementById('game-wrapper').style.display = 'flex';
+          return;
+        }
+
+        const progressBar = document.getElementById('loading-progress');
+        const loadingText = document.querySelector('.loading-text');
+        
+        for (let i = 0; i < this.loadingSteps.length; i++) {
+          const step = this.loadingSteps[i];
+          loadingText.textContent = step.name;
+          
+          await this.simulateLoading(step.duration, (progress) => {
+            const totalProgress = ((i + progress) / this.loadingSteps.length) * 100;
+            progressBar.style.width = totalProgress + '%';
+          });
+        }
+        
+        loadingText.textContent = '✅ بازی آماده است!';
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('game-wrapper').style.display = 'flex';
+        localStorage.setItem('gameLoaded', 'true'); // Mark as loaded
+      }
+
+      simulateLoading(duration, onProgress) {
+        return new Promise(resolve => {
+          let elapsed = 0;
+          const interval = setInterval(() => {
+            elapsed += 50;
+            const progress = Math.min(elapsed / duration, 1);
+            onProgress(progress);
+            
+            if (progress >= 1) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 50);
+        });
+      }
+    }
+
+    // --- Leaderboard and API System ---
+    const LB_KEY = 'laneCarLeaderboard_v3';
     let leaderboard = [];
+    let currentPlayerScore = 0;
+    let currentPlayerName = null;
+    
+    const API = {
+      async getLeaderboard() {
+        return new Promise((resolve) => {
+          setTimeout(() => resolve(leaderboard), 100);
+        });
+      },
+      async saveScore(name, score) {
+        return new Promise((resolve) => {
+          setTimeout(() => resolve({success: true, id: Date.now()}), 200);
+        });
+      }
+    };
+
     function loadLeaderboard() {
       try {
         const raw = localStorage.getItem(LB_KEY);
-        leaderboard = raw ? JSON.parse(raw) : [];
-      } catch (e) { leaderboard = []; }
+        leaderboard = raw ? JSON.parse(raw) : [
+          {name: 'علی رضا', score: 1250},
+          {name: 'سارا احمدی', score: 980},
+          {name: 'محمد حسنی', score: 875},
+          {name: 'فاطمه کریمی', score: 720},
+          {name: 'حسین محمدی', score: 650},
+          {name: 'مریم رضایی', score: 580},
+          {name: 'امیر علی', score: 520},
+          {name: 'نازنین یوسفی', score: 480},
+          {name: 'رضا اصغری', score: 420},
+          {name: 'زهرا موسوی', score: 380}
+        ];
+      } catch (e) { 
+        leaderboard = [
+          {name: 'علی رضا', score: 1250},
+          {name: 'سارا احمدی', score: 980},
+          {name: 'محمد حسنی', score: 875},
+          {name: 'فاطمه کریمی', score: 720},
+          {name: 'حسین محمدی', score: 650}
+        ];
+      }
       if (!Array.isArray(leaderboard)) leaderboard = [];
-      updateLeaderboardDisplay();
     }
-    function saveLeaderboardEntry(name, score) {
-      leaderboard.push({ name: name || 'بازیکن', score: score || 0 });
-      leaderboard.sort((a,b)=>b.score - a.score);
-      leaderboard = leaderboard.slice(0, 10);
-      localStorage.setItem(LB_KEY, JSON.stringify(leaderboard));
-      updateLeaderboardDisplay();
+
+    async function saveLeaderboardEntry(name, score) {
+      try {
+        await API.saveScore(name, score);
+        leaderboard.push({ name: name || 'بازیکن ناشناس', score: score || 0, timestamp: Date.now() });
+        leaderboard.sort((a,b) => b.score - a.score);
+        leaderboard = leaderboard.slice(0, 100);
+        localStorage.setItem(LB_KEY, JSON.stringify(leaderboard));
+        currentPlayerName = name;
+        updateGameOverLeaderboard();
+        return true;
+      } catch (error) {
+        console.error('Failed to save score:', error);
+        leaderboard.push({ name: name || 'بازیکن ناشناس', score: score || 0, timestamp: Date.now() });
+        leaderboard.sort((a,b) => b.score - a.score);
+        leaderboard = leaderboard.slice(0, 100);
+        localStorage.setItem(LB_KEY, JSON.stringify(leaderboard));
+        currentPlayerName = name;
+        updateGameOverLeaderboard();
+        return false;
+      }
     }
-    function updateLeaderboardDisplay() {
-      const list = document.getElementById('leaderboard-list');
+
+    function updateGameOverLeaderboard() {
+      const list = document.getElementById('game-over-leaderboard-list');
       list.innerHTML = '';
-      leaderboard.slice(0,5).forEach((e, i) => {
+      let displayEntries = [...leaderboard].sort((a,b) => b.score - a.score).slice(0, 10);
+      if (currentPlayerName && currentPlayerScore > 0) {
+        const playerEntry = { name: currentPlayerName, score: currentPlayerScore };
+        const playerRank = getPlayerRank(currentPlayerScore);
+        if (playerRank > 10) {
+          displayEntries.push({ ...playerEntry, isCurrentPlayer: true, rank: playerRank });
+        }
+      }
+      displayEntries.forEach((entry, i) => {
         const row = document.createElement('div');
         row.className = 'entry';
-        row.innerHTML = `<span>${i+1}. ${escapeHtml(e.name)}</span><span>${e.score}</span>`;
+        const isCurrentPlayer = entry.isCurrentPlayer || (currentPlayerName && entry.name === currentPlayerName && Math.abs(entry.score - currentPlayerScore) < 10);
+        if (isCurrentPlayer) row.className += ' current-player';
+        const rank = entry.rank || (i + 1);
+        const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
+        row.innerHTML = `<span class="player-rank">${rankEmoji}</span><span class="player-name">${escapeHtml(entry.name)}</span><span class="entry-score">${entry.score}</span>`;
         list.appendChild(row);
       });
     }
-    function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
 
-    // --- responsive size ---
-    function getGameSize() {
-      const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-      // On mobile prefer portrait full-viewport; on desktop use viewport as well
-      return { width: Math.max(360, window.innerWidth), height: Math.max(600, window.innerHeight) };
+    function getPlayerRank(score) {
+      const sortedScores = [...leaderboard].sort((a,b) => b.score - a.score);
+      let rank = sortedScores.findIndex(entry => score > entry.score);
+      if (rank === -1) rank = sortedScores.length;
+      return rank + 1;
     }
 
-    // --- Phaser main scene ---
+    function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
+
+    // --- Game size calculation ---
+    function getGameSize() {
+      return { width: 600, height: 800 };
+    }
+
+    // --- Enhanced Phaser Scene ---
     class MainScene extends Phaser.Scene {
       constructor(){ super({ key: 'MainScene' }); }
-
       preload(){
-        // generate simple textures for car & obstacle
-        const g = this.add.graphics();
-        g.fillStyle(0x2ecc71, 1).fillRoundedRect(0,0,60,100,8).generateTexture('car', 60, 100); g.clear();
-        g.fillStyle(0xe74c3c, 1).fillRoundedRect(0,0,60,100,8).generateTexture('obstacle', 60, 100); g.clear();
+        this.load.on('progress', (value) => console.log('Loading progress:', Math.round(value * 100) + '%'));
+        this.load.image('player-car', 'assets/images/cars/player-car.png');
+        this.load.image('obstacle-1', 'assets/images/cars/Obstacle1.png');
+        this.load.image('obstacle-2', 'assets/images/cars/Obstacle2.png');
+        for(let i = 1; i <= 5; i++) this.load.image(`powerup-${i}`, `assets/images/powerups/Powerup${i}.png`);
+        for(let i = 1; i <= 4; i++) this.load.image(`text-${i}`, `assets/images/text/text_${i}.png`);
+        this.load.image('logo', 'assets/ui/logo_002_vz.png');
+        this.load.image('road-texture', 'assets/images/road/road.png');
+        this.load.on('loaderror', (file) => console.warn('Failed to load:', file.src));
       }
-
       create(){
-        // references
         const w = this.scale.width;
         const h = this.scale.height;
-
-        // background + road
-        this.bg = this.add.graphics();
-        this._drawBackground(w,h);
-
-        // lanes (3 lanes)
+        this.createBackground(w, h);
+        this.roadOffset = 0;
         this.lanes = [w * 0.25, w * 0.5, w * 0.75];
-        this.laneIndex = 1; // start middle
-
-        // draw lane divider lines (visual)
-        this.linesG = this.add.graphics();
-        this._drawLaneDividers(w,h);
-
-        // player (physics sprite)
-        this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'car');
-        this.player.setDepth(3);
+        this.laneIndex = 1;
+        this.createAnimatedRoad(w, h);
+        this.createPlayer(w, h);
+        this.obstacles = this.physics.add.group();
+        this.powerUps = this.physics.add.group();
+        this.bonusTexts = this.physics.add.group();
+        this.setupCollisions();
+        this.setupControls();
+        this.initializeGameState();
+        this.setupSpawners();
+        this._updateUI();
+        loadLeaderboard();
+      }
+      createBackground(w, h) {
+        this.bg = this.add.graphics();
+        this.bg.fillGradientStyle(0x87CEEB, 0x87CEEB, 0x228B22, 0x228B22, 1);
+        this.bg.fillRect(0, 0, w, h);
+        const roadMargin = Math.max(40, w * 0.1);
+        this.roadGraphics = this.add.graphics();
+        this.roadGraphics.fillStyle(0x2c3e50, 1);
+        this.roadGraphics.fillRect(roadMargin, 0, w - roadMargin * 2, h);
+        this.roadGraphics.fillStyle(0xffffff, 1);
+        this.roadGraphics.fillRect(roadMargin - 6, 0, 6, h);
+        this.roadGraphics.fillRect(w - roadMargin, 0, 6, h);
+        this.roadMargin = roadMargin;
+      }
+      createAnimatedRoad(w, h) {
+        this.laneLines = this.add.graphics();
+        this.laneLines.setDepth(1);
+      }
+      createPlayer(w, h) {
+        const carWidth = Math.min(60, w * 0.12);
+        const carHeight = carWidth * 1.6;
+        if (this.textures.exists('player-car')) {
+          this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car');
+          this.player.setDisplaySize(carWidth+25, carHeight);
+        } else {
+          this.createFallbackTextures();
+          this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car-fallback');
+        }
+        this.player.setDepth(5);
         this.player.body.setImmovable(true);
         this.player.body.setCollideWorldBounds(true);
-
-        // obstacles group
-        this.obstacles = this.physics.add.group();
-
-        // overlap -> game over
-        this.physics.add.overlap(this.player, this.obstacles, this._onHit, null, this);
-
-        // input (keyboard)
-        this.input.keyboard.on('keydown-LEFT',()=>this.moveLeft());
-        this.input.keyboard.on('keydown-RIGHT',()=>this.moveRight());
-        this.input.keyboard.on('keydown-A',()=>this.moveLeft());
-        this.input.keyboard.on('keydown-D',()=>this.moveRight());
-
-        // pointer (touch/click) - split-screen left/right immediate move
-        this.input.on('pointerdown', pointer => {
-          // pointer.x is in game coordinates (Phaser handles scale)
-          if (pointer.x < this.scale.width * 0.5) this.moveLeft();
-          else this.moveRight();
-        });
-
-        // spawn obstacles on lanes periodically
-        this.obstacleSpeed = 260; // px/s
-        this.spawnTimer = this.time.addEvent({ delay: 900, loop: true, callback: this._spawnObstacle, callbackScope: this });
-
-        // score & lives
-        this.score = 0;
-        this.lives = 3;
-        this._updateUI();
-
-        // small move cooldown so holding doesn't spam
-        this._moveCooldown = false;
-
-        // load leaderboard
-        loadLeaderboard();
-
-        // expose quick access for resize handling
-        this.events.on('resize', (gameSize) => {
-          const { width, height } = gameSize;
-          this._onResize(width, height);
+        this.tweens.add({
+          targets: this.player,
+          y: this.player.y - 3,
+          duration: 1000,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
         });
       }
-
-      update(){
-        // clean obstacles that left bottom and increase score
-        this.obstacles.getChildren().forEach(obs => {
-          if (!obs) return;
-          if (obs.y > this.scale.height + 100) {
-            obs.destroy();
-            this.score += 10;
-            this._updateUI();
+      setupCollisions() {
+        this.physics.add.overlap(this.player, this.obstacles, this.onCarCrash, null, this);
+        this.physics.add.overlap(this.player, this.powerUps, this.onPowerUpCollected, null, this);
+        this.physics.add.overlap(this.player, this.bonusTexts, this.onBonusTextCollected, null, this);
+      }
+      setupControls() {
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.wasd = this.input.keyboard.addKeys('W,S,A,D');
+        this.input.on('pointerdown', (pointer) => {
+          const centerX = this.scale.width * 0.5;
+          if (pointer.x < centerX - 50) this.moveLeft();
+          else if (pointer.x > centerX + 50) this.moveRight();
+        });
+        let startX = 0;
+        this.input.on('pointerdown', (pointer) => { startX = pointer.x; });
+        this.input.on('pointerup', (pointer) => {
+          const deltaX = pointer.x - startX;
+          if (Math.abs(deltaX) > 50) {
+            if (deltaX < 0) this.moveLeft();
+            else this.moveRight();
           }
         });
       }
-
-      // move immediately to lane (no tween) — fast response to touch
-      moveLeft(){
-        if (this._moveCooldown) return;
-        if (this.laneIndex > 0) {
-          this.laneIndex--;
-          this.player.x = this.lanes[this.laneIndex];
-          this._moveCooldown = true;
-          this.time.delayedCall(120, ()=> this._moveCooldown = false);
+      initializeGameState() {
+        this.score = 0;
+        this.lives = 3;
+        this.maxLives = 3;
+        this.speed = 1.0;
+        this.baseObstacleSpeed = 180;
+        this.maxSpeed = 4.5;
+        this.scoreMultiplier = 1;
+        this.powerUpActive = false;
+        this.powerUpTimeRemaining = 0;
+        this.difficultyLevel = 1;
+        this.obstaclesAvoided = 0;
+        this.moveCooldown = false;
+        this.invulnerabilityTime = 0;
+      }
+      setupSpawners() {
+        this.obstacleSpawnDelay = 1800;
+        this.obstacleTimer = this.time.addEvent({ delay: this.obstacleSpawnDelay, loop: true, callback: this.spawnObstacle, callbackScope: this });
+        this.powerUpTimer = this.time.addEvent({ delay: 8000, loop: true, callback: this.spawnPowerUp, callbackScope: this });
+        this.speedTimer = this.time.addEvent({ delay: 6000, loop: true, callback: this.increaseSpeed, callbackScope: this });
+        this.bonusTextTimer = this.time.addEvent({ delay: 12000, loop: true, callback: this.spawnBonusText, callbackScope: this });
+      }
+      update(time, delta) {
+        if (this.cursors.left.isDown || this.wasd.A.isDown) this.moveLeft();
+        else if (this.cursors.right.isDown || this.wasd.D.isDown) this.moveRight();
+        this.updateRoadAnimation(delta);
+        if (this.invulnerabilityTime > 0) {
+          this.invulnerabilityTime -= delta;
+          this.player.setAlpha(Math.sin(time * 0.01) > 0 ? 0.5 : 1.0);
+        } else this.player.setAlpha(1.0);
+        if (this.powerUpActive && this.powerUpTimeRemaining > 0) {
+          this.powerUpTimeRemaining -= delta;
+          if (this.powerUpTimeRemaining <= 0) this.deactivatePowerUp();
+        }
+        this.obstacles.getChildren().forEach(obstacle => {
+          if (obstacle && obstacle.y > this.scale.height + 100) {
+            obstacle.destroy();
+            this.obstaclesAvoided++;
+            const points = Math.floor(15 * this.scoreMultiplier * this.speed);
+            this.score += points;
+            this.showFloatingText('+' + points, obstacle.x, this.scale.height - 50, 0x00ff00);
+            this._updateUI();
+          }
+        });
+        [...this.powerUps.getChildren(), ...this.bonusTexts.getChildren()].forEach(item => {
+          if (item && item.y > this.scale.height + 100) item.destroy();
+        });
+        this.updateDifficulty();
+      }
+      updateRoadAnimation(delta) {
+        const roadSpeed = (this.baseObstacleSpeed * this.speed * delta) / 1000;
+        this.roadOffset += roadSpeed;
+        this.drawAnimatedLanes();
+      }
+      drawAnimatedLanes() {
+        this.laneLines.clear();
+        this.laneLines.lineStyle(4, 0xffffff, 0.8);
+        const w = this.scale.width;
+        const h = this.scale.height;
+        const laneX1 = w / 3;
+        const laneX2 = 2 * w / 3;
+        const dashLength = 40;
+        const gapLength = 30;
+        const totalLength = dashLength + gapLength;
+        let yOffset = (this.roadOffset % totalLength) - dashLength;
+        while (yOffset < h) {
+          if (yOffset >= -dashLength) {
+            const startY = Math.max(0, yOffset);
+            const endY = Math.min(h, yOffset + dashLength);
+            if (endY > startY) {
+              this.laneLines.strokeLineShape(new Phaser.Geom.Line(laneX1, startY, laneX1, endY));
+              this.laneLines.strokeLineShape(new Phaser.Geom.Line(laneX2, startY, laneX2, endY));
+            }
+          }
+          yOffset += totalLength;
         }
       }
-      moveRight(){
-        if (this._moveCooldown) return;
-        if (this.laneIndex < this.lanes.length - 1) {
-          this.laneIndex++;
-          this.player.x = this.lanes[this.laneIndex];
-          this._moveCooldown = true;
-          this.time.delayedCall(120, ()=> this._moveCooldown = false);
+      moveLeft() {
+        if (this.moveCooldown || this.laneIndex <= 0) return;
+        this.laneIndex--;
+        this.tweenPlayerToLane();
+        this.setMoveCooldown();
+      }
+      moveRight() {
+        if (this.moveCooldown || this.laneIndex >= this.lanes.length - 1) return;
+        this.laneIndex++;
+        this.tweenPlayerToLane();
+        this.setMoveCooldown();
+      }
+      tweenPlayerToLane() {
+        this.tweens.add({
+          targets: this.player,
+          x: this.lanes[this.laneIndex],
+          duration: 150,
+          ease: 'Back.easeOut'
+        });
+      }
+      setMoveCooldown() {
+        this.moveCooldown = true;
+        this.time.delayedCall(200, () => this.moveCooldown = false);
+      }
+      spawnObstacle() {
+        let availableLanes = [0, 1, 2];
+        if (Math.random() < 0.3 && availableLanes.length > 1) availableLanes = availableLanes.filter(lane => lane !== this.laneIndex);
+        const laneIndex = Phaser.Math.RND.pick(availableLanes);
+        const x = this.lanes[laneIndex];
+        const obstacleType = Phaser.Math.Between(1, 2);
+        const obstacleKey = `obstacle-${obstacleType}`;
+        const carWidth = Math.min(55, this.scale.width * 0.11);
+        const carHeight = carWidth * 1.7;
+        let obstacle;
+        if (this.textures.exists(obstacleKey)) {
+          obstacle = this.obstacles.create(x, -120, obstacleKey);
+          obstacle.setDisplaySize(carWidth, carHeight);
+        } else obstacle = this.obstacles.create(x, -120, 'obstacle-fallback');
+        obstacle.setDepth(4);
+        const currentSpeed = this.baseObstacleSpeed * this.speed;
+        obstacle.body.setVelocityY(currentSpeed + Phaser.Math.Between(-20, 20));
+      }
+      spawnPowerUp() {
+        const powerUpType = Math.random() < 0.4 ? 'star' : 'text';
+        const laneIndex = Phaser.Math.Between(0, 2);
+        const x = this.lanes[laneIndex];
+        if (powerUpType === 'star') {
+          const starType = Phaser.Math.Between(1, 5);
+          const starKey = `powerup-${starType}`;
+          let powerUp;
+          if (this.textures.exists(starKey)) {
+            powerUp = this.powerUps.create(x, -120, starKey);
+            powerUp.setDisplaySize(40, 40);
+          } else powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
+          powerUp.setDepth(3);
+          powerUp.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.7);
+          this.tweens.add({ targets: powerUp, rotation: Math.PI * 2, duration: 2000, repeat: -1 });
+          this.tweens.add({ targets: powerUp, scaleX: 1.1/3, scaleY: 1.1/3, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
         }
       }
-
-      _spawnObstacle(){
-        const lane = Phaser.Math.Between(0, 2);
-        const x = this.lanes[lane];
-        const obs = this.obstacles.create(x, -120, 'obstacle');
-        obs.setDepth(2);
-        obs.body.setVelocityY(this.obstacleSpeed);
-        // slightly randomize size/shape
-        //obs.setDisplaySize(48, 90);
+      spawnBonusText() {
+        const textType = Phaser.Math.Between(1, 4);
+        const textKey = `text-${textType}`;
+        const laneIndex = Phaser.Math.Between(0, 2);
+        const x = this.lanes[laneIndex];
+        let bonusText;
+        if (this.textures.exists(textKey)) {
+          bonusText = this.bonusTexts.create(x, -120, textKey);
+          bonusText.setDisplaySize(70, 35);
+        } else {
+          bonusText = this.add.text(x, -120, 'BONUS!', { fontSize: '22px', fill: '#f1c40f', fontWeight: 'bold', stroke: '#000', strokeThickness: 2 });
+          bonusText.setOrigin(0.5);
+          this.physics.add.existing(bonusText);
+          this.bonusTexts.add(bonusText);
+        }
+        bonusText.setDepth(3);
+        bonusText.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.8);
+        this.tweens.add({ targets: bonusText, y: bonusText.y - 15, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       }
-
-      _onHit(player, obstacle) {
-        // destroy obstacle, reduce lives, or game over
+      onCarCrash(player, obstacle) {
+        if (this.invulnerabilityTime > 0) return;
         obstacle.destroy();
-        this.lives -= 1;
+        this.lives--;
         this._updateUI();
-        // small flash
-        this.cameras.main.shake(150, 0.01);
+        this.invulnerabilityTime = 2000;
+        this.cameras.main.shake(400, 0.03);
+        const flash = this.add.graphics();
+        flash.fillStyle(0xff0000, 0.5);
+        flash.fillRect(0, 0, this.scale.width, this.scale.height);
+        flash.setDepth(10);
+        this.tweens.add({ targets: flash, alpha: 0, duration: 300, onComplete: () => flash.destroy() });
         player.setTint(0xff0000);
-        this.time.delayedCall(180, ()=> player.clearTint());
-
-        if (this.lives <= 0) {
-          this._gameOver();
+        this.time.delayedCall(300, () => player.clearTint());
+        this.showFloatingText('-1 جان', player.x, player.y - 50, 0xff0000);
+        this.time.delayedCall(200, () => { if (this.lives <= 0) this.gameOver(); });
+      }
+      onPowerUpCollected(player, powerUp) {
+        powerUp.destroy();
+        this.activatePowerUp();
+        const points = Math.floor(75 * this.scoreMultiplier);
+        this.score += points;
+        this.showFloatingText('+' + points, powerUp.x, powerUp.y, 0xf1c40f);
+        this.showPowerUpEffect(powerUp.x, powerUp.y);
+        this._updateUI();
+      }
+      onBonusTextCollected(player, bonusText) {
+        bonusText.destroy();
+        const bonusPoints = Math.floor(50 * this.scoreMultiplier);
+        this.score += bonusPoints;
+        this.showFloatingText('+' + bonusPoints + ' امتیاز!', bonusText.x, bonusText.y, 0x00ff88);
+        this._updateUI();
+      }
+      activatePowerUp() {
+        this.scoreMultiplier = 2;
+        this.powerUpActive = true;
+        this.powerUpTimeRemaining = 6000;
+        this.player.setTint(0xf1c40f);
+        document.getElementById('ui-powerup').style.display = 'block';
+        this.updatePowerUpUI();
+      }
+      deactivatePowerUp() {
+        this.scoreMultiplier = 1;
+        this.powerUpActive = false;
+        this.powerUpTimeRemaining = 0;
+        this.player.clearTint();
+        document.getElementById('ui-powerup').style.display = 'none';
+      }
+      updatePowerUpUI() {
+        if (!this.powerUpActive) return;
+        const seconds = Math.ceil(this.powerUpTimeRemaining / 1000);
+        document.getElementById('ui-powerup').textContent = `⭐ امتیاز دوبرابر! (${seconds}s)`;
+        this.time.delayedCall(500, () => this.updatePowerUpUI());
+      }
+      showFloatingText(text, x, y, color) {
+        const floatingText = this.add.text(x, y, text, { fontSize: '18px', fill: `#${color.toString(16).padStart(6, '0')}`, fontWeight: 'bold', stroke: '#000', strokeThickness: 2 });
+        floatingText.setOrigin(0.5);
+        floatingText.setDepth(10);
+        this.tweens.add({ targets: floatingText, y: y - 80, alpha: 0, duration: 1500, ease: 'Power2', onComplete: () => floatingText.destroy() });
+      }
+      showPowerUpEffect(x, y) {
+        for (let i = 0; i < 8; i++) {
+          const sparkle = this.add.graphics();
+          sparkle.fillStyle(0xf1c40f, 1);
+          sparkle.fillCircle(0, 0, 4);
+          sparkle.x = x;
+          sparkle.y = y;
+          sparkle.setDepth(8);
+          const angle = (i / 8) * Math.PI * 2;
+          const distance = Phaser.Math.Between(30, 60);
+          this.tweens.add({ targets: sparkle, x: x + Math.cos(angle) * distance, y: y + Math.sin(angle) * distance, alpha: 0, scaleX: 0, scaleY: 0, duration: 800, ease: 'Power2', onComplete: () => sparkle.destroy() });
         }
       }
-
-      _gameOver(){
-        // stop spawning and physics
-        if (this.spawnTimer) this.spawnTimer.remove(false);
+      increaseSpeed() {
+        if (this.speed < this.maxSpeed) {
+          this.speed += 0.15;
+          if (this.obstacleSpawnDelay > 600) {
+            this.obstacleSpawnDelay = Math.max(600, this.obstacleSpawnDelay - 150);
+            this.obstacleTimer.reset({ delay: this.obstacleSpawnDelay, loop: true, callback: this.spawnObstacle, callbackScope: this });
+          }
+          this._updateUI();
+        }
+      }
+      updateDifficulty() {
+        const newDifficultyLevel = Math.floor(this.obstaclesAvoided / 20) + 1;
+        if (newDifficultyLevel > this.difficultyLevel) {
+          this.difficultyLevel = newDifficultyLevel;
+          this.showFloatingText(`سطح ${this.difficultyLevel}`, this.scale.width / 2, this.scale.height / 2, 0x00ff88);
+        }
+      }
+      gameOver() {
+        [this.obstacleTimer, this.powerUpTimer, this.speedTimer, this.bonusTextTimer].forEach(timer => { if (timer) timer.remove(false); });
         this.physics.pause();
-
-        // show DOM overlay centered inside wrapper
+        currentPlayerScore = this.score;
         showGameOver(this.score);
       }
-
-      _updateUI(){
-        document.getElementById('ui-score').innerText = 'امتیاز: ' + this.score;
-        document.getElementById('lives').innerText = this.lives;
+      _updateUI() {
+        document.getElementById('ui-score').textContent = `امتیاز: ${this.score.toLocaleString()}${this.powerUpActive ? ' (دوبرابر!)' : ''}`;
+        document.getElementById('ui-speed').textContent = `سرعت: ${this.speed.toFixed(1)}`;
+        document.getElementById('lives-count').textContent = this.lives;
+        this.updateHeartsDisplay();
       }
-
-      _drawBackground(w,h){
-        this.bg.clear();
-        // full background
-        this.bg.fillStyle(0x2c3e50, 1).fillRect(0,0,w,h);
-        // road rect
-        const margin = Math.max(28, w * 0.06);
-        this.bg.fillStyle(0x34495e, 1).fillRect(margin, 0, w - margin*2, h);
+      updateHeartsDisplay() {
+        const heartsContainer = document.getElementById('hearts-container');
+        heartsContainer.innerHTML = '';
+        for (let i = 0; i < this.maxLives; i++) {
+          const heart = document.createElement('div');
+          heart.className = 'heart';
+          if (i >= this.lives) heart.classList.add('empty');
+          heartsContainer.appendChild(heart);
+        }
       }
-
-      _drawLaneDividers(w,h){
-        if (this.linesG) this.linesG.clear();
-        this.linesG.lineStyle(6, 0xf1c40f, 1);
-        const x1 = w/3; const x2 = 2*w/3;
-        // dashed look by drawing short segments
-        const segH = 24; const gap = 18; let y=0;
-        while (y < h) { this.linesG.strokeLineShape(new Phaser.Geom.Line(x1, y, x1, Math.min(h,y+segH))); this.linesG.strokeLineShape(new Phaser.Geom.Line(x2, y, x2, Math.min(h,y+segH))); y += segH + gap; }
-      }
-
-      _onResize(newW, newH){
-        // recalc lanes and reposition player
-        this._drawBackground(newW, newH);
-        this._drawLaneDividers(newW, newH);
-        this.lanes = [newW * 0.25, newW * 0.5, newW * 0.75];
-        this.player.x = this.lanes[this.laneIndex];
-        // reposition score UI (Phaser text keeps position relative to canvas; but we use DOM for score so no change)
+      createFallbackTextures() {
+        const carG = this.add.graphics();
+        carG.fillStyle(0xe74c3c, 1);
+        carG.fillRoundedRect(0, 0, 60, 96, 8);
+        carG.fillStyle(0xffffff, 1);
+        carG.fillRoundedRect(8, 15, 44, 25, 4);
+        carG.fillRoundedRect(8, 50, 44, 20, 4);
+        carG.fillStyle(0x2c3e50, 1);
+        carG.fillCircle(15, 10, 6);
+        carG.fillCircle(45, 10, 6);
+        carG.fillCircle(15, 86, 6);
+        carG.fillCircle(45, 86, 6);
+        carG.generateTexture('player-car-fallback', 60, 96);
+        carG.destroy();
+        const obsG = this.add.graphics();
+        obsG.fillStyle(0x34495e, 1);
+        obsG.fillRoundedRect(0, 0, 55, 94, 6);
+        obsG.fillStyle(0xffffff, 1);
+        obsG.fillRoundedRect(6, 12, 43, 22, 3);
+        obsG.fillRoundedRect(6, 45, 43, 18, 3);
+        obsG.fillStyle(0x2c3e50, 1);
+        obsG.fillCircle(13, 8, 5);
+        obsG.fillCircle(42, 8, 5);
+        obsG.fillCircle(13, 86, 5);
+        obsG.fillCircle(42, 86, 5);
+        obsG.generateTexture('obstacle-fallback', 55, 94);
+        obsG.destroy();
+        const powerG = this.add.graphics();
+        powerG.fillStyle(0xf1c40f, 1);
+        powerG.fillStar(20, 20, 5, 15, 10, 0);
+        powerG.fillStyle(0xffffff, 0.6);
+        powerG.fillStar(20, 20, 5, 8, 6, 0);
+        powerG.generateTexture('powerup-fallback', 40, 40);
+        powerG.destroy();
       }
     }
 
-    // --- start game ---
-    const size = getGameSize();
-    const config = {
-      type: Phaser.AUTO,
-      parent: 'game-container',
-      width: size.width,
-      height: size.height,
-      backgroundColor: '#000000',
-      physics: { default: 'arcade', arcade: { debug: false } },
-      scene: MainScene,
-      scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
-    };
+    let game;
 
-    let game = new Phaser.Game(config);
+    async function initializeGame() {
+      const isFirstLoad = !localStorage.getItem('gameLoaded');
+      const loadingManager = new LoadingManager();
+      await loadingManager.start(isFirstLoad);
+      
+      const size = getGameSize();
+      const config = {
+        type: Phaser.AUTO,
+        parent: 'game-container',
+        width: size.width,
+        height: size.height,
+        backgroundColor: '#000000',
+        physics: { default: 'arcade', arcade: { debug: false, gravity: { y: 0 } } },
+        scene: MainScene,
+        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
+      };
 
-    // handle browser resize - recreate sizing and notify scene
-    window.addEventListener('resize', ()=>{
-      const s = getGameSize();
-      try {
-        game.scale.resize(s.width, s.height);
-        const sc = game.scene.keys['MainScene'];
-        if (sc && sc._onResize) sc._onResize(s.width, s.height);
-      } catch(e) { /* ignore if game not ready */ }
-    });
+      game = new Phaser.Game(config);
+      setupResizeHandler();
+    }
 
-    // --- DOM overlay control ---
-    const overEl = document.getElementById('game-over');
+    function setupResizeHandler() {
+      window.addEventListener('resize', () => {
+        const gameWrapper = document.getElementById('game-wrapper');
+        gameWrapper.style.width = '600px';
+        gameWrapper.style.height = '800px';
+        gameWrapper.style.top = '50%';
+        gameWrapper.style.left = '50%';
+        gameWrapper.style.transform = 'translate(-50%, -50%)';
+      });
+    }
+
+    const gameOverModal = document.getElementById('game-over');
     const finalScoreEl = document.getElementById('final-score');
-    document.getElementById('save-btn').addEventListener('click', ()=>{
-      const name = prompt('نام خود را وارد کنید:') || 'بازیکن';
-      // save current score then restart
-      const sc = game.scene.keys['MainScene'];
-      const score = sc ? sc.score : 0;
-      saveLeaderboardEntry(name, score);
-      hideGameOverAndRestart();
-    });
-    document.getElementById('restart-btn').addEventListener('click', ()=>{
-      hideGameOverAndRestart();
+    const playerRankEl = document.getElementById('player-rank-display');
+
+    document.getElementById('save-btn').addEventListener('click', async () => {
+      const name = prompt('نام خود را وارد کنید (حداکثر 20 کاراکتر):') || 'بازیکن ناشناس';
+      const trimmedName = name.trim().substring(0, 20);
+      const scene = game.scene.keys['MainScene'];
+      const score = scene ? scene.score : currentPlayerScore;
+      const saveBtn = document.getElementById('save-btn');
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = '⏳ در حال ذخیره...';
+      saveBtn.disabled = true;
+      try {
+        await saveLeaderboardEntry(trimmedName, score);
+        saveBtn.textContent = '✅ ذخیره شد!';
+        setTimeout(() => hideGameOverAndRestart(), 1000);
+      } catch (error) {
+        saveBtn.textContent = '❌ خطا! دوباره تلاش کنید';
+        setTimeout(() => { saveBtn.textContent = originalText; saveBtn.disabled = false; }, 2000);
+      }
     });
 
-    function showGameOver(score){
-      finalScoreEl.innerText = 'امتیاز: ' + score;
-      overEl.style.display = 'block';
+    document.getElementById('restart-btn').addEventListener('click', () => hideGameOverAndRestart());
+
+    function showGameOver(score) {
+      finalScoreEl.textContent = `امتیاز نهایی: ${score.toLocaleString()}`;
+      const rank = getPlayerRank(score);
+      const totalPlayers = leaderboard.length + 1;
+      let rankText = '';
+      if (rank === 1) rankText = '🥇 رکورد جدید! رتبه 1';
+      else if (rank <= 3) rankText = `🏆 عالی! رتبه ${rank} از ${totalPlayers}`;
+      else if (rank <= 10) rankText = `👍 خوب! رتبه ${rank} از ${totalPlayers}`;
+      else if (score > 100) rankText = `رتبه ${rank} از ${totalPlayers}`;
+      playerRankEl.textContent = rankText;
+      gameOverModal.style.display = 'block';
+      updateGameOverLeaderboard();
     }
-    function hideGameOverAndRestart(){
-      overEl.style.display = 'none';
-      // restart scene
+
+    function hideGameOverAndRestart() {
+      gameOverModal.style.display = 'none';
+      currentPlayerScore = 0;
+      currentPlayerName = null;
+      const saveBtn = document.getElementById('save-btn');
+      saveBtn.textContent = '💾 ذخیره امتیاز';
+      saveBtn.disabled = false;
       try {
-        // restart the MainScene
         game.scene.stop('MainScene');
         game.scene.start('MainScene');
       } catch(e) {
-        // fallback: destroy and recreate whole game
+        console.warn('Restart error, recreating game:', e);
         game.destroy(true);
-        const s = getGameSize();
-        config.width = s.width; config.height = s.height; config.scale.width = s.width; config.scale.height = s.height;
-        game = new Phaser.Game(config);
+        setTimeout(() => {
+          const size = getGameSize();
+          const config = {
+            type: Phaser.AUTO,
+            parent: 'game-container',
+            width: size.width,
+            height: size.height,
+            backgroundColor: '#000000',
+            physics: { default: 'arcade', arcade: { debug: false } },
+            scene: MainScene,
+            scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
+          };
+          game = new Phaser.Game(config);
+          setupResizeHandler();
+        }, 100);
       }
     }
 
-    // load leaderboard initially
-    loadLeaderboard();
+    document.addEventListener('DOMContentLoaded', () => {
+      loadLeaderboard();
+      initializeGame();
+    });
   </script>
 </body>
 </html>
