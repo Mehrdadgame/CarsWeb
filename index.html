@@ -63,7 +63,7 @@
     /* UI elements */
 .ui-top-left {
   position: absolute;
-  left: 40px;
+  left: 120px;
   top: 60px;
   color: #FFA500;
   font-weight: 700;
@@ -77,7 +77,7 @@
 
 .ui-top-right {
   position: absolute;
-  right: 100px;
+  right: 120px;
   top: 8%;
   z-index: 50;
   background: rgba(0,0,0,0.45);
@@ -95,22 +95,22 @@
     .hearts{display:flex;gap:3px}
     .heart{width:20px;height:20px;background:url('assets/images/ui/heart_vz.png') center/contain no-repeat;}
     .heart.empty{opacity:0.8;filter:grayscale(100%);}
-    .ui-speed{position:absolute;left:75px;bottom:80px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
+    .ui-speed{position:absolute;left:120px;bottom:80px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
 .ui-powerup {
   position: absolute;
   left: 50%;
-  top: 8%; 
+  top: 15%; 
   transform: translateX(-60%);
   z-index: 60;
   background: linear-gradient(135deg,#f1c40f,#f39c12);
   color: #fff;
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 15px;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
   display: none;
   animation: powerupPulse 0.5s ease-in-out infinite alternate;
-  box-shadow: 0 2px 10px rgba(241,196,15,0.4);
+  box-shadow: 0 2px 8px rgba(241,196,15,0.4);
 }      background:linear-gradient(135deg,#f1c40f,#f39c12);color:#fff;padding:8px 16px;
       border-radius:20px;font-size:14px;font-weight:bold;
       display:none;animation:powerupPulse 0.5s ease-in-out infinite alternate;
@@ -682,8 +682,7 @@
         this.powerUpActive = true;
         this.powerUpTimeRemaining = 6000;
         this.player.setTint(0xf1c40f);
-        document.getElementById('ui-powerup').style.display = 'block';
-        this.updatePowerUpUI();
+        this.showRandomTextEffect(); // نمایش تصادفی عکس
       }
       deactivatePowerUp() {
         this.scoreMultiplier = 1;
@@ -692,12 +691,31 @@
         this.player.clearTint();
         document.getElementById('ui-powerup').style.display = 'none';
       }
-      updatePowerUpUI() {
-        if (!this.powerUpActive) return;
-        const seconds = Math.ceil(this.powerUpTimeRemaining / 1000);
-        document.getElementById('ui-powerup').textContent = `⭐ امتیاز دوبرابر! (${seconds}s)`;
-        this.time.delayedCall(500, () => this.updatePowerUpUI());
+      showRandomTextEffect() {
+        const w = this.scale.width;
+        const h = this.scale.height;
+        const playerY = this.player.y; 
+        const x = this.player.x; 
+        const textTypes = [1, 2, 3, 4];
+        const randomText = `text-${Phaser.Math.RND.pick(textTypes)}`; 
+        const textSprite = this.add.image(x, playerY - 100, randomText); 
+        textSprite.setDepth(10);
+        textSprite.setDisplaySize(60*2, 70*2); 
+
+        // انیمیشن محو شدن بعد از 1 ثانیه
+        this.tweens.add({
+          targets: textSprite,
+          alpha: 0,
+          duration: 1500,
+          onComplete: () => textSprite.destroy()
+        });
       }
+      // updatePowerUpUI() {
+      //   if (!this.powerUpActive) return;
+      //   const seconds = Math.ceil(this.powerUpTimeRemaining / 1000);
+      //   document.getElementById('ui-powerup').textContent = `⭐ امتیاز دوبرابر! (${seconds}s)`;
+      //   this.time.delayedCall(500, () => this.updatePowerUpUI());
+      // }
       showFloatingText(text, x, y, color) {
         const floatingText = this.add.text(x, y, text, { fontSize: '18px', fill: `#${color.toString(16).padStart(6, '0')}`, fontWeight: 'bold', stroke: '#000', strokeThickness: 2 });
         floatingText.setOrigin(0.5);
