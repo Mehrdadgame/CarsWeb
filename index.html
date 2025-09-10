@@ -63,18 +63,21 @@
     /* UI elements */
 .ui-top-left {
   position: absolute;
-  left: 65px;
+  left: 40px;
   top: 60px;
   color: #FFA500;
   font-weight: 700;
   z-index: 50;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-  font-size: 16px;
+  font-size: 20px;
+  background: rgba(0, 0, 0, 0.45); 
+  padding: 6px 10px; 
+  border-radius: 6px; 
 }
 
 .ui-top-right {
   position: absolute;
-  right: 65px;
+  right: 100px;
   top: 8%;
   z-index: 50;
   background: rgba(0,0,0,0.45);
@@ -92,7 +95,7 @@
     .hearts{display:flex;gap:3px}
     .heart{width:20px;height:20px;background:url('assets/images/ui/heart_vz.png') center/contain no-repeat;}
     .heart.empty{opacity:0.8;filter:grayscale(100%);}
-    .ui-speed{position:absolute;left:40px;bottom:80px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
+    .ui-speed{position:absolute;left:75px;bottom:80px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
 .ui-powerup {
   position: absolute;
   left: 50%;
@@ -101,13 +104,13 @@
   z-index: 60;
   background: linear-gradient(135deg,#f1c40f,#f39c12);
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 12px;
   font-weight: bold;
   display: none;
   animation: powerupPulse 0.5s ease-in-out infinite alternate;
-  box-shadow: 0 4px 15px rgba(241,196,15,0.4);
+  box-shadow: 0 2px 10px rgba(241,196,15,0.4);
 }      background:linear-gradient(135deg,#f1c40f,#f39c12);color:#fff;padding:8px 16px;
       border-radius:20px;font-size:14px;font-weight:bold;
       display:none;animation:powerupPulse 0.5s ease-in-out infinite alternate;
@@ -225,7 +228,7 @@
       constructor() {
         this.progress = 0;
         this.loadingSteps = [
-          { name: 'بارگذاری موتور بازی...', duration: 500 },
+          { name: 'بارگذاری ...', duration: 500 },
           { name: 'بارگذاری تصاویر ماشین‌ها...', duration: 800 },
           { name: 'بارگذاری پاورآپ‌ها...', duration: 600 },
           { name: 'بارگذاری رابط کاربری...', duration: 400 },
@@ -614,11 +617,11 @@
           let powerUp;
           if (this.textures.exists(starKey)) {
             powerUp = this.powerUps.create(x, -120, starKey);
-            powerUp.setDisplaySize(40, 40);
+            powerUp.setDisplaySize(30, 30);
           } else powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
           powerUp.setDepth(3);
           powerUp.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.7);
-          this.tweens.add({ targets: powerUp, rotation: Math.PI /2, duration: 2000, repeat: -1 });
+         // this.tweens.add({ targets: powerUp, rotation: Math.PI , duration: 2000, repeat: -1 });
           this.tweens.add({ targets: powerUp, scaleX: 1.1/4, scaleY: 1.1/4, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
         }
       }
