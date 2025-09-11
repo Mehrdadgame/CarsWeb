@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <titleپچ پچ</title>
-  <link rel="icon" type="image/png" href="assets/images/ui/logo_002_vz.png">
-  <link rel="shortcut icon" type="image/png" href="assets/images/ui/logo_002_vz.png">
+  <title>پچ پچ</title>
+  <link rel="icon" type="image/png" href="assets/images/ui/logo 2.png">
+  <link rel="shortcut icon" type="image/png" href="assets/images/ui/logo 2.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.88.2/phaser.min.js"></script>
   <style>
-    html,body{height:100%;margin:0;padding:0;overflow:hidden}
+    html,body{height:100%;margin:0;padding:0;overflow:hidden;background:#000;}
     #game-wrapper{
       position:fixed;
       top:50%;
@@ -20,6 +20,7 @@
       align-items:center;
       justify-content:center;
       overflow:hidden;
+      background:#000;
     }
     #game-container{
       width:600px;
@@ -28,18 +29,70 @@
       border-radius:8px;
       overflow:hidden;
       position:relative;
+      background:#000;
     }
+    
+    /* Welcome Screen */
+    #welcome-screen{
+      position:fixed;
+      top:0;left:0;width:100%;height:100%;
+      background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      z-index:1001;color:#fff;
+    }
+    .welcome-logo{
+      width:120px;height:120px;margin-bottom:30px;
+      background:url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
+      animation:pulse 2s ease-in-out infinite;
+    }
+    .welcome-title{
+      font-size:28px;font-weight:bold;margin-bottom:30px;
+      text-shadow:0 2px 4px rgba(0,0,0,0.5);
+    }
+    .phone-input-container{
+      margin-bottom:30px;
+    }
+    .phone-input-container input{
+      padding:12px 20px;
+      font-size:16px;
+      border:none;
+      border-radius:8px;
+      text-align:center;
+      direction:ltr;
+      width:200px;
+    }
+    .phone-input-container label{
+      display:block;
+      margin-bottom:10px;
+      font-size:16px;
+    }
+    .start-btn{
+      padding:15px 30px;
+      background:#2ecc71;
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      font-size:18px;
+      cursor:pointer;
+      transition:all 0.3s;
+      font-weight:bold;
+    }
+    .start-btn:hover{
+      background:#27ae60;
+      transform:scale(1.05);
+    }
+    
     /* Loading Screen */
     #loading-screen{
       position:fixed;
       top:0;left:0;width:100%;height:100%;
       background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      display:none;flex-direction:column;align-items:center;justify-content:center;
       z-index:1000;color:#fff;
     }
     .loading-logo{
       width:100px;height:100px;margin-bottom:30px;
-      background:url('assets/ui/logo_002_vz.png') center/contain no-repeat;
+      background:url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
       animation:pulse 2s ease-in-out infinite;
     }
     @keyframes pulse {
@@ -60,6 +113,7 @@
     .loading-tip{
       font-size:14px;opacity:0.8;text-align:center;max-width:400px;line-height:1.6;
     }
+    
     /* UI elements */
 .ui-top-left {
   position: absolute;
@@ -111,10 +165,7 @@
   display: none;
   animation: powerupPulse 0.5s ease-in-out infinite alternate;
   box-shadow: 0 2px 8px rgba(241,196,15,0.4);
-}      background:linear-gradient(135deg,#f1c40f,#f39c12);color:#fff;padding:8px 16px;
-      border-radius:20px;font-size:14px;font-weight:bold;
-      display:none;animation:powerupPulse 0.5s ease-in-out infinite alternate;
-      box-shadow:0 4px 15px rgba(241,196,15,0.4);}
+}
     @keyframes powerupPulse{
       from{transform:translateX(-50%) scale(1);}
       to{transform:translateX(-50%) scale(1.05);}
@@ -125,6 +176,10 @@
       background:rgba(0,0,0,0.95);color:#fff;padding:30px;border-radius:15px;
       text-align:center;border:3px solid #3498db;
       box-shadow:0 10px 30px rgba(0,0,0,0.7);
+    }
+    #game-over .game-over-logo{
+      width:80px;height:80px;margin:0 auto 20px auto;
+      background:url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
     }
     #game-over h2{margin:10px 0 20px 0;font-size:24px;color:#e74c3c}
     #game-over p{margin:8px 0;font-size:18px}
@@ -155,32 +210,21 @@
       #game-over p { font-size: 16px; }
       .btn { padding: 10px 16px; font-size: 14px; }
     }
-    @media (orientation: portrait) {
-#game-wrapper {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 800px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden; 
-}
-
-#game-container {
-  width: 600px;
-  height: 800px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-}
-    }
   </style>
 </head>
 <body>
+  <!-- Welcome Screen -->
+  <div id="welcome-screen">
+    <div class="welcome-logo"></div>
+    <div class="welcome-title">به بازی پچ پچ خوش آمدید</div>
+    <div class="phone-input-container" id="phone-container">
+      <label for="phone-input">شماره موبایل خود را وارد کنید:</label>
+      <input type="tel" id="phone-input" placeholder="09xxxxxxxxx" maxlength="11">
+    </div>
+    <button class="start-btn" id="start-game-btn">شروع بازی</button>
+  </div>
+
+  <!-- Loading Screen -->
   <div id="loading-screen">
     <div class="loading-logo"></div>
     <div class="loading-text">در حال بارگذاری...</div>
@@ -208,7 +252,8 @@
     <div class="ui-powerup" id="ui-powerup">⭐ امتیاز دوبرابر فعال!</div>
     <div class="ui-speed" id="ui-speed">سرعت: 1.0</div>
     <div id="game-over">
-      <h2>🏁 بازی تمام شد!</h2>
+      <div class="game-over-logo"></div>
+      <h2> بازی تمام شد!</h2>
       <p id="final-score">امتیاز نهایی: 0</p>
       <p id="player-rank-display"></p>
       <div id="game-over-leaderboard">
@@ -223,6 +268,33 @@
   </div>
 
   <script>
+    // Player phone storage
+    let playerPhone = localStorage.getItem('playerPhone');
+    
+    // Welcome screen logic
+    document.getElementById('start-game-btn').addEventListener('click', () => {
+      const phoneInput = document.getElementById('phone-input');
+      const phone = phoneInput.value.trim();
+      
+      if (!playerPhone && (!phone || phone.length < 10)) {
+        alert('لطفاً شماره موبایل معتبر وارد کنید');
+        return;
+      }
+      
+      if (!playerPhone && phone) {
+        localStorage.setItem('playerPhone', phone);
+        playerPhone = phone;
+      }
+      
+      document.getElementById('welcome-screen').style.display = 'none';
+      initializeGame();
+    });
+    
+    // If player phone exists, hide phone input
+    if (playerPhone) {
+      document.getElementById('phone-container').style.display = 'none';
+    }
+
     // --- Loading System ---
     class LoadingManager {
       constructor() {
@@ -245,6 +317,7 @@
           return;
         }
 
+        document.getElementById('loading-screen').style.display = 'flex';
         const progressBar = document.getElementById('loading-progress');
         const loadingText = document.querySelector('.loading-text');
         
@@ -263,7 +336,7 @@
         
         document.getElementById('loading-screen').style.display = 'none';
         document.getElementById('game-wrapper').style.display = 'flex';
-        localStorage.setItem('gameLoaded', 'true'); // Mark as loaded
+        localStorage.setItem('gameLoaded', 'true');
       }
 
       simulateLoading(duration, onProgress) {
@@ -306,24 +379,24 @@
       try {
         const raw = localStorage.getItem(LB_KEY);
         leaderboard = raw ? JSON.parse(raw) : [
-          {name: 'علی رضا', score: 1250},
-          {name: 'سارا احمدی', score: 980},
-          {name: 'محمد حسنی', score: 875},
-          {name: 'فاطمه کریمی', score: 720},
-          {name: 'حسین محمدی', score: 650},
-          {name: 'مریم رضایی', score: 580},
-          {name: 'امیر علی', score: 520},
-          {name: 'نازنین یوسفی', score: 480},
-          {name: 'رضا اصغری', score: 420},
-          {name: 'زهرا موسوی', score: 380}
+          {name: 'علی رضا', score: 100},
+          {name: 'سارا احمدی', score: 80},
+          {name: 'محمد حسنی', score: 75},
+          {name: 'فاطمه کریمی', score: 72},
+          {name: 'حسین محمدی', score: 70},
+          {name: 'مریم رضایی', score: 66},
+          {name: 'امیر علی', score: 65},
+          {name: 'نازنین یوسفی', score: 62},
+          {name: 'رضا اصغری', score: 60},
+          {name: 'زهرا موسوی', score: 59}
         ];
       } catch (e) { 
         leaderboard = [
-          {name: 'علی رضا', score: 1250},
-          {name: 'سارا احمدی', score: 980},
-          {name: 'محمد حسنی', score: 875},
-          {name: 'فاطمه کریمی', score: 720},
-          {name: 'حسین محمدی', score: 650}
+          {name: 'علی رضا', score: 100},
+          {name: 'سارا احمدی', score: 80},
+          {name: 'محمد حسنی', score: 75},
+          {name: 'فاطمه کریمی', score: 72},
+          {name: 'حسین محمدی', score: 70}
         ];
       }
       if (!Array.isArray(leaderboard)) leaderboard = [];
@@ -391,58 +464,89 @@
     // --- Enhanced Phaser Scene ---
     class MainScene extends Phaser.Scene {
       constructor(){ super({ key: 'MainScene' }); }
-      preload(){
-        this.load.on('progress', (value) => console.log('Loading progress:', Math.round(value * 100) + '%'));
-        this.load.image('player-car', 'assets/images/cars/player-car.png');
-        this.load.image('obstacle-1', 'assets/images/cars/Obstacle1.png');
-        this.load.image('obstacle-2', 'assets/images/cars/Obstacle2.png');
-        for(let i = 1; i <= 5; i++) this.load.image(`powerup-${i}`, `assets/images/powerups/Powerup${i}.png`);
-        for(let i = 1; i <= 4; i++) this.load.image(`text-${i}`, `assets/images/text/text_${i}.png`);
-        this.load.image('logo', 'assets/ui/logo_002_vz.png');
-        this.load.image('road-texture', 'assets/images/road/road.png');
-        this.load.on('loaderror', (file) => console.warn('Failed to load:', file.src));
-      }
-      create(){
-        const w = this.scale.width;
-        const h = this.scale.height;
-        this.createBackground(w, h);
-        this.roadOffset = 0;
-        this.lanes = [w * 0.25, w * 0.5, w * 0.75];
-        this.laneIndex = 1;
-        this.createAnimatedRoad(w, h);
-        this.createPlayer(w, h);
-        this.obstacles = this.physics.add.group();
-        this.powerUps = this.physics.add.group();
-        this.bonusTexts = this.physics.add.group();
-        this.setupCollisions();
-        this.setupControls();
-        this.initializeGameState();
-        this.setupSpawners();
-        this._updateUI();
-        loadLeaderboard();
-      }
-      createBackground(w, h) {
-  // Sky gradient background
-  this.bg = this.add.graphics();
-  this.bg.fillGradientStyle(0x87CEEB, 0x87CEEB, 0x228B22, 0x228B22, 1);
-  this.bg.fillRect(0, 0, w, h);
-  
-  // Road base -
-  const roadMargin = 0; 
-  this.roadGraphics = this.add.graphics();
-  this.roadGraphics.fillStyle(0x2c3e50, 1);
-  this.roadGraphics.fillRect(0, 0, w, h); 
-  
-  this.roadGraphics.fillStyle(0xffffff, 1);
-  this.roadGraphics.fillRect(0, 0, 6, h);
-  this.roadGraphics.fillRect(w - 6, 0, 6, h); 
-  
-  this.roadMargin = roadMargin;
+preload() {
+  this.load.on('progress', (value) => console.log('Loading progress:', Math.round(value * 100) + '%'));
+  this.load.image('player-car', 'assets/images/cars/player-car.png');
+  this.load.image('obstacle-1', 'assets/images/cars/Obstacle1.png');
+  this.load.image('obstacle-2', 'assets/images/cars/Obstacle2.png');
+  for(let i = 1; i <= 5; i++) this.load.image(`powerup-${i}`, `assets/images/powerups/Powerup${i}.png`);
+  for(let i = 1; i <= 4; i++) this.load.image(`text-${i}`, `assets/images/text/text_${i}.png`);
+  this.load.image('logo', 'assets/images/ui/logo 002_vz.png');
+  this.load.image('road-texture', 'assets/images/road/road.png');
+  this.load.audio('background-music', 'assets/SoundVfx/music.ogg');
+  this.load.audio('obstacle-sound', 'assets/SoundVfx/Obstacle.ogg');
+  this.load.audio('powerup-sound', 'assets/SoundVfx/PechPech.ogg');
+  this.load.on('loaderror', (file) => console.warn('Failed to load:', file.src));
 }
-      createAnimatedRoad(w, h) {
-        this.laneLines = this.add.graphics();
-        this.laneLines.setDepth(1);
+     create() {
+  const w = this.scale.width;
+  const h = this.scale.height;
+  this.createBackground(w, h);
+  this.roadOffset = 0;
+  
+  // Two lane road setup
+  this.lanes = [w * 0.35, w * 0.65]; // Only 2 lanes
+  this.laneIndex = 0; // Start in left lane
+  
+  this.createPlayer(w, h);
+  this.obstacles = this.physics.add.group();
+  this.powerUps = this.physics.add.group();
+  this.bonusTexts = this.physics.add.group();
+  this.setupCollisions();
+  this.setupControls();
+  this.initializeGameState();
+  this.setupSpawners();
+  this._updateUI();
+  loadLeaderboard();
+  this.music = this.sound.add('background-music', { loop: true, volume: 0.5 });
+  this.music.play();
+  this.physics.pause();
+  this.startCountdown();
+}
+      
+startCountdown() {
+  let count = 3;
+  const countdownText = this.add.text(this.scale.width / 2, this.scale.height / 2, '3', { fontSize: '72px', fill: '#ffffff', fontWeight: 'bold', stroke: '#000', strokeThickness: 4 });
+  countdownText.setOrigin(0.5);
+  const timer = this.time.addEvent({
+    delay: 1000,
+    repeat: 2,
+    callback: () => {
+      count--;
+      countdownText.setText(count.toString());
+      if (count === 0) {
+        countdownText.setText('شروع!');
+        this.time.delayedCall(1000, () => {
+          countdownText.destroy();
+          this.physics.resume();
+          // اطمینان از تأخیر اولیه برای اسپاون موانع
+          this.obstacleTimer.paused = false;
+        });
       }
+    },
+    callbackScope: this
+  });
+  // توقف موقت تایمر موانع تا پایان شمارش معکوس
+  this.obstacleTimer.paused = true;
+}
+      
+createBackground(w, h) {
+  // به جای image از tileSprite استفاده می‌کنیم
+  this.roadTexture = this.add.tileSprite(0, 0, w, h, 'road-texture');
+  this.roadTexture.setOrigin(0, 0);
+  this.roadTexture.setDepth(-1);
+
+  // گرفتن سایز اصلی تکسچر
+  const textureWidth = this.textures.get('road-texture').getSourceImage().width;  // 1080
+  const textureHeight = this.textures.get('road-texture').getSourceImage().height; // 1920
+
+  // مقیاس دهی برای فیت شدن
+  const scale = Math.max(w / textureWidth, h / textureHeight);
+  this.roadTexture.setTileScale(scale, scale); // به جای setScale → setTileScale
+}
+
+
+      
       createPlayer(w, h) {
         const carWidth = Math.min(60, w * 0.12);
         const carHeight = carWidth * 1.6;
@@ -465,11 +569,13 @@
           ease: 'Sine.easeInOut'
         });
       }
+      
       setupCollisions() {
         this.physics.add.overlap(this.player, this.obstacles, this.onCarCrash, null, this);
         this.physics.add.overlap(this.player, this.powerUps, this.onPowerUpCollected, null, this);
         this.physics.add.overlap(this.player, this.bonusTexts, this.onBonusTextCollected, null, this);
       }
+      
       setupControls() {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.wasd = this.input.keyboard.addKeys('W,S,A,D');
@@ -488,6 +594,7 @@
           }
         });
       }
+      
       initializeGameState() {
         this.score = 0;
         this.lives = 3;
@@ -503,80 +610,91 @@
         this.moveCooldown = false;
         this.invulnerabilityTime = 0;
       }
-      setupSpawners() {
-        this.obstacleSpawnDelay = 1800;
-        this.obstacleTimer = this.time.addEvent({ delay: this.obstacleSpawnDelay, loop: true, callback: this.spawnObstacle, callbackScope: this });
-        this.powerUpTimer = this.time.addEvent({ delay: 8000, loop: true, callback: this.spawnPowerUp, callbackScope: this });
-        this.speedTimer = this.time.addEvent({ delay: 6000, loop: true, callback: this.increaseSpeed, callbackScope: this });
-        this.bonusTextTimer = this.time.addEvent({ delay: 12000, loop: true, callback: this.spawnBonusText, callbackScope: this });
-      }
-      update(time, delta) {
-        if (this.cursors.left.isDown || this.wasd.A.isDown) this.moveLeft();
-        else if (this.cursors.right.isDown || this.wasd.D.isDown) this.moveRight();
-        this.updateRoadAnimation(delta);
-        if (this.invulnerabilityTime > 0) {
-          this.invulnerabilityTime -= delta;
-          this.player.setAlpha(Math.sin(time * 0.01) > 0 ? 0.5 : 1.0);
-        } else this.player.setAlpha(1.0);
-        if (this.powerUpActive && this.powerUpTimeRemaining > 0) {
-          this.powerUpTimeRemaining -= delta;
-          if (this.powerUpTimeRemaining <= 0) this.deactivatePowerUp();
-        }
-        this.obstacles.getChildren().forEach(obstacle => {
-          if (obstacle && obstacle.y > this.scale.height + 100) {
-            obstacle.destroy();
-            this.obstaclesAvoided++;
-            const points = Math.floor(15 * this.scoreMultiplier * this.speed);
-            this.score += points;
-            this.showFloatingText('+' + points, obstacle.x, this.scale.height - 50, 0x00ff00);
-            this._updateUI();
-          }
-        });
-        [...this.powerUps.getChildren(), ...this.bonusTexts.getChildren()].forEach(item => {
-          if (item && item.y > this.scale.height + 100) item.destroy();
-        });
-        this.updateDifficulty();
-      }
-      updateRoadAnimation(delta) {
-        const roadSpeed = (this.baseObstacleSpeed * this.speed * delta) / 1000;
-        this.roadOffset += roadSpeed;
-        this.drawAnimatedLanes();
-      }
-      drawAnimatedLanes() {
-        this.laneLines.clear();
-        this.laneLines.lineStyle(4, 0xffffff, 0.8);
-        const w = this.scale.width;
-        const h = this.scale.height;
-        const laneX1 = w / 3;
-        const laneX2 = 2 * w / 3;
-        const dashLength = 40;
-        const gapLength = 30;
-        const totalLength = dashLength + gapLength;
-        let yOffset = (this.roadOffset % totalLength) - dashLength;
-        while (yOffset < h) {
-          if (yOffset >= -dashLength) {
-            const startY = Math.max(0, yOffset);
-            const endY = Math.min(h, yOffset + dashLength);
-            if (endY > startY) {
-              this.laneLines.strokeLineShape(new Phaser.Geom.Line(laneX1, startY, laneX1, endY));
-              this.laneLines.strokeLineShape(new Phaser.Geom.Line(laneX2, startY, laneX2, endY));
-            }
-          }
-          yOffset += totalLength;
-        }
-      }
+      
+setupSpawners() {
+  this.obstacleSpawnDelay = 1800; // تأخیر پایه برای اسپاون موانع
+  this.obstacleTimer = this.time.addEvent({
+    delay: this.obstacleSpawnDelay,
+    startAt: 3000, // تأخیر اولیه 3 ثانیه برای اولین مانع
+    loop: true,
+    callback: this.spawnObstacle,
+    callbackScope: this
+  });
+  this.powerUpTimer = this.time.addEvent({
+    delay: 1700,
+    loop: true,
+    callback: this.spawnPowerUp,
+    callbackScope: this
+  });
+  this.speedTimer = this.time.addEvent({
+    delay: 6000,
+    loop: true,
+    callback: this.increaseSpeed,
+    callbackScope: this
+  });
+  this.bonusTextTimer = this.time.addEvent({
+    delay: 12000,
+    loop: true,
+    callback: this.spawnBonusText,
+    callbackScope: this
+  });
+}
+      
+update(time, delta) {
+  
+  if (this.cursors.left.isDown || this.wasd.A.isDown) this.moveLeft();
+  else if (this.cursors.right.isDown || this.wasd.D.isDown) this.moveRight();
+
+ 
+  if (this.invulnerabilityTime > 0) {
+    this.invulnerabilityTime -= delta;
+    this.player.setAlpha(Math.sin(time * 0.01) > 0 ? 0.5 : 1.0);
+  } else this.player.setAlpha(1.0);
+
+ 
+  if (this.powerUpActive && this.powerUpTimeRemaining > 0) {
+    this.powerUpTimeRemaining -= delta;
+    if (this.powerUpTimeRemaining <= 0) this.deactivatePowerUp();
+  }
+
+  this.obstacles.getChildren().forEach(obstacle => {
+    if (obstacle && obstacle.y > this.scale.height + 100) {
+      obstacle.destroy();
+      this.obstaclesAvoided++;
+      this._updateUI();
+    } else {
+      const obstacleSpeed = this.baseObstacleSpeed * this.speed;
+      obstacle.body.setVelocityY(obstacleSpeed);
+    }
+  });
+
+  [...this.powerUps.getChildren(), ...this.bonusTexts.getChildren()].forEach(item => {
+    if (item && item.y > this.scale.height + 100) item.destroy();
+  });
+
+  this.updateDifficulty();
+
+  const roadSpeed = (this.baseObstacleSpeed * -this.speed/40) * (delta / 16); 
+  this.roadTexture.tilePositionY += roadSpeed;
+}
+
+      
+
+      
       moveLeft() {
         if (this.moveCooldown || this.laneIndex <= 0) return;
         this.laneIndex--;
         this.tweenPlayerToLane();
         this.setMoveCooldown();
       }
+      
       moveRight() {
         if (this.moveCooldown || this.laneIndex >= this.lanes.length - 1) return;
         this.laneIndex++;
         this.tweenPlayerToLane();
         this.setMoveCooldown();
       }
+      
       tweenPlayerToLane() {
         this.tweens.add({
           targets: this.player,
@@ -585,31 +703,68 @@
           ease: 'Back.easeOut'
         });
       }
+      
       setMoveCooldown() {
         this.moveCooldown = true;
         this.time.delayedCall(200, () => this.moveCooldown = false);
       }
-      spawnObstacle() {
-        let availableLanes = [0, 1, 2];
-        if (Math.random() < 0.3 && availableLanes.length > 1) availableLanes = availableLanes.filter(lane => lane !== this.laneIndex);
-        const laneIndex = Phaser.Math.RND.pick(availableLanes);
-        const x = this.lanes[laneIndex];
-        const obstacleType = Phaser.Math.Between(1, 2);
-        const obstacleKey = `obstacle-${obstacleType}`;
-        const carWidth = Math.min(55, this.scale.width * 0.11);
-        const carHeight = carWidth * 1.7;
-        let obstacle;
-        if (this.textures.exists(obstacleKey)) {
-          obstacle = this.obstacles.create(x, -120, obstacleKey);
-          obstacle.setDisplaySize(carWidth, carHeight);
-        } else obstacle = this.obstacles.create(x, -120, 'obstacle-fallback');
-        obstacle.setDepth(4);
-        const currentSpeed = this.baseObstacleSpeed * this.speed;
-        obstacle.body.setVelocityY(currentSpeed + Phaser.Math.Between(-20, 20));
-      }
+      
+spawnObstacle() {
+  // بررسی موانع فعال در محدوده قابل‌مشاهده
+  const activeObstacles = this.obstacles.getChildren()
+    .filter(obstacle => obstacle.y > -100 && obstacle.y < this.scale.height + 100);
+
+  // اگر مانع فعال وجود داشته باشد، اسپاون جدید انجام نشود
+  if (activeObstacles.length >= 1) return;
+
+  // انتخاب خط برای مانع
+  let availableLanes = [0, 1]; // دو خط موجود
+  // حذف خط فعلی بازیکن برای جلوگیری از اسپاون مانع در خط بازیکن
+  availableLanes = availableLanes.filter(lane => lane !== this.laneIndex);
+
+  // اگر هیچ خط آزادی موجود نبود، از خط دیگر استفاده کن
+  if (availableLanes.length === 0) {
+    availableLanes = [this.laneIndex ? 0 : 1];
+  }
+
+  // انتخاب تصادفی یک خط از خطوط موجود
+  const laneIndex = Phaser.Math.RND.pick(availableLanes);
+  const x = this.lanes[laneIndex];
+
+  // انتخاب نوع مانع
+  const obstacleType = Phaser.Math.Between(1, 2);
+  const obstacleKey = `obstacle-${obstacleType}`;
+
+  // اندازه مانع
+  const carWidth = Math.min(55, this.scale.width * 0.11);
+  const carHeight = carWidth * 1.7;
+
+  let obstacle;
+  if (this.textures.exists(obstacleKey)) {
+    obstacle = this.obstacles.create(x, -120, obstacleKey);
+    obstacle.setDisplaySize(carWidth, carHeight);
+  } else {
+    obstacle = this.obstacles.create(x, -120, 'obstacle-fallback');
+  }
+
+  obstacle.setDepth(4);
+  const currentSpeed = this.baseObstacleSpeed * this.speed;
+  obstacle.body.setVelocityY(currentSpeed + Phaser.Math.Between(-20, 20));
+
+  // تنظیم تأخیر بعدی بر اساس سرعت بازی
+  this.obstacleSpawnDelay = Math.max(600, this.obstacleSpawnDelay - (this.speed * 50));
+  this.obstacleTimer.reset({
+    delay: this.obstacleSpawnDelay,
+    loop: true,
+    callback: this.spawnObstacle,
+    callbackScope: this
+  });
+}
+
+      
       spawnPowerUp() {
         const powerUpType = Math.random() < 0.4 ? 'star' : 'text';
-        const laneIndex = Phaser.Math.Between(0, 2);
+        const laneIndex = Phaser.Math.Between(0, 1); // Only 2 lanes
         const x = this.lanes[laneIndex];
         if (powerUpType === 'star') {
           const starType = Phaser.Math.Between(1, 5);
@@ -618,17 +773,21 @@
           if (this.textures.exists(starKey)) {
             powerUp = this.powerUps.create(x, -120, starKey);
             powerUp.setDisplaySize(30, 30);
-          } else powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
+            powerUp.powerUpType = starType; // Store the type
+          } else {
+            powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
+            powerUp.powerUpType = 1; // Default type
+          }
           powerUp.setDepth(3);
           powerUp.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.7);
-         // this.tweens.add({ targets: powerUp, rotation: Math.PI , duration: 2000, repeat: -1 });
           this.tweens.add({ targets: powerUp, scaleX: 1.1/4, scaleY: 1.1/4, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
         }
       }
+      
       spawnBonusText() {
         const textType = Phaser.Math.Between(1, 4);
         const textKey = `text-${textType}`;
-        const laneIndex = Phaser.Math.Between(0, 2);
+        const laneIndex = Phaser.Math.Between(0, 1); // Only 2 lanes
         const x = this.lanes[laneIndex];
         let bonusText;
         if (this.textures.exists(textKey)) {
@@ -644,6 +803,7 @@
         bonusText.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.8);
         this.tweens.add({ targets: bonusText, y: bonusText.y - 15, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       }
+      
       onCarCrash(player, obstacle) {
         if (this.invulnerabilityTime > 0) return;
         obstacle.destroy();
@@ -659,69 +819,87 @@
         player.setTint(0xff0000);
         this.time.delayedCall(300, () => player.clearTint());
         this.showFloatingText('-1 جان', player.x, player.y - 50, 0xff0000);
+        this.sound.play('obstacle-sound', { volume: 0.8 });
         this.time.delayedCall(200, () => { if (this.lives <= 0) this.gameOver(); });
       }
-      onPowerUpCollected(player, powerUp) {
-        powerUp.destroy();
-        this.activatePowerUp();
-        const points = Math.floor(75 * this.scoreMultiplier);
-        this.score += points;
-        this.showFloatingText('+' + points, powerUp.x, powerUp.y, 0xf1c40f);
-        this.showPowerUpEffect(powerUp.x, powerUp.y);
-        this._updateUI();
-      }
-      onBonusTextCollected(player, bonusText) {
-        bonusText.destroy();
-        const bonusPoints = Math.floor(50 * this.scoreMultiplier);
-        this.score += bonusPoints;
-        this.showFloatingText('+' + bonusPoints + ' امتیاز!', bonusText.x, bonusText.y, 0x00ff88);
-        this._updateUI();
-      }
-      activatePowerUp() {
-        this.scoreMultiplier = 2;
-        this.powerUpActive = true;
-        this.powerUpTimeRemaining = 6000;
-        this.player.setTint(0xf1c40f);
-        this.showRandomTextEffect(); // نمایش تصادفی عکس
-      }
-      deactivatePowerUp() {
-        this.scoreMultiplier = 1;
-        this.powerUpActive = false;
-        this.powerUpTimeRemaining = 0;
-        this.player.clearTint();
-        document.getElementById('ui-powerup').style.display = 'none';
-      }
-      showRandomTextEffect() {
-        const w = this.scale.width;
-        const h = this.scale.height;
-        const playerY = this.player.y; 
-        const x = this.player.x; 
-        const textTypes = [1, 2, 3, 4];
-        const randomText = `text-${Phaser.Math.RND.pick(textTypes)}`; 
-        const textSprite = this.add.image(x, playerY - 100, randomText); 
-        textSprite.setDepth(10);
-        textSprite.setDisplaySize(60*2, 70*2); 
+      
 
-        // انیمیشن محو شدن بعد از 1 ثانیه
-        this.tweens.add({
-          targets: textSprite,
-          alpha: 0,
-          duration: 1500,
-          onComplete: () => textSprite.destroy()
-        });
-      }
-      // updatePowerUpUI() {
-      //   if (!this.powerUpActive) return;
-      //   const seconds = Math.ceil(this.powerUpTimeRemaining / 1000);
-      //   document.getElementById('ui-powerup').textContent = `⭐ امتیاز دوبرابر! (${seconds}s)`;
-      //   this.time.delayedCall(500, () => this.updatePowerUpUI());
-      // }
+onPowerUpCollected(player, powerUp) {
+  const key = powerUp.texture.key; 
+  console.log('Collected:', powerUp.texture.key); 
+  powerUp.destroy();
+
+  let points = 1; 
+
+  if (key === 'powerup-1') {
+    points = 2;
+    this.activatePowerUp();
+  }
+  else{
+    points=1;
+     this.showRandomTextEffect();
+  }
+
+  this.score += points;
+
+  
+
+  this.showFloatingText('+' + points, powerUp.x, powerUp.y, 0xf1c40f);
+
+  this.showPowerUpEffect(powerUp.x, powerUp.y);
+  this.sound.play('powerup-sound', { volume: 0.8 });
+  this._updateUI();
+}
+
+
+
+
+
+activatePowerUp() {
+  this.scoreMultiplier = 2;
+  this.powerUpActive = true;
+  this.powerUpTimeRemaining = 1500;
+  this.player.setTint(0xf1c40f);
+
+  this.showRandomTextEffect();
+
+  document.getElementById('ui-powerup').style.display = 'block';
+}
+
+deactivatePowerUp() {
+  this.scoreMultiplier = 1;
+  this.powerUpActive = false;
+  this.powerUpTimeRemaining = 0;
+  this.player.clearTint();
+  document.getElementById('ui-powerup').style.display = 'none';
+}
+
+showRandomTextEffect() {
+  const x = this.player.x;
+  const y = this.player.y - 100; // بالای ماشین
+  const textTypes = [1, 2, 3, 4];
+  const randomText = `text-${Phaser.Math.RND.pick(textTypes)}`; 
+  const textSprite = this.add.image(x, y, randomText); 
+  textSprite.setDepth(10);
+  textSprite.setDisplaySize(120, 140);
+
+  this.tweens.add({
+    targets: textSprite,
+    y: y - 50,          // کمی بالاتر بره
+    alpha: 0,
+    duration: 1500,
+    onComplete: () => textSprite.destroy()
+  });
+}
+
+      
       showFloatingText(text, x, y, color) {
         const floatingText = this.add.text(x, y, text, { fontSize: '18px', fill: `#${color.toString(16).padStart(6, '0')}`, fontWeight: 'bold', stroke: '#000', strokeThickness: 2 });
         floatingText.setOrigin(0.5);
         floatingText.setDepth(10);
         this.tweens.add({ targets: floatingText, y: y - 80, alpha: 0, duration: 1500, ease: 'Power2', onComplete: () => floatingText.destroy() });
       }
+      
       showPowerUpEffect(x, y) {
         for (let i = 0; i < 8; i++) {
           const sparkle = this.add.graphics();
@@ -735,6 +913,7 @@
           this.tweens.add({ targets: sparkle, x: x + Math.cos(angle) * distance, y: y + Math.sin(angle) * distance, alpha: 0, scaleX: 0, scaleY: 0, duration: 800, ease: 'Power2', onComplete: () => sparkle.destroy() });
         }
       }
+      
       increaseSpeed() {
         if (this.speed < this.maxSpeed) {
           this.speed += 0.15;
@@ -745,6 +924,7 @@
           this._updateUI();
         }
       }
+      
       updateDifficulty() {
         const newDifficultyLevel = Math.floor(this.obstaclesAvoided / 20) + 1;
         if (newDifficultyLevel > this.difficultyLevel) {
@@ -752,18 +932,22 @@
           this.showFloatingText(`سطح ${this.difficultyLevel}`, this.scale.width / 2, this.scale.height / 2, 0x00ff88);
         }
       }
+      
       gameOver() {
         [this.obstacleTimer, this.powerUpTimer, this.speedTimer, this.bonusTextTimer].forEach(timer => { if (timer) timer.remove(false); });
         this.physics.pause();
+        this.music.stop();
         currentPlayerScore = this.score;
         showGameOver(this.score);
       }
+      
       _updateUI() {
         document.getElementById('ui-score').textContent = `امتیاز: ${this.score.toLocaleString()}${this.powerUpActive ? ' (دوبرابر!)' : ''}`;
         document.getElementById('ui-speed').textContent = `سرعت: ${this.speed.toFixed(1)}`;
         document.getElementById('lives-count').textContent = this.lives;
         this.updateHeartsDisplay();
       }
+      
       updateHeartsDisplay() {
         const heartsContainer = document.getElementById('hearts-container');
         heartsContainer.innerHTML = '';
@@ -774,6 +958,7 @@
           heartsContainer.appendChild(heart);
         }
       }
+      
       createFallbackTextures() {
         const carG = this.add.graphics();
         carG.fillStyle(0xe74c3c, 1);
@@ -917,7 +1102,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       loadLeaderboard();
-      initializeGame();
+      // Don't auto-initialize game - wait for welcome screen
     });
   </script>
 </body>
