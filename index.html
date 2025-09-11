@@ -531,18 +531,22 @@ startCountdown() {
 }
       
 createBackground(w, h) {
-  // به جای image از tileSprite استفاده می‌کنیم
+  // ایجاد tileSprite برای جاده
   this.roadTexture = this.add.tileSprite(0, 0, w, h, 'road-texture');
   this.roadTexture.setOrigin(0, 0);
   this.roadTexture.setDepth(-1);
 
-  // گرفتن سایز اصلی تکسچر
-  const textureWidth = this.textures.get('road-texture').getSourceImage().width;  // 1080
-  const textureHeight = this.textures.get('road-texture').getSourceImage().height; // 1920
+  // تنظیم مقیاس برای پوشش کامل عرض و ارتفاع صفحه
+  const textureWidth = this.textures.get('road-texture').getSourceImage().width; // عرض تکسچر اصلی
+  const textureHeight = this.textures.get('road-texture').getSourceImage().height; // ارتفاع تکسچر اصلی
 
-  // مقیاس دهی برای فیت شدن
-  const scale = Math.max(w / textureWidth, h / textureHeight);
-  this.roadTexture.setTileScale(scale, scale); // به جای setScale → setTileScale
+  // مقیاس‌بندی برای فیت شدن عرض جاده با عرض صفحه
+  const scaleX = w / textureWidth;
+  const scaleY = h / textureHeight;
+  this.roadTexture.setTileScale(scaleX, scaleY);
+
+  // اطمینان از اینکه tileSprite کل صفحه را پر می‌کند
+  this.roadTexture.setDisplaySize(w, h);
 }
 
 
@@ -641,17 +645,14 @@ setupSpawners() {
 }
       
 update(time, delta) {
-  
   if (this.cursors.left.isDown || this.wasd.A.isDown) this.moveLeft();
   else if (this.cursors.right.isDown || this.wasd.D.isDown) this.moveRight();
 
- 
   if (this.invulnerabilityTime > 0) {
     this.invulnerabilityTime -= delta;
     this.player.setAlpha(Math.sin(time * 0.01) > 0 ? 0.5 : 1.0);
   } else this.player.setAlpha(1.0);
 
- 
   if (this.powerUpActive && this.powerUpTimeRemaining > 0) {
     this.powerUpTimeRemaining -= delta;
     if (this.powerUpTimeRemaining <= 0) this.deactivatePowerUp();
@@ -674,8 +675,9 @@ update(time, delta) {
 
   this.updateDifficulty();
 
-  const roadSpeed = (this.baseObstacleSpeed * -this.speed/40) * (delta / 16); 
-  this.roadTexture.tilePositionY += roadSpeed;
+  // حرکت جاده
+  const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta / 1000); // سرعت بر حسب ثانیه
+  this.roadTexture.tilePositionY += roadSpeed * 0.5; // تنظیم سرعت اسکرول جاده
 }
 
       
