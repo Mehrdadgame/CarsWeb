@@ -471,7 +471,7 @@ preload() {
   for(let i = 1; i <= 4; i++) this.load.image(`text-${i}`, `assets/images/text/text_${i}.png`);
   this.load.image('logo', 'assets/images/ui/logo 002_vz.png');
   this.load.image('road-texture', 'assets/images/road/road.png');
-  this.load.audio('background-music', ['assets/SoundVfx/music.ogg', 'assets/SoundVfx/music.mp3']);
+  this.load.audio('background-music', ['assets/SoundVfx/Music.ogg', 'assets/SoundVfx/Music.ogg']);
   this.load.audio('obstacle-sound', 'assets/SoundVfx/Obstacle.ogg');
   this.load.audio('powerup-sound', 'assets/SoundVfx/PechPech.ogg');
   this.load.on('loaderror', (file) => console.warn('Failed to load:', file.src));
@@ -664,8 +664,8 @@ preload() {
 
         this.updateDifficulty();
 
-        const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta / 1000);
-        this.roadTexture.tilePositionY += roadSpeed * 0.5;
+const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta / 1000);
+  this.roadTexture.tilePositionY += roadSpeed * 2;
       }
 
       moveLeft() {
