@@ -11,24 +11,40 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.88.2/phaser.min.js"></script>
   <style>
     html,body{height:100%;margin:0;padding:0;overflow:hidden;background:#000;}
-    /* #game-wrapper{
-      position:fixed;
-      top:50%;
-      left:50%;
-      transform:translate(-50%, -50%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      background:#000;
-    }
-    #game-container{
-      box-shadow:0 12px 30px rgba(0,0,0,0.35);
-      border-radius:8px;
-      overflow:hidden;
-      position:relative;
-      background:#000;
-    } */
+/* Game container styles */
+#game-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+  max-width: 450px; /* حداکثر عرض برای دسکتاپ */
+  max-height: 100vh;
+}
+
+#game-container {
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+}
+
+@media (min-width: 769px) {
+  #game-wrapper {
+    max-width: 450px;
+    width: 450px;
+    height: 100vh;
+  }
+  #game-container {
+    width: 450px !important;
+    height: 100vh !important;
+  }
+}
     
     /* Welcome Screen */
     #welcome-screen{
@@ -456,9 +472,17 @@
 
     // --- Game size calculation ---
 function getGameSize() {
+  // برای دسکتاپ از نسبت portrait استفاده کن
+  if (window.innerWidth > 768) {
+    return {
+      width: 450,
+      height: window.innerHeight
+    };
+  }
+  // برای موبایل از کل صفحه استفاده کن
   return {
-    width: window.innerWidth || 600,
-    height: window.innerHeight || 800
+    width: window.innerWidth,
+    height: window.innerHeight
   };
 }
 
@@ -975,11 +999,13 @@ async function initializeGame() {
   const loadingManager = new LoadingManager();
   await loadingManager.start(isFirstLoad);
   
+  const size = getGameSize(); // اضافه کردن این خط
+  
   const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
-    width: window.innerWidth,
-    height: window.innerHeight, // استفاده مستقیم از ارتفاع پنجره
+    width: size.width,    // تغییر از window.innerWidth
+    height: size.height,  // تغییر از window.innerHeight
     backgroundColor: '#000000',
     physics: { 
       default: 'arcade', 
@@ -989,8 +1015,8 @@ async function initializeGame() {
     scale: {
       mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      width: window.innerWidth,
-      height: window.innerHeight
+      width: size.width,   // تغییر از window.innerWidth
+      height: size.height  // تغییر از window.innerHeight
     }
   };
 
@@ -1000,36 +1026,45 @@ async function initializeGame() {
 
 function setupResizeHandler() {
   window.addEventListener('resize', () => {
+    const size = getGameSize(); // اضافه کردن این خط
     const gameContainer = document.getElementById('game-container');
     const gameWrapper = document.getElementById('game-wrapper');
     
-    // تنظیم مستقیم اندازه container
-    gameContainer.style.width = window.innerWidth + 'px';
-    gameContainer.style.height = window.innerHeight + 'px';
+    // تنظیم اندازه بر اساس size محاسبه شده
+    gameContainer.style.width = size.width + 'px';
+    gameContainer.style.height = size.height + 'px';
     
-    gameWrapper.style.width = window.innerWidth + 'px';
-    gameWrapper.style.height = window.innerHeight + 'px';
-    gameWrapper.style.top = '0';
-    gameWrapper.style.left = '0';
-    gameWrapper.style.transform = 'none';
+    if (window.innerWidth > 768) {
+      // حالت دسکتاپ - مرکز صفحه
+      gameWrapper.style.width = size.width + 'px';
+      gameWrapper.style.height = size.height + 'px';
+      gameWrapper.style.top = '50%';
+      gameWrapper.style.left = '50%';
+      gameWrapper.style.transform = 'translate(-50%, -50%)';
+    } else {
+      // حالت موبایل - تمام صفحه
+      gameWrapper.style.width = size.width + 'px';
+      gameWrapper.style.height = size.height + 'px';
+      gameWrapper.style.top = '0';
+      gameWrapper.style.left = '0';
+      gameWrapper.style.transform = 'none';
+    }
 
     // به‌روزرسانی اندازه Phaser
     if (game && game.scale) {
-      game.scale.resize(window.innerWidth, window.innerHeight);
+      game.scale.resize(size.width, size.height);
       
-      // به‌روزرسانی background در صورت وجود scene
       const scene = game.scene.getScene('MainScene');
       if (scene && scene.roadTexture) {
-        scene.roadTexture.setDisplaySize(window.innerWidth, window.innerHeight);
+        scene.roadTexture.setDisplaySize(size.width, size.height);
         scene.roadTexture.setTileScale(
-          window.innerWidth / scene.textures.get('road-texture').getSourceImage().width,
-          window.innerHeight / scene.textures.get('road-texture').getSourceImage().height
+          size.width / scene.textures.get('road-texture').getSourceImage().width,
+          size.height / scene.textures.get('road-texture').getSourceImage().height
         );
       }
     }
   });
 
-  // اجرای فوری resize
   window.dispatchEvent(new Event('resize'));
 }
 
