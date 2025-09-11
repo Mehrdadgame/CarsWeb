@@ -115,7 +115,7 @@
     /* UI elements */
 .ui-top-left {
   position: absolute;
-  left: 120px;
+  left: 80px;
   top: 60px;
   color: #FFA500;
   font-weight: 700;
@@ -129,8 +129,8 @@
 
 .ui-top-right {
   position: absolute;
-  right: 120px;
-  top: 8%;
+  right: 80px;
+  top:60px;
   z-index: 50;
   background: rgba(0,0,0,0.45);
   padding: 6px 8px;
@@ -653,7 +653,7 @@ preload() {
             this.obstaclesAvoided++;
             this._updateUI();
           } else {
-            const obstacleSpeed = this.baseObstacleSpeed/2 * this.speed;
+            const obstacleSpeed = this.baseObstacleSpeed * this.speed;
             obstacle.body.setVelocityY(obstacleSpeed);
           }
         });
