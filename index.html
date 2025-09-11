@@ -572,11 +572,11 @@ createBackground(w, h) {
 }
       
       createPlayer(w, h) {
-        const carWidth = Math.min(60, w * 0.12);
-        const carHeight = carWidth * 1.6;
+        const carWidth = Math.min(70, w * 0.14);
+        const carHeight = carWidth * 1.9;
         if (this.textures.exists('player-car')) {
           this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car');
-          this.player.setDisplaySize(carWidth + 35, carHeight);
+          this.player.setDisplaySize(carWidth + 45, carHeight);
         } else {
           this.createFallbackTextures();
           this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car-fallback');
@@ -746,7 +746,7 @@ const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta/1000) ;
         const obstacleType = Phaser.Math.Between(1, 2);
         const obstacleKey = `obstacle-${obstacleType}`;
 
-       const carWidth = Math.min(55, this.scale.width * 0.11) * 2.2;  // تغییر: ضرب در 1.3
+       const carWidth = Math.min(55, this.scale.width * 0.11) * 1.7;  // تغییر: ضرب در 1.3
         const carHeight = carWidth * 1.7;
 
         let obstacle;
@@ -780,7 +780,7 @@ spawnPowerUp() {
     let powerUp;
     if (this.textures.exists(starKey)) {
       powerUp = this.powerUps.create(x, -120, starKey);
-      powerUp.setDisplaySize(30, 30);
+      powerUp.setDisplaySize(25, 25);
       powerUp.powerUpType = starType;
     } else {
       powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
@@ -791,7 +791,7 @@ spawnPowerUp() {
     
     // تنظیم انیمیشن با 50 درصد اختلاف
     // از 0.75 (سایز کوچک) تا 1.25 (سایز بزرگ) = 50 درصد اختلاف
-    powerUp.setScale(0.32); // سایز پایه
+    powerUp.setScale(0.28); // سایز پایه
     this.tweens.add({ 
       targets: powerUp, 
       scaleX: 0.19,  // 50 درصد بزرگتر از 0.75
