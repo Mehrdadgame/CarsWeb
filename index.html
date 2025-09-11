@@ -526,19 +526,19 @@ preload() {
         this.obstacleTimer.paused = true;
       }
       
-      createBackground(w, h) {
-        this.roadTexture = this.add.tileSprite(0, 0, w, h, 'road-texture');
-        this.roadTexture.setOrigin(0, 0);
-        this.roadTexture.setDepth(-1);
-      
-        const textureWidth = this.textures.get('road-texture').getSourceImage().width;
-        const textureHeight = this.textures.get('road-texture').getSourceImage().height;
-      
-        const scaleX = w / textureWidth;
-        const scaleY = h / textureHeight;
-        this.roadTexture.setTileScale(scaleX, scaleY);
-        this.roadTexture.setDisplaySize(w, h);
-      }
+createBackground(w, h) {
+  this.roadTexture = this.add.tileSprite(0, 0, w, h, 'road-texture');
+  this.roadTexture.setOrigin(0, 0);
+  this.roadTexture.setDepth(-1);
+  
+  const textureWidth = this.textures.get('road-texture').getSourceImage().width;
+  const textureHeight = this.textures.get('road-texture').getSourceImage().height;
+  
+  const scaleX = w / textureWidth;
+  const scaleY = h / textureHeight; // تنظیم scaleY دقیقاً برابر با ارتفاع صفحه
+  this.roadTexture.setTileScale(scaleX, scaleY);
+  this.roadTexture.setDisplaySize(w, h); // حفظ عرض و ارتفاع کلی
+}
       
       createPlayer(w, h) {
         const carWidth = Math.min(60, w * 0.12);
