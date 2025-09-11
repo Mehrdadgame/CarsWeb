@@ -455,9 +455,12 @@
     function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
 
     // --- Game size calculation ---
-    function getGameSize() {
-      return { width: 600, height: 800 };
-    }
+function getGameSize() {
+  return {
+    width: window.innerWidth || 600,
+    height: window.innerHeight || 800
+  };
+}
 
     // --- Enhanced Phaser Scene ---
     class MainScene extends Phaser.Scene {
@@ -527,19 +530,19 @@ preload() {
       }
       
 createBackground(w, h) {
-  const displayHeight = window.innerHeight; // استفاده از ارتفاع واقعی صفحه نمایش
-  this.roadTexture = this.add.tileSprite(0, 0, w, displayHeight, 'road-texture');
-  this.roadTexture.setOrigin(0, 0);
-  this.roadTexture.setDepth(-1);
-  
-  const textureWidth = this.textures.get('road-texture').getSourceImage().width;
-  const textureHeight = this.textures.get('road-texture').getSourceImage().height;
-  
-  const scaleX = w / textureWidth;
-  const scaleY = displayHeight / textureHeight; // تنظیم scaleY بر اساس ارتفاع صفحه
-  this.roadTexture.setTileScale(scaleX, scaleY);
-  this.roadTexture.setDisplaySize(w, displayHeight); // تنظیم ارتفاع به اندازه صفحه نمایش
-}
+     const displayHeight = this.scale.height; // ارتفاع واقعی رندر شده توسط Phaser
+     this.roadTexture = this.add.tileSprite(0, 0, w, displayHeight, 'road-texture');
+     this.roadTexture.setOrigin(0, 0);
+     this.roadTexture.setDepth(-1);
+     
+     const textureWidth = this.textures.get('road-texture').getSourceImage().width;
+     const textureHeight = this.textures.get('road-texture').getSourceImage().height;
+     
+     const scaleX = w / textureWidth;
+     const scaleY = displayHeight / textureHeight; // تنظیم scaleY بر اساس ارتفاع رندر شده
+     this.roadTexture.setTileScale(scaleX, scaleY);
+     this.roadTexture.setDisplaySize(w, displayHeight); // تنظیم ارتفاع به اندازه رندر شده
+   }
       
       createPlayer(w, h) {
         const carWidth = Math.min(60, w * 0.12);
@@ -964,26 +967,31 @@ const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta/1000) ;
 
     let game;
 
-    async function initializeGame() {
-      const isFirstLoad = !localStorage.getItem('gameLoaded');
-      const loadingManager = new LoadingManager();
-      await loadingManager.start(isFirstLoad);
-      
-      const size = getGameSize();
-      const config = {
-        type: Phaser.AUTO,
-        parent: 'game-container',
-        width: size.width,
-        height: size.height,
-        backgroundColor: '#000000',
-        physics: { default: 'arcade', arcade: { debug: false, gravity: { y: 0 } } },
-        scene: MainScene,
-        scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
-      };
-
-      game = new Phaser.Game(config);
-      setupResizeHandler();
+async function initializeGame() {
+  const isFirstLoad = !localStorage.getItem('gameLoaded');
+  const loadingManager = new LoadingManager();
+  await loadingManager.start(isFirstLoad);
+  
+  const size = getGameSize();
+  const config = {
+    type: Phaser.AUTO,
+    parent: 'game-container',
+    width: size.width, // 600 به‌صورت پیش‌فرض
+    height: size.height, // 800 به‌صورت پیش‌فرض
+    backgroundColor: '#000000',
+    physics: { default: 'arcade', arcade: { debug: false, gravity: { y: 0 } } },
+    scene: MainScene,
+    scale: {
+      mode: Phaser.Scale.RESIZE, // مقیاس‌بندی پویا بر اساس اندازه صفحه
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: window.innerWidth, // عرض پویا
+      height: window.innerHeight // ارتفاع پویا
     }
+  };
+
+  game = new Phaser.Game(config);
+  setupResizeHandler();
+}
 
     function setupResizeHandler() {
       window.addEventListener('resize', () => {
