@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -14,8 +16,6 @@
       top:50%;
       left:50%;
       transform:translate(-50%, -50%);
-      width:600px;
-      height:800px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -23,8 +23,6 @@
       background:#000;
     }
     #game-container{
-      width:600px;
-      height:800px;
       box-shadow:0 12px 30px rgba(0,0,0,0.35);
       border-radius:8px;
       overflow:hidden;
@@ -253,7 +251,7 @@
     <div class="ui-speed" id="ui-speed">سرعت: 1.0</div>
     <div id="game-over">
       <div class="game-over-logo"></div>
-      <h2> بازی تمام شد!</h2>
+      <h2>🏁 بازی تمام شد!</h2>
       <p id="final-score">امتیاز نهایی: 0</p>
       <p id="player-rank-display"></p>
       <div id="game-over-leaderboard">
@@ -473,7 +471,7 @@ preload() {
   for(let i = 1; i <= 4; i++) this.load.image(`text-${i}`, `assets/images/text/text_${i}.png`);
   this.load.image('logo', 'assets/images/ui/logo 002_vz.png');
   this.load.image('road-texture', 'assets/images/road/road.png');
-  this.load.audio('background-music', 'assets/SoundVfx/music.ogg');
+  this.load.audio('background-music', ['assets/SoundVfx/music.ogg', 'assets/SoundVfx/music.mp3']);
   this.load.audio('obstacle-sound', 'assets/SoundVfx/Obstacle.ogg');
   this.load.audio('powerup-sound', 'assets/SoundVfx/PechPech.ogg');
   this.load.on('loaderror', (file) => console.warn('Failed to load:', file.src));
@@ -504,59 +502,50 @@ preload() {
   this.startCountdown();
 }
       
-startCountdown() {
-  let count = 3;
-  const countdownText = this.add.text(this.scale.width / 2, this.scale.height / 2, '3', { fontSize: '72px', fill: '#ffffff', fontWeight: 'bold', stroke: '#000', strokeThickness: 4 });
-  countdownText.setOrigin(0.5);
-  const timer = this.time.addEvent({
-    delay: 1000,
-    repeat: 2,
-    callback: () => {
-      count--;
-      countdownText.setText(count.toString());
-      if (count === 0) {
-        countdownText.setText('شروع!');
-        this.time.delayedCall(1000, () => {
-          countdownText.destroy();
-          this.physics.resume();
-          // اطمینان از تأخیر اولیه برای اسپاون موانع
-          this.obstacleTimer.paused = false;
+      startCountdown() {
+        let count = 3;
+        const countdownText = this.add.text(this.scale.width / 2, this.scale.height / 2, '3', { fontSize: '72px', fill: '#ffffff', fontWeight: 'bold', stroke: '#000', strokeThickness: 4 });
+        countdownText.setOrigin(0.5);
+        const timer = this.time.addEvent({
+          delay: 1000,
+          repeat: 2,
+          callback: () => {
+            count--;
+            countdownText.setText(count.toString());
+            if (count === 0) {
+              countdownText.setText('شروع!');
+              this.time.delayedCall(1000, () => {
+                countdownText.destroy();
+                this.physics.resume();
+                this.obstacleTimer.paused = false;
+              });
+            }
+          },
+          callbackScope: this
         });
+        this.obstacleTimer.paused = true;
       }
-    },
-    callbackScope: this
-  });
-  // توقف موقت تایمر موانع تا پایان شمارش معکوس
-  this.obstacleTimer.paused = true;
-}
       
-createBackground(w, h) {
-  // ایجاد tileSprite برای جاده
-  this.roadTexture = this.add.tileSprite(0, 0, w, h, 'road-texture');
-  this.roadTexture.setOrigin(0, 0);
-  this.roadTexture.setDepth(-1);
-
-  // تنظیم مقیاس برای پوشش کامل عرض و ارتفاع صفحه
-  const textureWidth = this.textures.get('road-texture').getSourceImage().width; // عرض تکسچر اصلی
-  const textureHeight = this.textures.get('road-texture').getSourceImage().height; // ارتفاع تکسچر اصلی
-
-  // مقیاس‌بندی برای فیت شدن عرض جاده با عرض صفحه
-  const scaleX = w / textureWidth;
-  const scaleY = h / textureHeight;
-  this.roadTexture.setTileScale(scaleX, scaleY);
-
-  // اطمینان از اینکه tileSprite کل صفحه را پر می‌کند
-  this.roadTexture.setDisplaySize(w, h);
-}
-
-
+      createBackground(w, h) {
+        this.roadTexture = this.add.tileSprite(0, 0, w, h, 'road-texture');
+        this.roadTexture.setOrigin(0, 0);
+        this.roadTexture.setDepth(-1);
+      
+        const textureWidth = this.textures.get('road-texture').getSourceImage().width;
+        const textureHeight = this.textures.get('road-texture').getSourceImage().height;
+      
+        const scaleX = w / textureWidth;
+        const scaleY = h / textureHeight;
+        this.roadTexture.setTileScale(scaleX, scaleY);
+        this.roadTexture.setDisplaySize(w, h);
+      }
       
       createPlayer(w, h) {
         const carWidth = Math.min(60, w * 0.12);
         const carHeight = carWidth * 1.6;
         if (this.textures.exists('player-car')) {
           this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car');
-          this.player.setDisplaySize(carWidth+35, carHeight);
+          this.player.setDisplaySize(carWidth + 35, carHeight);
         } else {
           this.createFallbackTextures();
           this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car-fallback');
@@ -615,88 +604,84 @@ createBackground(w, h) {
         this.invulnerabilityTime = 0;
       }
       
-setupSpawners() {
-  this.obstacleSpawnDelay = 1800; // تأخیر پایه برای اسپاون موانع
-  this.obstacleTimer = this.time.addEvent({
-    delay: this.obstacleSpawnDelay,
-    startAt: 3000, // تأخیر اولیه 3 ثانیه برای اولین مانع
-    loop: true,
-    callback: this.spawnObstacle,
-    callbackScope: this
-  });
-  this.powerUpTimer = this.time.addEvent({
-    delay: 1700,
-    loop: true,
-    callback: this.spawnPowerUp,
-    callbackScope: this
-  });
-  this.speedTimer = this.time.addEvent({
-    delay: 6000,
-    loop: true,
-    callback: this.increaseSpeed,
-    callbackScope: this
-  });
-  this.bonusTextTimer = this.time.addEvent({
-    delay: 12000,
-    loop: true,
-    callback: this.spawnBonusText,
-    callbackScope: this
-  });
-}
+      setupSpawners() {
+        this.obstacleSpawnDelay = 1800;
+        this.obstacleTimer = this.time.addEvent({
+          delay: this.obstacleSpawnDelay,
+          startAt: 3000,
+          loop: true,
+          callback: this.spawnObstacle,
+          callbackScope: this
+        });
+        this.powerUpTimer = this.time.addEvent({
+          delay: 1700,
+          loop: true,
+          callback: this.spawnPowerUp,
+          callbackScope: this
+        });
+        this.speedTimer = this.time.addEvent({
+          delay: 6000,
+          loop: true,
+          callback: this.increaseSpeed,
+          callbackScope: this
+        });
+        this.bonusTextTimer = this.time.addEvent({
+          delay: 12000,
+          loop: true,
+          callback: this.spawnBonusText,
+          callbackScope: this
+        });
+      }
       
-update(time, delta) {
-  if (this.cursors.left.isDown || this.wasd.A.isDown) this.moveLeft();
-  else if (this.cursors.right.isDown || this.wasd.D.isDown) this.moveRight();
+      update(time, delta) {
+        if (this.cursors.left.isDown || this.wasd.A.isDown) this.moveLeft();
+        else if (this.cursors.right.isDown || this.wasd.D.isDown) this.moveRight();
 
-  if (this.invulnerabilityTime > 0) {
-    this.invulnerabilityTime -= delta;
-    this.player.setAlpha(Math.sin(time * 0.01) > 0 ? 0.5 : 1.0);
-  } else this.player.setAlpha(1.0);
+        if (this.invulnerabilityTime > 0) {
+          this.invulnerabilityTime -= delta;
+          this.player.setAlpha(Math.sin(time * 0.01) > 0 ? 0.5 : 1.0);
+        } else this.player.setAlpha(1.0);
 
-  if (this.powerUpActive && this.powerUpTimeRemaining > 0) {
-    this.powerUpTimeRemaining -= delta;
-    if (this.powerUpTimeRemaining <= 0) this.deactivatePowerUp();
-  }
+        if (this.powerUpActive && this.powerUpTimeRemaining > 0) {
+          this.powerUpTimeRemaining -= delta;
+          if (this.powerUpTimeRemaining <= 0) this.deactivatePowerUp();
+        }
 
-  this.obstacles.getChildren().forEach(obstacle => {
-    if (obstacle && obstacle.y > this.scale.height + 100) {
-      obstacle.destroy();
-      this.obstaclesAvoided++;
-      this._updateUI();
-    } else {
-      const obstacleSpeed = this.baseObstacleSpeed * this.speed;
-      obstacle.body.setVelocityY(obstacleSpeed);
-    }
-  });
+        this.obstacles.getChildren().forEach(obstacle => {
+          if (obstacle && obstacle.y > this.scale.height + 100) {
+            obstacle.destroy();
+            this.obstaclesAvoided++;
+            this._updateUI();
+          } else {
+            const obstacleSpeed = this.baseObstacleSpeed/2 * this.speed;
+            obstacle.body.setVelocityY(obstacleSpeed);
+          }
+        });
 
-  [...this.powerUps.getChildren(), ...this.bonusTexts.getChildren()].forEach(item => {
-    if (item && item.y > this.scale.height + 100) item.destroy();
-  });
+        [...this.powerUps.getChildren(), ...this.bonusTexts.getChildren()].forEach(item => {
+          if (item && item.y > this.scale.height + 100) item.destroy();
+        });
 
-  this.updateDifficulty();
+        this.updateDifficulty();
 
-  // حرکت جاده
-  const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta / 1000); // سرعت بر حسب ثانیه
-  this.roadTexture.tilePositionY += roadSpeed * 0.5; // تنظیم سرعت اسکرول جاده
-}
+        const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta / 1000);
+        this.roadTexture.tilePositionY += roadSpeed * 0.5;
+      }
 
-      
-
-      
       moveLeft() {
         if (this.moveCooldown || this.laneIndex <= 0) return;
         this.laneIndex--;
         this.tweenPlayerToLane();
         this.setMoveCooldown();
       }
-      
+
       moveRight() {
         if (this.moveCooldown || this.laneIndex >= this.lanes.length - 1) return;
         this.laneIndex++;
         this.tweenPlayerToLane();
         this.setMoveCooldown();
       }
-      
+
       tweenPlayerToLane() {
         this.tweens.add({
           targets: this.player,
@@ -705,68 +690,58 @@ update(time, delta) {
           ease: 'Back.easeOut'
         });
       }
-      
+
       setMoveCooldown() {
         this.moveCooldown = true;
         this.time.delayedCall(200, () => this.moveCooldown = false);
       }
-      
-spawnObstacle() {
-  // بررسی موانع فعال در محدوده قابل‌مشاهده
-  const activeObstacles = this.obstacles.getChildren()
-    .filter(obstacle => obstacle.y > -100 && obstacle.y < this.scale.height + 100);
 
-  // اگر مانع فعال وجود داشته باشد، اسپاون جدید انجام نشود
-  if (activeObstacles.length >= 1) return;
+      spawnObstacle() {
+        const activeObstacles = this.obstacles.getChildren()
+          .filter(obstacle => obstacle.y > -100 && obstacle.y < this.scale.height + 100);
 
-  // انتخاب خط برای مانع
-  let availableLanes = [0, 1]; // دو خط موجود
-  // حذف خط فعلی بازیکن برای جلوگیری از اسپاون مانع در خط بازیکن
-  availableLanes = availableLanes.filter(lane => lane !== this.laneIndex);
+        if (activeObstacles.length >= 1) return;
 
-  // اگر هیچ خط آزادی موجود نبود، از خط دیگر استفاده کن
-  if (availableLanes.length === 0) {
-    availableLanes = [this.laneIndex ? 0 : 1];
-  }
+        let availableLanes = [0, 1];
+        availableLanes = availableLanes.filter(lane => lane !== this.laneIndex);
 
-  // انتخاب تصادفی یک خط از خطوط موجود
-  const laneIndex = Phaser.Math.RND.pick(availableLanes);
-  const x = this.lanes[laneIndex];
+        if (availableLanes.length === 0) {
+          availableLanes = [this.laneIndex ? 0 : 1];
+        }
 
-  // انتخاب نوع مانع
-  const obstacleType = Phaser.Math.Between(1, 2);
-  const obstacleKey = `obstacle-${obstacleType}`;
+        const laneIndex = Phaser.Math.RND.pick(availableLanes);
+        const x = this.lanes[laneIndex];
 
-  // اندازه مانع
-  const carWidth = Math.min(55, this.scale.width * 0.11);
-  const carHeight = carWidth * 1.7;
+        const obstacleType = Phaser.Math.Between(1, 2);
+        const obstacleKey = `obstacle-${obstacleType}`;
 
-  let obstacle;
-  if (this.textures.exists(obstacleKey)) {
-    obstacle = this.obstacles.create(x, -120, obstacleKey);
-    obstacle.setDisplaySize(carWidth, carHeight);
-  } else {
-    obstacle = this.obstacles.create(x, -120, 'obstacle-fallback');
-  }
+        const carWidth = Math.min(55, this.scale.width * 0.11);
+        const carHeight = carWidth * 1.7;
 
-  obstacle.setDepth(4);
-  const currentSpeed = this.baseObstacleSpeed * this.speed;
-  obstacle.body.setVelocityY(currentSpeed + Phaser.Math.Between(-20, 20));
+        let obstacle;
+        if (this.textures.exists(obstacleKey)) {
+          obstacle = this.obstacles.create(x, -120, obstacleKey);
+          obstacle.setDisplaySize(carWidth, carHeight);
+        } else {
+          obstacle = this.obstacles.create(x, -120, 'obstacle-fallback');
+        }
 
-  // تنظیم تأخیر بعدی بر اساس سرعت بازی
-  this.obstacleSpawnDelay = Math.max(600, this.obstacleSpawnDelay - (this.speed * 50));
-  this.obstacleTimer.reset({
-    delay: this.obstacleSpawnDelay,
-    loop: true,
-    callback: this.spawnObstacle,
-    callbackScope: this
-  });
-}
+        obstacle.setDepth(4);
+        const currentSpeed = this.baseObstacleSpeed * this.speed;
+        obstacle.body.setVelocityY(currentSpeed + Phaser.Math.Between(-20, 20));
 
-      
+        this.obstacleSpawnDelay = Math.max(600, this.obstacleSpawnDelay - (this.speed * 50));
+        this.obstacleTimer.reset({
+          delay: this.obstacleSpawnDelay,
+          loop: true,
+          callback: this.spawnObstacle,
+          callbackScope: this
+        });
+      }
+
       spawnPowerUp() {
         const powerUpType = Math.random() < 0.4 ? 'star' : 'text';
-        const laneIndex = Phaser.Math.Between(0, 1); // Only 2 lanes
+        const laneIndex = Phaser.Math.Between(0, 1);
         const x = this.lanes[laneIndex];
         if (powerUpType === 'star') {
           const starType = Phaser.Math.Between(1, 5);
@@ -775,21 +750,21 @@ spawnObstacle() {
           if (this.textures.exists(starKey)) {
             powerUp = this.powerUps.create(x, -120, starKey);
             powerUp.setDisplaySize(30, 30);
-            powerUp.powerUpType = starType; // Store the type
+            powerUp.powerUpType = starType;
           } else {
             powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
-            powerUp.powerUpType = 1; // Default type
+            powerUp.powerUpType = 1;
           }
           powerUp.setDepth(3);
           powerUp.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.7);
           this.tweens.add({ targets: powerUp, scaleX: 1.1/4, scaleY: 1.1/4, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
         }
       }
-      
+
       spawnBonusText() {
         const textType = Phaser.Math.Between(1, 4);
         const textKey = `text-${textType}`;
-        const laneIndex = Phaser.Math.Between(0, 1); // Only 2 lanes
+        const laneIndex = Phaser.Math.Between(0, 1);
         const x = this.lanes[laneIndex];
         let bonusText;
         if (this.textures.exists(textKey)) {
@@ -805,7 +780,7 @@ spawnObstacle() {
         bonusText.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.8);
         this.tweens.add({ targets: bonusText, y: bonusText.y - 15, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       }
-      
+
       onCarCrash(player, obstacle) {
         if (this.invulnerabilityTime > 0) return;
         obstacle.destroy();
@@ -824,84 +799,72 @@ spawnObstacle() {
         this.sound.play('obstacle-sound', { volume: 0.8 });
         this.time.delayedCall(200, () => { if (this.lives <= 0) this.gameOver(); });
       }
-      
 
-onPowerUpCollected(player, powerUp) {
-  const key = powerUp.texture.key; 
-  console.log('Collected:', powerUp.texture.key); 
-  powerUp.destroy();
+      onPowerUpCollected(player, powerUp) {
+        const key = powerUp.texture.key;
+        console.log('Collected:', powerUp.texture.key);
+        powerUp.destroy();
 
-  let points = 1; 
+        let points = 1;
 
-  if (key === 'powerup-1') {
-    points = 2;
-    this.activatePowerUp();
-  }
-  else{
-    points=1;
-     this.showRandomTextEffect();
-  }
+        if (key === 'powerup-1') {
+          points = 2;
+          this.activatePowerUp();
+        } else {
+          points = 1;
+          this.showRandomTextEffect();
+        }
 
-  this.score += points;
+        this.score += points;
 
-  
+        this.showFloatingText('+' + points, powerUp.x, powerUp.y, 0xf1c40f);
+        this.showPowerUpEffect(powerUp.x, powerUp.y);
+        this.sound.play('powerup-sound', { volume: 0.8 });
+        this._updateUI();
+      }
 
-  this.showFloatingText('+' + points, powerUp.x, powerUp.y, 0xf1c40f);
+      activatePowerUp() {
+        this.scoreMultiplier = 2;
+        this.powerUpActive = true;
+        this.powerUpTimeRemaining = 1500;
+        this.player.setTint(0xf1c40f);
+        this.showRandomTextEffect();
+        document.getElementById('ui-powerup').style.display = 'block';
+      }
 
-  this.showPowerUpEffect(powerUp.x, powerUp.y);
-  this.sound.play('powerup-sound', { volume: 0.8 });
-  this._updateUI();
-}
+      deactivatePowerUp() {
+        this.scoreMultiplier = 1;
+        this.powerUpActive = false;
+        this.powerUpTimeRemaining = 0;
+        this.player.clearTint();
+        document.getElementById('ui-powerup').style.display = 'none';
+      }
 
+      showRandomTextEffect() {
+        const x = this.player.x;
+        const y = this.player.y - 100;
+        const textTypes = [1, 2, 3, 4];
+        const randomText = `text-${Phaser.Math.RND.pick(textTypes)}`;
+        const textSprite = this.add.image(x, y, randomText);
+        textSprite.setDepth(10);
+        textSprite.setDisplaySize(120, 140);
 
+        this.tweens.add({
+          targets: textSprite,
+          y: y - 50,
+          alpha: 0,
+          duration: 1500,
+          onComplete: () => textSprite.destroy()
+        });
+      }
 
-
-
-activatePowerUp() {
-  this.scoreMultiplier = 2;
-  this.powerUpActive = true;
-  this.powerUpTimeRemaining = 1500;
-  this.player.setTint(0xf1c40f);
-
-  this.showRandomTextEffect();
-
-  document.getElementById('ui-powerup').style.display = 'block';
-}
-
-deactivatePowerUp() {
-  this.scoreMultiplier = 1;
-  this.powerUpActive = false;
-  this.powerUpTimeRemaining = 0;
-  this.player.clearTint();
-  document.getElementById('ui-powerup').style.display = 'none';
-}
-
-showRandomTextEffect() {
-  const x = this.player.x;
-  const y = this.player.y - 100; // بالای ماشین
-  const textTypes = [1, 2, 3, 4];
-  const randomText = `text-${Phaser.Math.RND.pick(textTypes)}`; 
-  const textSprite = this.add.image(x, y, randomText); 
-  textSprite.setDepth(10);
-  textSprite.setDisplaySize(120, 140);
-
-  this.tweens.add({
-    targets: textSprite,
-    y: y - 50,          // کمی بالاتر بره
-    alpha: 0,
-    duration: 1500,
-    onComplete: () => textSprite.destroy()
-  });
-}
-
-      
       showFloatingText(text, x, y, color) {
         const floatingText = this.add.text(x, y, text, { fontSize: '18px', fill: `#${color.toString(16).padStart(6, '0')}`, fontWeight: 'bold', stroke: '#000', strokeThickness: 2 });
         floatingText.setOrigin(0.5);
         floatingText.setDepth(10);
         this.tweens.add({ targets: floatingText, y: y - 80, alpha: 0, duration: 1500, ease: 'Power2', onComplete: () => floatingText.destroy() });
       }
-      
+
       showPowerUpEffect(x, y) {
         for (let i = 0; i < 8; i++) {
           const sparkle = this.add.graphics();
@@ -915,7 +878,7 @@ showRandomTextEffect() {
           this.tweens.add({ targets: sparkle, x: x + Math.cos(angle) * distance, y: y + Math.sin(angle) * distance, alpha: 0, scaleX: 0, scaleY: 0, duration: 800, ease: 'Power2', onComplete: () => sparkle.destroy() });
         }
       }
-      
+
       increaseSpeed() {
         if (this.speed < this.maxSpeed) {
           this.speed += 0.15;
@@ -926,7 +889,7 @@ showRandomTextEffect() {
           this._updateUI();
         }
       }
-      
+
       updateDifficulty() {
         const newDifficultyLevel = Math.floor(this.obstaclesAvoided / 20) + 1;
         if (newDifficultyLevel > this.difficultyLevel) {
@@ -934,7 +897,7 @@ showRandomTextEffect() {
           this.showFloatingText(`سطح ${this.difficultyLevel}`, this.scale.width / 2, this.scale.height / 2, 0x00ff88);
         }
       }
-      
+
       gameOver() {
         [this.obstacleTimer, this.powerUpTimer, this.speedTimer, this.bonusTextTimer].forEach(timer => { if (timer) timer.remove(false); });
         this.physics.pause();
@@ -942,14 +905,14 @@ showRandomTextEffect() {
         currentPlayerScore = this.score;
         showGameOver(this.score);
       }
-      
+
       _updateUI() {
         document.getElementById('ui-score').textContent = `امتیاز: ${this.score.toLocaleString()}${this.powerUpActive ? ' (دوبرابر!)' : ''}`;
         document.getElementById('ui-speed').textContent = `سرعت: ${this.speed.toFixed(1)}`;
         document.getElementById('lives-count').textContent = this.lives;
         this.updateHeartsDisplay();
       }
-      
+
       updateHeartsDisplay() {
         const heartsContainer = document.getElementById('hearts-container');
         heartsContainer.innerHTML = '';
@@ -960,7 +923,7 @@ showRandomTextEffect() {
           heartsContainer.appendChild(heart);
         }
       }
-      
+
       createFallbackTextures() {
         const carG = this.add.graphics();
         carG.fillStyle(0xe74c3c, 1);
@@ -1014,7 +977,7 @@ showRandomTextEffect() {
         backgroundColor: '#000000',
         physics: { default: 'arcade', arcade: { debug: false, gravity: { y: 0 } } },
         scene: MainScene,
-        scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
+        scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
       };
 
       game = new Phaser.Game(config);
@@ -1024,12 +987,29 @@ showRandomTextEffect() {
     function setupResizeHandler() {
       window.addEventListener('resize', () => {
         const gameWrapper = document.getElementById('game-wrapper');
-        gameWrapper.style.width = '600px';
-        gameWrapper.style.height = '800px';
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const aspectRatio = 600 / 800;
+        let newWidth, newHeight;
+
+        if (windowWidth / windowHeight > aspectRatio) {
+          newHeight = windowHeight;
+          newWidth = newHeight * aspectRatio;
+        } else {
+          newWidth = windowWidth;
+          newHeight = newWidth / aspectRatio;
+        }
+
+        gameWrapper.style.width = `${newWidth}px`;
+        gameWrapper.style.height = `${newHeight}px`;
         gameWrapper.style.top = '50%';
         gameWrapper.style.left = '50%';
         gameWrapper.style.transform = 'translate(-50%, -50%)';
+
+        game.scale.resize(newWidth, newHeight);
       });
+
+      window.dispatchEvent(new Event('resize'));
     }
 
     const gameOverModal = document.getElementById('game-over');
@@ -1094,7 +1074,7 @@ showRandomTextEffect() {
             backgroundColor: '#000000',
             physics: { default: 'arcade', arcade: { debug: false } },
             scene: MainScene,
-            scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
+            scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
           };
           game = new Phaser.Game(config);
           setupResizeHandler();
@@ -1109,3 +1089,4 @@ showRandomTextEffect() {
   </script>
 </body>
 </html>
+```
