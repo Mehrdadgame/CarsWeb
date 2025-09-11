@@ -393,24 +393,24 @@
       try {
         const raw = localStorage.getItem(LB_KEY);
         leaderboard = raw ? JSON.parse(raw) : [
-          {name: 'علی رضا', score: 100},
-          {name: 'سارا احمدی', score: 80},
-          {name: 'محمد حسنی', score: 75},
-          {name: 'فاطمه کریمی', score: 72},
-          {name: 'حسین محمدی', score: 70},
-          {name: 'مریم رضایی', score: 66},
-          {name: 'امیر علی', score: 65},
-          {name: 'نازنین یوسفی', score: 62},
-          {name: 'رضا اصغری', score: 60},
-          {name: 'زهرا موسوی', score: 59}
+          {name: 'علی رضا', score: 20},
+          {name: 'سارا احمدی', score: 14},
+          {name: 'محمد حسنی', score: 12},
+          {name: 'فاطمه کریمی', score: 11},
+          {name: 'حسین محمدی', score: 10},
+          {name: 'مریم رضایی', score: 9},
+          {name: 'امیر علی', score: 8},
+          {name: 'نازنین یوسفی', score: 7},
+          {name: 'رضا اصغری', score: 6},
+          {name: 'زهرا موسوی', score: 5}
         ];
       } catch (e) { 
         leaderboard = [
-          {name: 'علی رضا', score: 100},
-          {name: 'سارا احمدی', score: 80},
-          {name: 'محمد حسنی', score: 75},
-          {name: 'فاطمه کریمی', score: 72},
-          {name: 'حسین محمدی', score: 70}
+          {name: 'علی رضا', score: 20},
+          {name: 'سارا احمدی', score: 14},
+          {name: 'محمد حسنی', score:12},
+          {name: 'فاطمه کریمی', score: 10},
+          {name: 'حسین محمدی', score: 9}
         ];
       }
       if (!Array.isArray(leaderboard)) leaderboard = [];
@@ -746,7 +746,7 @@ const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta/1000) ;
         const obstacleType = Phaser.Math.Between(1, 2);
         const obstacleKey = `obstacle-${obstacleType}`;
 
-        const carWidth = Math.min(55, this.scale.width * 0.11);
+       const carWidth = Math.min(55, this.scale.width * 0.11) * 2.2;  // تغییر: ضرب در 1.3
         const carHeight = carWidth * 1.7;
 
         let obstacle;
@@ -770,28 +770,39 @@ const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta/1000) ;
         });
       }
 
-      spawnPowerUp() {
-        const powerUpType = Math.random() < 0.4 ? 'star' : 'text';
-        const laneIndex = Phaser.Math.Between(0, 1);
-        const x = this.lanes[laneIndex];
-        if (powerUpType === 'star') {
-          const starType = Phaser.Math.Between(1, 5);
-          const starKey = `powerup-${starType}`;
-          let powerUp;
-          if (this.textures.exists(starKey)) {
-            powerUp = this.powerUps.create(x, -120, starKey);
-            powerUp.setDisplaySize(30, 30);
-            powerUp.powerUpType = starType;
-          } else {
-            powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
-            powerUp.powerUpType = 1;
-          }
-          powerUp.setDepth(3);
-          powerUp.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.7);
-          this.tweens.add({ targets: powerUp, scaleX: 1.1/4, scaleY: 1.1/4, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-        }
-      }
-
+spawnPowerUp() {
+  const powerUpType = Math.random() < 0.4 ? 'star' : 'text';
+  const laneIndex = Phaser.Math.Between(0, 1);
+  const x = this.lanes[laneIndex];
+  if (powerUpType === 'star') {
+    const starType = Phaser.Math.Between(1, 5);
+    const starKey = `powerup-${starType}`;
+    let powerUp;
+    if (this.textures.exists(starKey)) {
+      powerUp = this.powerUps.create(x, -120, starKey);
+      powerUp.setDisplaySize(30, 30);
+      powerUp.powerUpType = starType;
+    } else {
+      powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
+      powerUp.powerUpType = 1;
+    }
+    powerUp.setDepth(3);
+    powerUp.body.setVelocityY(this.baseObstacleSpeed * this.speed * 0.7);
+    
+    // تنظیم انیمیشن با 50 درصد اختلاف
+    // از 0.75 (سایز کوچک) تا 1.25 (سایز بزرگ) = 50 درصد اختلاف
+    powerUp.setScale(0.32); // سایز پایه
+    this.tweens.add({ 
+      targets: powerUp, 
+      scaleX: 0.19,  // 50 درصد بزرگتر از 0.75
+      scaleY: 0.19,  // 50 درصد بزرگتر از 0.75
+      duration: 1500, 
+      yoyo: true, 
+      repeat: -1, 
+      ease: 'Sine.easeInOut' 
+    });
+  }
+}
       spawnBonusText() {
         const textType = Phaser.Math.Between(1, 4);
         const textKey = `text-${textType}`;
@@ -971,16 +982,16 @@ const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta/1000) ;
         carG.destroy();
         const obsG = this.add.graphics();
         obsG.fillStyle(0x34495e, 1);
-        obsG.fillRoundedRect(0, 0, 55, 94, 6);
-        obsG.fillStyle(0xffffff, 1);
-        obsG.fillRoundedRect(6, 12, 43, 22, 3);
-        obsG.fillRoundedRect(6, 45, 43, 18, 3);
-        obsG.fillStyle(0x2c3e50, 1);
-        obsG.fillCircle(13, 8, 5);
-        obsG.fillCircle(42, 8, 5);
-        obsG.fillCircle(13, 86, 5);
-        obsG.fillCircle(42, 86, 5);
-        obsG.generateTexture('obstacle-fallback', 55, 94);
+       obsG.fillRoundedRect(0, 0, 55 * 1.3, 94 * 1.3, 6);  // تغییر: ضرب در 1.3
+       obsG.fillStyle(0xffffff, 1);
+       obsG.fillRoundedRect(6 * 1.3, 12 * 1.3, 43 * 1.3, 22 * 1.3, 3);  // تغییر: ضرب در 1.3
+       obsG.fillRoundedRect(6 * 1.3, 45 * 1.3, 43 * 1.3, 18 * 1.3, 3);  // تغییر: ضرب در 1.3
+       obsG.fillStyle(0x2c3e50, 1);
+       obsG.fillCircle(13 * 1.3, 8 * 1.3, 5 * 1.3);  // تغییر: ضرب در 1.3
+       obsG.fillCircle(42 * 1.3, 8 * 1.3, 5 * 1.3);  // تغییر: ضرب در 1.3
+       obsG.fillCircle(13 * 1.3, 86 * 1.3, 5 * 1.3);  // تغییر: ضرب در 1.3
+       obsG.fillCircle(42 * 1.3, 86 * 1.3, 5 * 1.3);  // تغییر: ضرب در 1.3
+       obsG.generateTexture('obstacle-fallback', 55 * 1.3, 94 * 1.3);  // تغییر: ضرب در 1.3
         obsG.destroy();
         const powerG = this.add.graphics();
         powerG.fillStyle(0xf1c40f, 1);
