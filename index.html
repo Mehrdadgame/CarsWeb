@@ -527,7 +527,8 @@ preload() {
       }
       
 createBackground(w, h) {
-  this.roadTexture = this.add.tileSprite(0, 0, w, h, 'road-texture');
+  const displayHeight = window.innerHeight; // استفاده از ارتفاع واقعی صفحه نمایش
+  this.roadTexture = this.add.tileSprite(0, 0, w, displayHeight, 'road-texture');
   this.roadTexture.setOrigin(0, 0);
   this.roadTexture.setDepth(-1);
   
@@ -535,9 +536,9 @@ createBackground(w, h) {
   const textureHeight = this.textures.get('road-texture').getSourceImage().height;
   
   const scaleX = w / textureWidth;
-  const scaleY = h / textureHeight; // تنظیم scaleY دقیقاً برابر با ارتفاع صفحه
+  const scaleY = displayHeight / textureHeight; // تنظیم scaleY بر اساس ارتفاع صفحه
   this.roadTexture.setTileScale(scaleX, scaleY);
-  this.roadTexture.setDisplaySize(w, h); // حفظ عرض و ارتفاع کلی
+  this.roadTexture.setDisplaySize(w, displayHeight); // تنظیم ارتفاع به اندازه صفحه نمایش
 }
       
       createPlayer(w, h) {
