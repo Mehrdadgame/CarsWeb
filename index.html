@@ -11,7 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.88.2/phaser.min.js"></script>
   <style>
     html,body{height:100%;margin:0;padding:0;overflow:hidden;background:#000;}
-    #game-wrapper{
+    /* #game-wrapper{
       position:fixed;
       top:50%;
       left:50%;
@@ -28,7 +28,7 @@
       overflow:hidden;
       position:relative;
       background:#000;
-    }
+    } */
     
     /* Welcome Screen */
     #welcome-screen{
@@ -530,19 +530,22 @@ preload() {
       }
       
 createBackground(w, h) {
-     const displayHeight = this.scale.height; // ارتفاع واقعی رندر شده توسط Phaser
-     this.roadTexture = this.add.tileSprite(0, 0, w, displayHeight, 'road-texture');
-     this.roadTexture.setOrigin(0, 0);
-     this.roadTexture.setDepth(-1);
-     
-     const textureWidth = this.textures.get('road-texture').getSourceImage().width;
-     const textureHeight = this.textures.get('road-texture').getSourceImage().height;
-     
-     const scaleX = w / textureWidth;
-     const scaleY = displayHeight / textureHeight; // تنظیم scaleY بر اساس ارتفاع رندر شده
-     this.roadTexture.setTileScale(scaleX, scaleY);
-     this.roadTexture.setDisplaySize(w, displayHeight); // تنظیم ارتفاع به اندازه رندر شده
-   }
+  // استفاده از ارتفاع واقعی صفحه نمایش به جای scale.height
+  const actualHeight = window.innerHeight;
+  
+  this.roadTexture = this.add.tileSprite(0, 0, w, actualHeight, 'road-texture');
+  this.roadTexture.setOrigin(0, 0);
+  this.roadTexture.setDepth(-1);
+  
+  const textureWidth = this.textures.get('road-texture').getSourceImage().width;
+  const textureHeight = this.textures.get('road-texture').getSourceImage().height;
+  
+  const scaleX = w / textureWidth;
+  const scaleY = actualHeight / textureHeight;
+  
+  this.roadTexture.setTileScale(scaleX, scaleY);
+  this.roadTexture.setDisplaySize(w, actualHeight);
+}
       
       createPlayer(w, h) {
         const carWidth = Math.min(60, w * 0.12);
@@ -972,20 +975,22 @@ async function initializeGame() {
   const loadingManager = new LoadingManager();
   await loadingManager.start(isFirstLoad);
   
-  const size = getGameSize();
   const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
-    width: size.width, // 600 به‌صورت پیش‌فرض
-    height: size.height, // 800 به‌صورت پیش‌فرض
+    width: window.innerWidth,
+    height: window.innerHeight, // استفاده مستقیم از ارتفاع پنجره
     backgroundColor: '#000000',
-    physics: { default: 'arcade', arcade: { debug: false, gravity: { y: 0 } } },
+    physics: { 
+      default: 'arcade', 
+      arcade: { debug: false, gravity: { y: 0 } } 
+    },
     scene: MainScene,
     scale: {
-      mode: Phaser.Scale.RESIZE, // مقیاس‌بندی پویا بر اساس اندازه صفحه
+      mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      width: window.innerWidth, // عرض پویا
-      height: window.innerHeight // ارتفاع پویا
+      width: window.innerWidth,
+      height: window.innerHeight
     }
   };
 
@@ -993,33 +998,40 @@ async function initializeGame() {
   setupResizeHandler();
 }
 
-    function setupResizeHandler() {
-      window.addEventListener('resize', () => {
-        const gameWrapper = document.getElementById('game-wrapper');
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        const aspectRatio = 600 / 800;
-        let newWidth, newHeight;
+function setupResizeHandler() {
+  window.addEventListener('resize', () => {
+    const gameContainer = document.getElementById('game-container');
+    const gameWrapper = document.getElementById('game-wrapper');
+    
+    // تنظیم مستقیم اندازه container
+    gameContainer.style.width = window.innerWidth + 'px';
+    gameContainer.style.height = window.innerHeight + 'px';
+    
+    gameWrapper.style.width = window.innerWidth + 'px';
+    gameWrapper.style.height = window.innerHeight + 'px';
+    gameWrapper.style.top = '0';
+    gameWrapper.style.left = '0';
+    gameWrapper.style.transform = 'none';
 
-        if (windowWidth / windowHeight > aspectRatio) {
-          newHeight = windowHeight;
-          newWidth = newHeight * aspectRatio;
-        } else {
-          newWidth = windowWidth;
-          newHeight = newWidth / aspectRatio;
-        }
-
-        gameWrapper.style.width = `${newWidth}px`;
-        gameWrapper.style.height = `${newHeight}px`;
-        gameWrapper.style.top = '50%';
-        gameWrapper.style.left = '50%';
-        gameWrapper.style.transform = 'translate(-50%, -50%)';
-
-        game.scale.resize(newWidth, newHeight);
-      });
-
-      window.dispatchEvent(new Event('resize'));
+    // به‌روزرسانی اندازه Phaser
+    if (game && game.scale) {
+      game.scale.resize(window.innerWidth, window.innerHeight);
+      
+      // به‌روزرسانی background در صورت وجود scene
+      const scene = game.scene.getScene('MainScene');
+      if (scene && scene.roadTexture) {
+        scene.roadTexture.setDisplaySize(window.innerWidth, window.innerHeight);
+        scene.roadTexture.setTileScale(
+          window.innerWidth / scene.textures.get('road-texture').getSourceImage().width,
+          window.innerHeight / scene.textures.get('road-texture').getSourceImage().height
+        );
+      }
     }
+  });
+
+  // اجرای فوری resize
+  window.dispatchEvent(new Event('resize'));
+}
 
     const gameOverModal = document.getElementById('game-over');
     const finalScoreEl = document.getElementById('final-score');
