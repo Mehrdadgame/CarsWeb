@@ -664,7 +664,7 @@ preload() {
 
         this.updateDifficulty();
 
-const roadSpeed = this.baseObstacleSpeed * -this.speed * delta ;
+const roadSpeed = this.baseObstacleSpeed * -this.speed * (delta/1000) ;
   this.roadTexture.tilePositionY += roadSpeed * 2;
       }
 
