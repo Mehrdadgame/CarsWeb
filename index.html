@@ -739,7 +739,7 @@ update(time, delta) {
   const worldSpeed = this.baseObstacleSpeed * (delta / 1000);
 
   // حرکت جاده
-  this.roadTexture.tilePositionY += -worldSpeed * 1.8;
+  this.roadTexture.tilePositionY += -worldSpeed * 1.75;
 
   // حرکت موانع - حالا مستقیماً با worldSpeed
   this.obstacles.getChildren().forEach(obstacle => {
