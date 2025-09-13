@@ -743,7 +743,7 @@ update(time, delta) {
 
   // حرکت موانع - حالا مستقیماً با worldSpeed
   this.obstacles.getChildren().forEach(obstacle => {
-    obstacle.y += worldSpeed;
+    obstacle.y += worldSpeed/1.1;
     if (obstacle.y > this.scale.height ) {
       this.obstaclesAvoided++;
       this._updateUI();
