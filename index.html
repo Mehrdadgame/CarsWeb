@@ -736,15 +736,15 @@ update(time, delta) {
   }
 
   // 🛣 سرعت مشترک - حالا همه چیز با این سرعت حرکت می‌کند
-  const worldSpeed = this.baseObstacleSpeed * (delta / 1000);
+  const worldSpeed = this.baseObstacleSpeed * (delta / 800);
 
   // حرکت جاده
-  this.roadTexture.tilePositionY += -worldSpeed * 1.75;
+  this.roadTexture.tilePositionY += -worldSpeed*2 ;
 
   // حرکت موانع - حالا مستقیماً با worldSpeed
   this.obstacles.getChildren().forEach(obstacle => {
     obstacle.y += worldSpeed/1.2;
-    if (obstacle.y > this.scale.height + 100) {
+    if (obstacle.y > this.scale.height ) {
       this.obstaclesAvoided++;
       this._updateUI();
       obstacle.destroy();
@@ -754,7 +754,7 @@ update(time, delta) {
   // حرکت powerups با همان سرعت جاده و موانع
   this.powerUps.getChildren().forEach(powerUp => {
     powerUp.y += worldSpeed/1.2;
-    if (powerUp.y > this.scale.height + 100) {
+    if (powerUp.y > this.scale.height ) {
       powerUp.destroy();
     }
   });
