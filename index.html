@@ -743,7 +743,7 @@ update(time, delta) {
 
   // حرکت موانع - حالا مستقیماً با worldSpeed
   this.obstacles.getChildren().forEach(obstacle => {
-    obstacle.y += worldSpeed;
+    obstacle.y += worldSpeed/1.2;
     if (obstacle.y > this.scale.height + 100) {
       this.obstaclesAvoided++;
       this._updateUI();
@@ -753,7 +753,7 @@ update(time, delta) {
 
   // حرکت powerups با همان سرعت جاده و موانع
   this.powerUps.getChildren().forEach(powerUp => {
-    powerUp.y += worldSpeed;
+    powerUp.y += worldSpeed/1.1;
     if (powerUp.y > this.scale.height + 100) {
       powerUp.destroy();
     }
