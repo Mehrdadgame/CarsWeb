@@ -767,13 +767,38 @@ function showGameOver(score) {
         this.powerUpActive = false; this.powerUpTimeRemaining = 0; this.difficultyLevel = 1;
         this.obstaclesAvoided = 0; this.moveCooldown = false; this.invulnerabilityTime = 0; this.isGameOver = false;
       }
-      setupSpawners() {
-        this.obstacleSpawnDelay = 1800;
-        this.obstacleTimer = this.time.addEvent({ delay: this.obstacleSpawnDelay, startAt: 3000, loop: true, callback: this.spawnObstacle, callbackScope: this });
-        this.powerUpTimer = this.time.addEvent({ delay: 1000, loop: true, callback: this.spawnPowerUp, callbackScope: this });
-        this.speedTimer = this.time.addEvent({ delay: 6000, loop: true, callback: this.increaseSpeed, callbackScope: this });
-        this.bonusTextTimer = this.time.addEvent({ delay: 12000, loop: true, callback: this.spawnBonusText, callbackScope: this });
-      }
+setupSpawners() {
+  this.obstacleSpawnDelay = 1800;
+  this.obstacleTimer = this.time.addEvent({ 
+    delay: this.obstacleSpawnDelay, 
+    startAt: 3000, 
+    loop: true, 
+    callback: this.spawnObstacle, 
+    callbackScope: this 
+  });
+  
+  // کاهش delay از 1000 به 500 برای spawn بیشتر PowerUp ها
+  this.powerUpTimer = this.time.addEvent({ 
+    delay: 500, 
+    loop: true, 
+    callback: this.spawnPowerUp, 
+    callbackScope: this 
+  });
+  
+  this.speedTimer = this.time.addEvent({ 
+    delay: 6000, 
+    loop: true, 
+    callback: this.increaseSpeed, 
+    callbackScope: this 
+  });
+  
+  this.bonusTextTimer = this.time.addEvent({ 
+    delay: 12000, 
+    loop: true, 
+    callback: this.spawnBonusText, 
+    callbackScope: this 
+  });
+}
       update(time, delta) {
         if (this.isGameOver) return;
         const activeElement = document.activeElement;
@@ -811,25 +836,51 @@ function showGameOver(score) {
         obstacle.setDepth(4); obstacle.laneIndex = laneIndex;
       }
       spawnPowerUp() {
-        const activeObstacles = this.obstacles.getChildren().filter(o => o.y > -100 && o.y < this.scale.height + 100);
-        const activePowerUps = this.powerUps.getChildren().filter(p => p.y > -100 && p.y < this.scale.height + 100);
-        if (activePowerUps.length >= 3) return;
-        const lastObstacle = activeObstacles[activeObstacles.length - 1];
-        if (lastObstacle && (-120 - lastObstacle.y) < 200) return;
-        let availableLanes = [0, 1];
-        activeObstacles.forEach(o => availableLanes = availableLanes.filter(l => l !== o.laneIndex));
-        if (availableLanes.length === 0) return;
-        const laneIndex = Phaser.Math.RND.pick(availableLanes); const x = this.lanes[laneIndex];
-        const powerUpType = Math.random() < 0.9 ? 'star' : 'text';
-        let powerUp;
-        if (powerUpType === 'star') {
-          const starType = Phaser.Math.Between(1, 5); const starKey = `powerup-${starType}`;
-          if (this.textures.exists(starKey)) { powerUp = this.powerUps.create(x, -120, starKey); powerUp.setDisplaySize(25, 25); powerUp.powerUpType = starType; }
-          else { powerUp = this.powerUps.create(x, -120, 'powerup-fallback'); powerUp.powerUpType = 1; }
-          powerUp.setDepth(3); powerUp.laneIndex = laneIndex;
-          this.tweens.add({ targets: powerUp, scaleX: 0.20, scaleY: 0.20, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-        }
-      }
+  const activeObstacles = this.obstacles.getChildren().filter(o => o.y > -100 && o.y < this.scale.height + 100);
+  const activePowerUps = this.powerUps.getChildren().filter(p => p.y > -100 && p.y < this.scale.height + 100);
+  
+  // تغییر از 3 به 6 برای افزایش تعداد PowerUp ها
+  if (activePowerUps.length >= 6) return;
+  
+  const lastObstacle = activeObstacles[activeObstacles.length - 1];
+  if (lastObstacle && (-120 - lastObstacle.y) < 200) return;
+  
+  let availableLanes = [0, 1];
+  activeObstacles.forEach(o => availableLanes = availableLanes.filter(l => l !== o.laneIndex));
+  if (availableLanes.length === 0) return;
+  
+  const laneIndex = Phaser.Math.RND.pick(availableLanes); 
+  const x = this.lanes[laneIndex];
+  
+  // افزایش احتمال spawn کردن PowerUp از 0.9 به 0.95
+  const powerUpType = Math.random() < 0.95 ? 'star' : 'text';
+  let powerUp;
+  
+  if (powerUpType === 'star') {
+    const starType = Phaser.Math.Between(1, 5); 
+    const starKey = `powerup-${starType}`;
+    if (this.textures.exists(starKey)) { 
+      powerUp = this.powerUps.create(x, -120, starKey); 
+      powerUp.setDisplaySize(25, 25); 
+      powerUp.powerUpType = starType; 
+    }
+    else { 
+      powerUp = this.powerUps.create(x, -120, 'powerup-fallback'); 
+      powerUp.powerUpType = 1; 
+    }
+    powerUp.setDepth(3); 
+    powerUp.laneIndex = laneIndex;
+    this.tweens.add({ 
+      targets: powerUp, 
+      scaleX: 0.20, 
+      scaleY: 0.20, 
+      duration: 1500, 
+      yoyo: true, 
+      repeat: -1, 
+      ease: 'Sine.easeInOut' 
+    });
+  }
+}
       spawnBonusText() {
         const textType = Phaser.Math.Between(1, 4); const textKey = `text-${textType}`;
         const laneIndex = Phaser.Math.Between(0, 1); const x = this.lanes[laneIndex];
@@ -1005,9 +1056,14 @@ saveBtn.addEventListener('click', async () => {
   const name = firstNameInput.value.trim();
   const lastName = lastNameInput.value.trim();
   const fullName = `${name} ${lastName}`.trim();
-  if (!fullName) { alert('لطفاً نام و نام خانوادگی را وارد کنید'); return; }
+  if (!fullName) { 
+    alert('لطفاً نام و نام خانوادگی را وارد کنید'); 
+    return; 
+  }
   const score = currentPlayerScore;
-  saveBtn.textContent = '⏳ در حال ذخیره...'; saveBtn.disabled = true;
+  saveBtn.textContent = '⏳ در حال ذخیره...'; 
+  saveBtn.disabled = true;
+  
   try {
     const success = await saveScoreToServer(fullName, playerPhone, score);
     if (success) {
@@ -1015,23 +1071,47 @@ saveBtn.addEventListener('click', async () => {
       nameInputContainer.style.display = 'none';
       document.getElementById('game-over-leaderboard').style.display = 'block';
       saveBtn.style.display = 'none';
-      currentPlayerName = fullName; // به‌روزرسانی نام کاربر
+      currentPlayerName = fullName;
+      
+      // ذخیره اینکه بازی انجام شده است
+      localStorage.setItem('hasPlayedGame', 'true');
+      
       await updateGameOverLeaderboard(playerPhone);
     } else {
       saveBtn.textContent = '❌ ارسال ناموفق بود، دوباره تلاش کنید';
-      setTimeout(() => { saveBtn.textContent = '💾 ذخیره امتیاز'; saveBtn.disabled = false; }, 2000);
+      setTimeout(() => { 
+        saveBtn.textContent = '💾 ذخیره امتیاز'; 
+        saveBtn.disabled = false; 
+      }, 2000);
     }
   } catch (error) {
     saveBtn.textContent = '❌ ارسال ناموفق بود، دوباره تلاش کنید';
-    setTimeout(() => { saveBtn.textContent = '💾 ذخیره امتیاز'; saveBtn.disabled = false; }, 2000);
+    setTimeout(() => { 
+      saveBtn.textContent = '💾 ذخیره امتیاز'; 
+      saveBtn.disabled = false; 
+    }, 2000);
   }
 });
 
 
+
 document.addEventListener('DOMContentLoaded', () => {
+  const hasPlayedGame = localStorage.getItem('hasPlayedGame');
+  
+  if (hasPlayedGame === 'true') {
+    // مخفی کردن دکمه شروع و نمایش پیام
+    document.getElementById('start-game-btn').style.display = 'none';
+    document.getElementById('phone-container').style.display = 'none';
+    
+    const welcomeTitle = document.querySelector('.welcome-title');
+    welcomeTitle.textContent = 'شما قبلاً این بازی را انجام داده‌اید';
+    welcomeTitle.style.color = '#f1c40f';
+  }
+  
   loadLeaderboard();
   applyUpdatedCSS();
-});    document.addEventListener('keydown', function(e) {
+});
+   document.addEventListener('keydown', function(e) {
       const activeElement = document.activeElement;
       const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.contentEditable === 'true');
       if (isInputFocused && ['KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(e.code)) { e.stopPropagation(); return; }
