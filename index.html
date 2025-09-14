@@ -7,242 +7,243 @@
   <link rel="icon" type="image/png" href="assets/images/ui/logo 2.png">
   <link rel="shortcut icon" type="image/png" href="assets/images/ui/logo 2.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.88.2/phaser.min.js"></script>
-  <style>
-    @font-face {
-      font-family: 'DigiSarvenaz';
-      src: url('assets/font/Digi Sarvenaz_0.ttf') format('truetype');
-      font-display: swap;
-    }
-    
-    html,body{height:100%;margin:0;padding:0;overflow:hidden;background:#000;font-family: 'DigiSarvenaz', Arial, sans-serif;}
-/* Game container styles */
-#game-wrapper {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: #000;
-  max-width: 450px; /* حداکثر عرض برای دسکتاپ */
-  max-height: 100vh;
-}
-
-#game-container {
-  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-  background: #000;
-}
-
-@media (min-width: 769px) {
+<style>
+  @font-face {
+    font-family: 'DigiSarvenaz';
+    src: url('assets/font/Digi Sarvenaz_0.ttf') format('truetype');
+    font-display: swap;
+  }
+  
+  html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background: #000; font-family: 'DigiSarvenaz', Arial, sans-serif; }
   #game-wrapper {
-    max-width: 450px;
-    width: 450px;
-    height: 100vh;
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+    background: #000; max-width: 450px; max-height: 100vh;
   }
   #game-container {
-    width: 450px !important;
-    height: 100vh !important;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35); border-radius: 8px; overflow: hidden;
+    position: relative; background: #000;
   }
-}
-    
-    /* Welcome Screen */
-    #welcome-screen{
-      position:fixed;
-      top:0;left:0;width:100%;height:100%;
-      background:#000000;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      z-index:1001;color:#fff;
-    }
-    .welcome-logo{
-      width:120px;height:120px;margin-bottom:30px;
-      background:url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
-      animation:pulse 2s ease-in-out infinite;
-    }
-    .welcome-title{
-      font-size:28px;font-weight:bold;margin-bottom:30px;
-      text-shadow:0 2px 4px rgba(0,0,0,0.5);
-      color:#fff;
-    }
-    .phone-input-container{
-      margin-bottom:30px;
-    }
-    .phone-input-container input{
-      padding:12px 20px;
-      font-size:16px;
-      border:none;
-      border-radius:8px;
-      text-align:center;
-      direction:ltr;
-      width:200px;
-    }
-    .phone-input-container label{
-      display:block;
-      margin-bottom:10px;
-      font-size:16px;
-      color:#fff;
-    }
-    .start-btn{
-      padding:15px 30px;
-      background:#fff;
-      color:#000;
-      border:none;
-      border-radius:8px;
-      font-size:18px;
-      cursor:pointer;
-      transition:all 0.5s;
-      font-weight:bold;
-      font-family: 'DigiSarvenaz', Arial, sans-serif;
-    }
-    .start-btn:hover{
-      background:#f0f0f0;
-      transform:scale(1.05);
-    }
-    
-    /* Loading Screen */
-    #loading-screen{
-      position:fixed;
-      top:0;left:0;width:100%;height:100%;
-      background:#000000;
-      display:none;flex-direction:column;align-items:center;justify-content:center;
-      z-index:1000;color:#fff;
-    }
-    .loading-logo{
-      width:100px;height:100px;margin-bottom:30px;
-      background:url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
-      animation:pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform:scale(1); opacity:1; }
-      50% { transform:scale(1.1); opacity:0.8; }
-    }
-    .loading-bar{
-      width:300px;height:6px;background:rgba(255,255,255,0.3);border-radius:10px;overflow:hidden;margin-bottom:20px;
-    }
-    .loading-progress{
-      width:0%;height:100%;background:linear-gradient(90deg,#00ff88,#00ccff);
-      transition:width 0.3s ease;border-radius:10px;
-      box-shadow:0 0 20px rgba(0,255,136,0.5);
-    }
-    .loading-text{
-      font-size:18px;margin-bottom:10px;text-shadow:0 2px 4px rgba(0,0,0,0.5);
-    }
-    .loading-tip{
-      font-size:14px;opacity:0.8;text-align:center;max-width:400px;line-height:1.6;
-    }
-    
-    /* UI elements */
-.ui-top-left {
-  position: absolute;
-  left: 40px;
-  top: 60px;
-  color: #FFA500;
-  font-weight: 700;
-  z-index: 50;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-  font-size: 20px;
-  background: rgba(0, 0, 0, 0.45); 
-  padding: 6px 10px; 
-  border-radius: 6px; 
+  @media (min-width: 769px) {
+    #game-wrapper { max-width: 450px; width: 450px; height: 100vh; }
+    #game-container { width: 450px !important; height: 100vh !important; }
+  }
+  
+  /* Welcome Screen */
+  #welcome-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 1001; color: #fff;
+  }
+  .welcome-logo { width: 120px; height: 120px; margin-bottom: 30px;
+    background: url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .welcome-title { font-size: 28px; font-weight: bold; margin-bottom: 30px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); color: #fff;
+  }
+  input[type="text"], textarea { -webkit-user-select: text; -moz-user-select: text; user-select: text; }
+  .phone-input-container { margin-bottom: 30px; }
+  .phone-input-container input { padding: 12px 20px; font-size: 16px; border: none; border-radius: 8px;
+    text-align: center; direction: ltr; width: 200px;
+  }
+  .phone-input-container label { display: block; margin-bottom: 10px; font-size: 16px; color: #fff; }
+  .start-btn { padding: 15px 30px; background: #fff; color: #000; border: none; border-radius: 8px;
+    font-size: 18px; cursor: pointer; transition: all 0.5s; font-weight: bold; font-family: 'DigiSarvenaz', Arial, sans-serif;
+  }
+  .start-btn:hover { background: #f0f0f0; transform: scale(1.05); }
+
+
+  .leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 2px solid rgba(255,215,0,0.6);
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #ffd700;
+  font-size: 14px;
 }
 
-.ui-top-right {
+.leaderboard-header .header-rank {
+  min-width: 40px;
+  text-align: center;
+}
+
+.leaderboard-header .header-name {
+  flex: 1;
+  text-align: center;
+}
+
+.leaderboard-header .header-score {
+  min-width: 60px;
+  text-align: center;
+}
+.user-rank-fixed {
   position: absolute;
-  right: 40px;
-  top:60px;
-  z-index: 50;
-  background: rgba(0,0,0,0.45);
-  padding: 6px 8px;
-  border-radius: 6px;
-  color: #FFA500;
-  font-size: 12px;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  background: rgba(255, 215, 0, 0.15);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 8px;
+  padding: 12px;
+  z-index: 70;
 }
-.ui-top-right .row {
+
+.user-rank-entry {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  min-width: 96px;
-  gap: 5px;
+  width: 100%;
 }
-    .hearts{display:flex;gap:3px}
-    .heart{width:20px;height:20px;background:url('assets/images/ui/heart_vz.png') center/contain no-repeat;}
-    .heart.empty{opacity:0.8;filter:grayscale(100%);}
-    .ui-speed{position:absolute;left:40px;bottom:80px;z-index:50;background:rgba(0,0,0,0.45);padding:6px 8px;border-radius:6px;color:#fff;font-size:12px}
-.ui-powerup {
+
+.user-rank-number {
+  color: #ffd700 !important;
+  font-size: 18px !important;
+  font-weight: bold;
+  min-width: 50px;
+  text-align: center;
+}
+
+.user-rank-name {
+  flex: 1;
+  text-align: center;
+  font-size: 18px !important;
+  font-weight: bold;
+  color: #fff !important;
+}
+
+.user-rank-score {
+  color: #ff4d4d !important;
+  font-size: 18px !important;
+  font-weight: bold;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* برای موبایل */
+@media (max-width: 480px) {
+  #game-over {
+    padding: 15px 20px 90px 20px;
+  }
+  
+  .user-rank-number,
+  .user-rank-name,
+  .user-rank-score {
+    font-size: 16px !important;
+  }
+  
+  .user-rank-fixed {
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    padding: 10px;
+  }
+}
+
+/* خط جداکننده */
+.leaderboard-separator {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 15px 0;
+  width: 100%;
+}
+  
+  /* Loading Screen */
+  #loading-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000000; display: none; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 1000; color: #fff;
+  }
+  .loading-logo { width: 100px; height: 100px; margin-bottom: 30px;
+    background: url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } }
+  .loading-bar { width: 300px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+  .loading-progress { width: 0%; height: 100%; background: linear-gradient(90deg,#ff4d4d,#ffd700);
+    transition: width 0.3s ease; border-radius: 10px; box-shadow: 0 0 20px rgba(255,215,0,0.5);
+  }
+  .loading-text { font-size: 18px; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+  .loading-tip { font-size: 14px; opacity: 0.8; text-align: center; max-width: 400px; line-height: 1.6; }
+  
+  /* UI elements */
+  .ui-top-left { position: absolute; left: 40px; top: 60px; color: #FFD700; font-weight: 700; z-index: 50;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8); font-size: 20px; background: rgba(0,0,0,0.45);
+    padding: 6px 10px; border-radius: 6px;
+  }
+  .ui-top-right { position: absolute; right: 40px; top: 60px; z-index: 50; background: rgba(0,0,0,0.45);
+    padding: 6px 8px; border-radius: 6px; color: #FFD700; font-size: 12px;
+  }
+  .ui-top-right .row { display: flex; align-items: center; min-width: 96px; gap: 5px; }
+  .hearts { display: flex; gap: 3px; }
+  .heart { width: 20px; height: 20px; background: url('assets/images/ui/heart_vz.png') center/contain no-repeat; }
+  .heart.empty { opacity: 0.8; filter: grayscale(100%); }
+  .ui-speed { position: absolute; left: 40px; bottom: 80px; z-index: 50; background: rgba(0,0,0,0.45);
+    padding: 6px 8px; border-radius: 6px; color: #fff; font-size: 12px;
+  }
+  .ui-powerup { position: absolute; left: 50%; top: 15%; transform: translateX(-60%); z-index: 60;
+    background: linear-gradient(135deg,#ff4d4d,#ffd700); color: #fff; padding: 3px 6px; border-radius: 15px;
+    font-size: 10px; font-weight: bold; display: none; animation: powerupPulse 0.5s ease-in-out infinite alternate;
+    box-shadow: 0 2px 8px rgba(255,215,0,0.4);
+  }
+  @keyframes powerupPulse { from { transform: translateX(-50%) scale(1); } to { transform: translateX(-50%) scale(1.05); } }
+#game-over {
   position: absolute;
   left: 50%;
-  top: 15%; 
-  transform: translateX(-60%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   z-index: 60;
-  background: linear-gradient(135deg,#f1c40f,#f39c12);
-  color: #fff;
-  padding: 3px 6px;
-  border-radius: 15px;
-  font-size: 10px;
-  font-weight: bold;
   display: none;
-  animation: powerupPulse 0.5s ease-in-out infinite alternate;
-  box-shadow: 0 2px 8px rgba(241,196,15,0.4);
+  min-width: 90%;
+  max-width: 400px;
+  background: rgba(0,0,0,0.90);
+  color: #fff;
+  padding: 20px 30px 100px 30px; /* پدینگ پایین بیشتر برای جای رتبه کاربر */
+  border-radius: 15px;
+  text-align: center;
+  border: 6px solid #ffd700;
+  box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+  max-height: 85vh;
+  overflow: hidden;
 }
-    @keyframes powerupPulse{
-      from{transform:translateX(-50%) scale(1);}
-      to{transform:translateX(-50%) scale(1.05);}
-    }
-    #game-over{
-      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-      z-index:60;display:none;min-width:90%;max-width:450px;
-      background:rgba(0,0,0,0.95);color:#fff;padding:30px;border-radius:15px;
-      text-align:center;border:3px solid #3498db;
-      box-shadow:0 10px 30px rgba(0,0,0,0.7);
-    }
-    #game-over .game-over-logo{
-      width:80px;height:80px;margin:0 auto 20px auto;
-      background:url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
-    }
-    #game-over h2{margin:10px 0 20px 0;font-size:24px;color:#e74c3c}
-    #game-over p{margin:8px 0;font-size:18px}
-    .btn{display:inline-block;padding:12px 20px;border-radius:8px;margin:10px 8px;cursor:pointer;border:none;font-size:16px;transition:all 0.3s;font-weight:bold}
-    .btn-primary{background:#2ecc71;color:#fff}
-    .btn-primary:hover{background:#27ae60;transform:scale(1.05)}
-    .btn-muted{background:#34495e;color:#fff}
-    .btn-muted:hover{background:#2c3e50;transform:scale(1.05)}
-    #game-over-leaderboard{
-      margin:20px 0;background:rgba(0,0,0,0.3);padding:15px;border-radius:10px;
-      max-height:300px;overflow-y:auto;
-    }
-    #game-over-leaderboard h4{margin:0 0 15px 0;font-size:16px;color:#f1c40f;text-shadow:0 1px 2px rgba(0,0,0,0.8)}
-    #game-over-leaderboard .entry{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);font-size:14px}
-    #game-over-leaderboard .entry:last-child{border-bottom:none}
-    #game-over-leaderboard .entry.current-player{background:rgba(241,196,15,0.3);border-radius:6px;padding:8px 12px;font-weight:bold}
-    .player-rank{font-weight:bold;color:#f1c40f;min-width:40px}
-    .entry-score{color:#3498db;font-weight:bold}
-    .player-name{flex:1;text-align:center}
-    #leaderboard{display:none}
-    canvas{touch-action:manipulation}
-    
-    .game-completed{
-      background:rgba(0,0,0,0.9);
-      color:#fff;
-      padding:30px;
-      border-radius:15px;
-      text-align:center;
-      border:3px solid #f1c40f;
-      box-shadow:0 10px 30px rgba(0,0,0,0.7);
-    }
-    
-    @media (max-width: 480px) {
-      .ui-top-left, .ui-top-right, .ui-speed { font-size: 10px; }
-      .loading-bar { width: 250px; }
-      .loading-text { font-size: 16px; }
-      #game-over { min-width: 95%; padding: 20px; }
-      #game-over h2 { font-size: 20px; }
-      #game-over p { font-size: 16px; }
-      .btn { padding: 10px 16px; font-size: 14px; }
-    }
-  </style>
+  #game-over .game-over-logo { width: 80px; height: 80px; margin: 0 auto 20px auto;
+    background: url('assets/images/ui/logo 002_vz.png') center/contain no-repeat;
+  }
+  #game-over h2 { margin: 10px 0 20px 0; font-size: 24px; color: #ff4d4d; }
+  #game-over p { margin: 8px 0; font-size: 18px; }
+  .btn { display: inline-block; padding: 12px 20px; border-radius: 8px; margin: 10px 8px; cursor: pointer;
+    border: none; font-size: 16px; transition: all 0.3s; font-weight: bold;
+  }
+  .btn-primary { background: #2ecc71; color: #fff; }
+  .btn-primary:hover { background: #27ae60; transform: scale(1.05); }
+  .btn-muted { background: #34495e; color: #fff; }
+  .btn-muted:hover { background: #2c3e50; transform: scale(1.05); }
+#game-over-leaderboard {
+  margin: 20px 0;
+  background: rgba(0,0,0,0.3);
+  padding: 15px;
+  border-radius: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+  #game-over-leaderboard h4 { margin: 0 0 15px 0; font-size: 16px; color: #ffd700; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+  #game-over-leaderboard .entry { display: flex; justify-content: space-between; align-items: center; padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 14px;
+  }
+  #game-over-leaderboard .entry:last-child { border-bottom: none; }
+  #game-over-leaderboard .entry.current-player { background: rgba(255,165,0,0.3); border-radius: 6px; padding: 8px 12px; font-weight: bold; } /* رنگ نارنجی */
+  .player-rank { font-weight: bold; color: #ffd700; min-width: 40px; }
+  .entry-score { color: #ff4d4d; font-weight: bold; }
+  .player-name { flex: 1; text-align: center; }
+  #leaderboard { display: none; }
+  canvas { touch-action: manipulation; }
+  .game-completed { background: rgba(0,0,0,0.9); color: #fff; padding: 30px; border-radius: 15px;
+    text-align: center; border: 3px solid #ffd700; box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+  }
+</style>
 </head>
 <body>
   <!-- Welcome Screen -->
@@ -288,6 +289,10 @@
       <h2>🏁 بازی تمام شد!</h2>
       <p id="final-score">امتیاز نهایی: 0</p>
       <p id="player-rank-display"></p>
+      <div id="name-input-container" style="margin-bottom:20px;display:none;">
+        <input type="text" id="first-name" placeholder="نام" style="margin:5px;padding:8px;width:45%;border:none;border-radius:4px;" onkeydown="event.stopPropagation();">
+        <input type="text" id="last-name" placeholder="نام خانوادگی" style="margin:5px;padding:8px;width:45%;border:none;border-radius:4px;" onkeydown="event.stopPropagation();">
+      </div>
       <div id="game-over-leaderboard">
         <h4>🏆 جدول امتیازات برتر</h4>
         <div id="game-over-leaderboard-list"></div>
@@ -299,107 +304,105 @@
   </div>
 
   <script>
-    // Player phone storage
+    
+    // ذخیره شماره تلفن و وضعیت بازی
     let playerPhone = localStorage.getItem('playerPhone');
     let hasPlayedGame = localStorage.getItem('hasPlayedGame');
-    
-    // Welcome screen logic
-    document.getElementById('start-game-btn').addEventListener('click', () => {
+
+    // تابع برای درخواست API
+    async function fetchAPI(url, options) {
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error('خطا در ارتباط با سرور');
+        return await response.json();
+      } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+      }
+    }
+
+    // چک کردن شماره تلفن در صفحه خوش‌آمدگویی
+    document.getElementById('start-game-btn').addEventListener('click', async () => {
       const phoneInput = document.getElementById('phone-input');
       const phone = phoneInput.value.trim();
-      
-      // Check if player has already played
-      if (hasPlayedGame) {
-        alert('شما قبلاً این بازی را انجام داده‌اید');
-        return;
-      }
-      
+
       if (!playerPhone && (!phone || phone.length < 10)) {
         alert('لطفاً شماره موبایل معتبر وارد کنید');
         return;
       }
       
+
       if (!playerPhone && phone) {
-        localStorage.setItem('playerPhone', phone);
-        playerPhone = phone;
+        try {
+          const result = await fetchAPI('https://game.mypechpech.com/app/wp-json/user-points/v1/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mobile: phone })
+          });
+          if (result.exists) {
+            document.getElementById('start-game-btn').style.display = 'none';
+            const welcomeTitle = document.querySelector('.welcome-title');
+            welcomeTitle.textContent = 'شما قبلاً این بازی را انجام داده‌اید';
+            welcomeTitle.style.color = '#f1c40f';
+            document.getElementById('phone-container').style.display = 'none';
+            return;
+          }
+          localStorage.setItem('playerPhone', phone);
+          playerPhone = phone;
+        } catch (error) {
+          alert('خطا در ارتباط با سرور، لطفاً دوباره تلاش کنید');
+          return;
+        }
       }
-      
+
       document.getElementById('welcome-screen').style.display = 'none';
       initializeGame();
     });
-    
-    // If player phone exists, hide phone input
-    if (playerPhone) {
-      document.getElementById('phone-container').style.display = 'none';
-    }
 
-    // If player has played, change welcome screen
+    // اگر شماره تلفن وجود داره، ورودی مخفی بشه
+    if (playerPhone) document.getElementById('phone-container').style.display = 'none';
     if (hasPlayedGame) {
       document.getElementById('start-game-btn').style.display = 'none';
       const welcomeTitle = document.querySelector('.welcome-title');
       welcomeTitle.textContent = 'شما قبلاً این بازی را انجام داده‌اید';
       welcomeTitle.style.color = '#f1c40f';
-      if (playerPhone) {
-        document.getElementById('phone-container').style.display = 'none';
-      }
     }
 
     // --- Loading System ---
     class LoadingManager {
-      constructor() {
-        this.progress = 0;
-        this.loadingSteps = [
-          { name: 'بارگذاری ...', duration: 500 },
-          { name: 'بارگذاری تصاویر ماشین‌ها...', duration: 800 },
-          { name: 'بارگذاری پاورآپ‌ها...', duration: 600 },
-          { name: 'بارگذاری رابط کاربری...', duration: 400 },
-          { name: 'آماده‌سازی جاده...', duration: 300 },
-          { name: 'تنظیم بازی...', duration: 400 }
-        ];
-        this.currentStep = 0;
-      }
-
+      constructor() { this.progress = 0; this.loadingSteps = [
+        { name: 'بارگذاری ...', duration: 500 },
+        { name: 'بارگذاری تصاویر ماشین‌ها...', duration: 800 },
+        { name: 'بارگذاری پاورآپ‌ها...', duration: 600 },
+        { name: 'بارگذاری رابط کاربری...', duration: 400 },
+        { name: 'آماده‌سازی جاده...', duration: 300 },
+        { name: 'تنظیم بازی...', duration: 400 }
+      ]; this.currentStep = 0; }
       async start(isFirstLoad) {
-        if (!isFirstLoad) {
-          document.getElementById('loading-screen').style.display = 'none';
-          document.getElementById('game-wrapper').style.display = 'flex';
-          return;
-        }
-
+        if (!isFirstLoad) { document.getElementById('loading-screen').style.display = 'none'; document.getElementById('game-wrapper').style.display = 'flex'; return; }
         document.getElementById('loading-screen').style.display = 'flex';
         const progressBar = document.getElementById('loading-progress');
         const loadingText = document.querySelector('.loading-text');
-        
         for (let i = 0; i < this.loadingSteps.length; i++) {
           const step = this.loadingSteps[i];
           loadingText.textContent = step.name;
-          
           await this.simulateLoading(step.duration, (progress) => {
             const totalProgress = ((i + progress) / this.loadingSteps.length) * 100;
             progressBar.style.width = totalProgress + '%';
           });
         }
-        
         loadingText.textContent = '✅ بازی آماده است!';
         await new Promise(resolve => setTimeout(resolve, 500));
-        
         document.getElementById('loading-screen').style.display = 'none';
         document.getElementById('game-wrapper').style.display = 'flex';
         localStorage.setItem('gameLoaded', 'true');
       }
-
       simulateLoading(duration, onProgress) {
         return new Promise(resolve => {
           let elapsed = 0;
           const interval = setInterval(() => {
-            elapsed += 50;
-            const progress = Math.min(elapsed / duration, 1);
-            onProgress(progress);
-            
-            if (progress >= 1) {
-              clearInterval(interval);
-              resolve();
-            }
+            elapsed += 50; const progress = Math.min(elapsed / duration, 1);
+            onProgress(progress); if (progress >= 1) { clearInterval(interval); resolve(); }
           }, 50);
         });
       }
@@ -410,977 +413,629 @@
     let leaderboard = [];
     let currentPlayerScore = 0;
     let currentPlayerName = null;
-    
-    const API = {
-      async getLeaderboard() {
-        return new Promise((resolve) => {
-          setTimeout(() => resolve(leaderboard), 100);
-        });
-      },
-      async saveScore(name, score) {
-        return new Promise((resolve) => {
-          setTimeout(() => resolve({success: true, id: Date.now()}), 200);
-        });
-      }
-    };
 
-    function loadLeaderboard() {
+    async function checkUserRegistration(phone) {
       try {
-        const raw = localStorage.getItem(LB_KEY);
-        leaderboard = raw ? JSON.parse(raw) : [
-          {name: 'علی رضا', score: 20},
-          {name: 'سارا احمدی', score: 14},
-          {name: 'محمد حسنی', score: 12},
-          {name: 'فاطمه کریمی', score: 11},
-          {name: 'حسین محمدی', score: 10},
-          {name: 'مریم رضایی', score: 9},
-          {name: 'امیر علی', score: 8},
-          {name: 'نازنین یوسفی', score: 7},
-          {name: 'رضا اصغری', score: 6},
-          {name: 'زهرا موسوی', score: 5}
-        ];
-      } catch (e) { 
-        leaderboard = [
-          {name: 'علی رضا', score: 20},
-          {name: 'سارا احمدی', score: 14},
-          {name: 'محمد حسنی', score:12},
-          {name: 'فاطمه کریمی', score: 10},
-          {name: 'حسین محمدی', score: 9}
-        ];
+        const result = await fetchAPI('https://game.mypechpech.com/app/wp-json/user-points/v1/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mobile: phone })
+        });
+        return result.registered || false;
+      } catch (error) {
+        alert('خطا در ارتباط با سرور، لطفاً دوباره تلاش کنید');
+        return true; // فرض می‌کنیم ثبت‌نام شده تا از بارگذاری جلوگیری بشه
       }
-      if (!Array.isArray(leaderboard)) leaderboard = [];
     }
 
-    async function saveLeaderboardEntry(name, score) {
+    async function saveScoreToServer(name, phone, score) {
       try {
-        await API.saveScore(name, score);
-        leaderboard.push({ name: name || 'بازیکن ناشناس', score: score || 0, timestamp: Date.now() });
-        leaderboard.sort((a,b) => b.score - a.score);
-        leaderboard = leaderboard.slice(0, 100);
-        localStorage.setItem(LB_KEY, JSON.stringify(leaderboard));
-        localStorage.setItem('hasPlayedGame', 'true');
-        currentPlayerName = name;
-        updateGameOverLeaderboard();
-        return true;
+        const result = await fetchAPI('https://game.mypechpech.com/app/wp-json/user-points/v1/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, mobile: phone, points: score })
+        });
+        return result.success || false;
       } catch (error) {
-        console.error('Failed to save score:', error);
-        leaderboard.push({ name: name || 'بازیکن ناشناس', score: score || 0, timestamp: Date.now() });
-        leaderboard.sort((a,b) => b.score - a.score);
-        leaderboard = leaderboard.slice(0, 100);
-        localStorage.setItem(LB_KEY, JSON.stringify(leaderboard));
-        localStorage.setItem('hasPlayedGame', 'true');
-        currentPlayerName = name;
-        updateGameOverLeaderboard();
+        alert('خطا در ارتباط با سرور، لطفاً دوباره تلاش کنید');
         return false;
       }
     }
 
-    function updateGameOverLeaderboard() {
-      const list = document.getElementById('game-over-leaderboard-list');
-      list.innerHTML = '';
-      let displayEntries = [...leaderboard].sort((a,b) => b.score - a.score).slice(0, 10);
-      if (currentPlayerName && currentPlayerScore > 0) {
-        const playerEntry = { name: currentPlayerName, score: currentPlayerScore };
-        const playerRank = getPlayerRank(currentPlayerScore);
-        if (playerRank > 10) {
-          displayEntries.push({ ...playerEntry, isCurrentPlayer: true, rank: playerRank });
-        }
-      }
-      displayEntries.forEach((entry, i) => {
-        const row = document.createElement('div');
-        row.className = 'entry';
-        const isCurrentPlayer = entry.isCurrentPlayer || (currentPlayerName && entry.name === currentPlayerName && Math.abs(entry.score - currentPlayerScore) < 10);
-        if (isCurrentPlayer) row.className += ' current-player';
-        const rank = entry.rank || (i + 1);
-        const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
-        row.innerHTML = `<span class="player-rank">${rankEmoji}</span><span class="player-name">${escapeHtml(entry.name)}</span><span class="entry-score">${entry.score}</span>`;
-        list.appendChild(row);
-      });
-    }
-
-    function getPlayerRank(score) {
-      const sortedScores = [...leaderboard].sort((a,b) => b.score - a.score);
-      let rank = sortedScores.findIndex(entry => score > entry.score);
-      if (rank === -1) rank = sortedScores.length;
-      return rank + 1;
-    }
-
-    function escapeHtml(str){ return String(str).replace(/[&<>"']/g, s=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
-
-    // --- Game size calculation ---
-function getGameSize() {
-  // برای دسکتاپ از نسبت portrait استفاده کن
-  if (window.innerWidth > 768) {
+   async function getTop10WithUser(phone) {
+  try {
+    const result = await fetchAPI('https://game.mypechpech.com/app/wp-json/user-points/v1/top10-with-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobile: phone })
+    });
+    // فرض می‌کنیم ساختار داده شامل top10 و userRank باشه
     return {
-      width: 450,
-      height: window.innerHeight
+      top10: result.top10 || [],
+      userRank: result.userRank || getPlayerRank(currentPlayerScore) // اگر userRank برگردونده نشد، محاسبه локально
+    };
+  } catch (error) {
+    alert('خطا در ارتباط با سرور، لطفاً دوباره تلاش کنید');
+    return { top10: [], userRank: null };
+  }
+}
+    function applyUpdatedCSS() {
+  // حذف CSS قدیمی اگر وجود داشت
+  const oldStyle = document.getElementById('additional-leaderboard-styles');
+  if (oldStyle) {
+    oldStyle.remove();
+  }
+  
+  // اضافه کردن CSS جدید
+  const styleElement = document.createElement('style');
+  styleElement.id = 'updated-leaderboard-styles';
+ // styleElement.textContent = updatedCSS;
+  document.head.appendChild(styleElement);
+}
+
+    function loadLeaderboard() {
+      try {
+        const raw = localStorage.getItem(LB_KEY);
+        leaderboard = raw ? JSON.parse(raw) : [];
+      } catch (e) { leaderboard = []; }
+    }
+
+async function updateGameOverLeaderboard(phone) {
+  const list = document.getElementById('game-over-leaderboard-list');
+  list.innerHTML = '';
+  
+  try {
+    const result = await getTop10WithUser(phone);
+    const { top10, user_rank, user } = result || { top10: [], user_rank: null, user: null };
+    
+    // مرتب‌سازی top10 بر اساس امتیاز (نزولی) و در صورت برابری بر اساس تاریخ (صعودی)
+    const sortedTop10 = top10.sort((a, b) => {
+      const pointsA = parseInt(a.points) || 0;
+      const pointsB = parseInt(b.points) || 0;
+      
+      if (pointsA !== pointsB) {
+        return pointsB - pointsA; // امتیاز بیشتر اول
+      }
+      
+      // در صورت برابری امتیاز، تاریخ قدیمی‌تر اول
+      return new Date(a.created_at) - new Date(b.created_at);
+    });
+
+    leaderboard = sortedTop10;
+// اضافه کردن هدر
+const headerDiv = document.createElement('div');
+headerDiv.className = 'leaderboard-header';
+headerDiv.innerHTML = `
+  <span class="header-rank">رتبه</span>
+  <span class="header-name">نام</span>
+  <span class="header-score">امتیاز</span>
+`;
+list.appendChild(headerDiv);
+    // نمایش فقط 10 نفر برتر (بدون رتبه کاربر)
+    sortedTop10.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'entry';
+      const rank = i + 1;
+      const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
+      const firstName = entry.name ? entry.name.split(' ')[0] : 'ناشناس';
+      
+      row.innerHTML = `<span class="player-rank">${rankEmoji}</span><span class="player-name">${escapeHtml(firstName)}</span><span class="entry-score">${entry.points || 0}</span>`;
+      
+      // اگر این کاربر همان کاربر جاری است
+      if (entry.mobile === phone && rank <= 10) {
+        row.classList.add('current-player');
+      }
+      
+      list.appendChild(row);
+    });
+
+    // به‌روزرسانی رتبه کاربر در المان جداگانه
+    updateUserRankDisplay(user_rank, user, phone);
+    
+  } catch (error) {
+    console.error('خطا در بارگذاری لیدربورد:', error);
+    
+    // نمایش پیام خطا
+    const errorDiv = document.createElement('div');
+    errorDiv.style.textAlign = 'center';
+    errorDiv.style.color = '#ff6b6b';
+    errorDiv.textContent = 'خطا در بارگذاری لیدربورد';
+    list.appendChild(errorDiv);
+  }
+}
+
+// تابع جدید برای به‌روزرسانی نمایش رتبه کاربر
+function updateUserRankDisplay(user_rank, user, phone) {
+  let userRankContainer = document.getElementById('user-rank-container');
+  
+  // اگر کانتینر وجود نداشت، ایجاد کن
+  if (!userRankContainer) {
+    userRankContainer = document.createElement('div');
+    userRankContainer.id = 'user-rank-container';
+    userRankContainer.className = 'user-rank-fixed';
+    
+    // اضافه کردن به انتهای game-over div
+    const gameOverDiv = document.getElementById('game-over');
+    gameOverDiv.appendChild(userRankContainer);
+  }
+  
+  // پاک کردن محتوای قبلی
+  userRankContainer.innerHTML = '';
+  
+  let userRank, userName, userScore;
+  
+  // استفاده از داده‌های user از API
+  if (user) {
+    userRank = user_rank || 1;
+    userName = user.name ? user.name.split(' ')[0] : 'شما';
+    userScore = user.points || currentPlayerScore || 0;
+  } else {
+    // حالت fallback
+    userRank = user_rank || getPlayerRank(currentPlayerScore);
+    userName = currentPlayerName ? currentPlayerName.split(' ')[0] : 'شما';
+    userScore = currentPlayerScore || 0;
+  }
+  
+  const rankEmoji = userRank === 1 ? '🥇' : userRank === 2 ? '🥈' : userRank === 3 ? '🥉' : `${userRank}.`;
+  
+  // ایجاد المان نمایش رتبه
+  const userRankRow = document.createElement('div');
+  userRankRow.className = 'user-rank-entry';
+  userRankRow.innerHTML = `
+    <span class="user-rank-number">${rankEmoji}</span>
+    <span class="user-rank-name">${escapeHtml(userName)}</span>
+    <span class="user-rank-score">${userScore}</span>
+  `;
+  
+  userRankContainer.appendChild(userRankRow);
+}
+
+// تصحیح تابع getTop10WithUser
+async function getTop10WithUser(phone) {
+  try {
+    const result = await fetchAPI('https://game.mypechpech.com/app/wp-json/user-points/v1/top10-with-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobile: phone })
+    });
+    
+    return {
+      top10: result.top10 || [],
+      user_rank: result.user_rank || null,
+      user: result.user || null,
+      user_in_top10: result.user_in_top10 || false
+    };
+  } catch (error) {
+    console.error('خطا در دریافت لیدربورد:', error);
+    return { 
+      top10: [], 
+      user_rank: 1,
+      user: null,
+      user_in_top10: false
     };
   }
-  // برای موبایل از کل صفحه استفاده کن
-  return {
-    width: window.innerWidth,
-    height: window.innerHeight
-  };
 }
+
+// تصحیح تابع getPlayerRank برای مطابقت با API
+function getPlayerRank(score) {
+  if (!leaderboard || leaderboard.length === 0) {
+    return 1;
+  }
+  
+  // محاسبه رتبه بر اساس امتیاز و تاریخ
+  let rank = 1;
+  for (let entry of leaderboard) {
+    const entryPoints = parseInt(entry.points) || 0;
+    if (entryPoints > score) {
+      rank++;
+    } else if (entryPoints === score) {
+      // در صورت برابری امتیاز، بر اساس تاریخ
+      const entryDate = new Date(entry.created_at);
+      const currentDate = new Date(); // فرض می‌کنیم امتیاز جاری الان ثبت شده
+      if (entryDate < currentDate) {
+        rank++;
+      }
+    }
+  }
+  
+  return rank;
+}
+
+function showGameOver(score) {
+  finalScoreEl.textContent = `امتیاز نهایی: ${score.toLocaleString()}`;
+  
+  let rankText = '';
+  const estimatedRank = getPlayerRank(score);
+  
+  if (estimatedRank === 1 && (!leaderboard.length || score > Math.max(...leaderboard.map(e => parseInt(e.points) || 0)))) {
+    rankText = '🥇 احتمال رکورد جدید!';
+  } else if (estimatedRank <= 3) {
+    rankText = `🏆 رتبه تخمینی: ${estimatedRank}`;
+  } else if (estimatedRank <= 10) {
+    rankText = `👍 رتبه تخمینی: ${estimatedRank}`;
+  } else {
+    rankText = `رتبه تخمینی: ${estimatedRank}`;
+  }
+  
+  playerRankEl.textContent = rankText;
+  gameOverModal.style.display = 'block';
+  nameInputContainer.style.display = 'block';
+  document.getElementById('game-over-leaderboard').style.display = 'none';
+}
+
+    function escapeHtml(str) { return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
+
+    // --- Game size calculation ---
+    function getGameSize() {
+      if (window.innerWidth > 768) return { width: 450, height: window.innerHeight };
+      return { width: window.innerWidth, height: window.innerHeight };
+    }
 
     // --- Enhanced Phaser Scene ---
     class MainScene extends Phaser.Scene {
-      constructor(){ super({ key: 'MainScene' }); }
-preload() {
-  this.load.on('progress', (value) => console.log('Loading progress:', Math.round(value * 100) + '%'));
-  this.load.image('player-car', 'assets/images/cars/player-car.png');
-  this.load.image('obstacle-1', 'assets/images/cars/Obstacle1.png');
-  this.load.image('obstacle-2', 'assets/images/cars/Obstacle2.png');
-  for(let i = 1; i <= 5; i++) this.load.image(`powerup-${i}`, `assets/images/powerups/Powerup${i}.png`);
-  for(let i = 1; i <= 4; i++) this.load.image(`text-${i}`, `assets/images/text/text_${i}.png`);
-  this.load.image('logo', 'assets/images/ui/logo 002_vz.png');
-  this.load.image('road-texture', 'assets/images/road/road.png');
-  this.load.audio('background-music', ['assets/SoundVfx/Music.ogg', 'assets/SoundVfx/Music.mp3']);
-  this.load.audio('obstacle-sound', 'assets/SoundVfx/Obstacle.ogg');
-  this.load.audio('powerup-sound', 'assets/SoundVfx/PechPech.ogg');
-  this.load.on('loaderror', (file) => console.warn('Failed to load:', file.src));
-}
-     create() {
-  const w = this.scale.width;
-  const h = this.scale.height;
-  this.createBackground(w, h);
-  this.roadOffset = 0;
-  
-  // Two lane road setup
-  this.lanes = [w * 0.35, w * 0.65]; // Only 2 lanes
-  this.laneIndex = 0; // Start in left lane
-  
-  this.createPlayer(w, h);
-  this.obstacles = this.physics.add.group();
-  this.powerUps = this.physics.add.group();
-  this.bonusTexts = this.physics.add.group();
-  this.setupCollisions();
-  this.setupControls();
-  this.initializeGameState();
-  this.setupSpawners();
-  this._updateUI();
-  loadLeaderboard();
-  this.music = this.sound.add('background-music', { loop: true, volume: 0.5 });
-  this.music.play();
-  this.physics.pause();
-  this.startCountdown();
-}
-      
-startCountdown() {
-  let count = 3;
-  const countdownText = this.add.text(
-    this.scale.width / 2,
-    this.scale.height / 2,
-    '3',
-    { 
-      fontFamily: 'Digi Sarvenaz',   // 👈 اینجا فونت جدید
-      fontSize: '72px',
-      fill: '#ffffff',
-      fontWeight: 'bold',
-      stroke: '#000',
-      strokeThickness: 4
-    }
-  );
-
-  countdownText.setOrigin(0.5);
-
-  const timer = this.time.addEvent({
-    delay: 1000,
-    repeat: 2,
-    callback: () => {
-      count--;
-      countdownText.setText(count.toString());
-      if (count === 0) {
-        countdownText.setText('شروع!');
-        this.time.delayedCall(1000, () => {
-          countdownText.destroy();
-          this.physics.resume();
-          this.obstacleTimer.paused = false;
-        });
+      constructor() { super({ key: 'MainScene' }); }
+      preload() {
+        this.load.on('progress', (value) => console.log('Loading progress:', Math.round(value * 100) + '%'));
+        this.load.image('player-car', 'assets/images/cars/player-car.png');
+        this.load.image('obstacle-1', 'assets/images/cars/Obstacle1.png');
+        this.load.image('obstacle-2', 'assets/images/cars/Obstacle2.png');
+        for (let i = 1; i <= 5; i++) this.load.image(`powerup-${i}`, `assets/images/powerups/Powerup${i}.png`);
+        for (let i = 1; i <= 4; i++) this.load.image(`text-${i}`, `assets/images/text/text_${i}.png`);
+        this.load.image('logo', 'assets/images/ui/logo 002_vz.png');
+        this.load.image('road-texture', 'assets/images/road/road.png');
+        this.load.audio('background-music', ['assets/SoundVfx/Music.ogg', 'assets/SoundVfx/Music.mp3']);
+        this.load.audio('obstacle-sound', 'assets/SoundVfx/Obstacle.ogg');
+        this.load.audio('powerup-sound', 'assets/SoundVfx/PechPech.ogg');
+        this.load.on('loaderror', (file) => console.warn('Failed to load:', file.src));
       }
-    },
-    callbackScope: this
-  });
-
-  this.obstacleTimer.paused = true;
-}
-
-      
-createBackground(w, h) {
-  // استفاده از ارتفاع واقعی صفحه نمایش به جای scale.height
-  const actualHeight = window.innerHeight;
-  
-  this.roadTexture = this.add.tileSprite(0, 0, w, actualHeight, 'road-texture');
-  this.roadTexture.setOrigin(0, 0);
-  this.roadTexture.setDepth(-1);
-  
-  const textureWidth = this.textures.get('road-texture').getSourceImage().width;
-  const textureHeight = this.textures.get('road-texture').getSourceImage().height;
-  
-  const scaleX = w / textureWidth;
-  const scaleY = actualHeight / textureHeight;
-  
-  this.roadTexture.setTileScale(scaleX, scaleY);
-  this.roadTexture.setDisplaySize(w, actualHeight);
-}
-      
+      create() {
+        const w = this.scale.width; const h = this.scale.height;
+        this.createBackground(w, h); this.roadOffset = 0;
+        this.lanes = [w * 0.35, w * 0.65]; this.laneIndex = 0;
+        this.createPlayer(w, h);
+        this.obstacles = this.physics.add.group();
+        this.powerUps = this.physics.add.group();
+        this.bonusTexts = this.physics.add.group();
+        this.setupCollisions();
+        this.setupControls();
+        this.initializeGameState();
+        this.setupSpawners();
+        this._updateUI();
+        loadLeaderboard();
+        this.music = this.sound.add('background-music', { loop: true, volume: 0.5 });
+        this.music.play();
+        this.physics.pause();
+        this.startCountdown();
+      }
+      startCountdown() {
+        let count = 3;
+        const countdownText = this.add.text(this.scale.width / 2, this.scale.height / 2, '3', {
+          fontFamily: 'Digi Sarvenaz', fontSize: '72px', fill: '#ffffff', fontWeight: 'bold', stroke: '#000', strokeThickness: 4
+        }); countdownText.setOrigin(0.5);
+        const timer = this.time.addEvent({
+          delay: 1000, repeat: 2, callback: () => {
+            count--; countdownText.setText(count.toString());
+            if (count === 0) { countdownText.setText('!شروع'); this.time.delayedCall(1000, () => {
+              countdownText.destroy(); this.physics.resume(); this.obstacleTimer.paused = false;
+            }); }
+          }, callbackScope: this
+        }); this.obstacleTimer.paused = true;
+      }
+      createBackground(w, h) {
+        const actualHeight = window.innerHeight;
+        this.roadTexture = this.add.tileSprite(0, 0, w, actualHeight, 'road-texture');
+        this.roadTexture.setOrigin(0, 0); this.roadTexture.setDepth(-1);
+        const textureWidth = this.textures.get('road-texture').getSourceImage().width;
+        const textureHeight = this.textures.get('road-texture').getSourceImage().height;
+        const scaleX = w / textureWidth; const scaleY = actualHeight / textureHeight;
+        this.roadTexture.setTileScale(scaleX, scaleY); this.roadTexture.setDisplaySize(w, actualHeight);
+      }
       createPlayer(w, h) {
-        const carWidth = Math.min(70, w * 0.14);
-        const carHeight = carWidth * 1.9;
+        const carWidth = Math.min(70, w * 0.14); const carHeight = carWidth * 1.9;
         if (this.textures.exists('player-car')) {
           this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car');
           this.player.setDisplaySize(carWidth + 45, carHeight);
-        } else {
-          this.createFallbackTextures();
-          this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car-fallback');
-        }
-        this.player.setDepth(5);
-        this.player.body.setImmovable(true);
-        this.player.body.setCollideWorldBounds(true);
-        this.tweens.add({
-          targets: this.player,
-          y: this.player.y - 3,
-          duration: 1000,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut'
-        });
+        } else { this.createFallbackTextures(); this.player = this.physics.add.sprite(this.lanes[this.laneIndex], h - 120, 'player-car-fallback'); }
+        this.player.setDepth(5); this.player.body.setImmovable(true); this.player.body.setCollideWorldBounds(true);
+        this.tweens.add({ targets: this.player, y: this.player.y - 3, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       }
-      
       setupCollisions() {
         this.physics.add.overlap(this.player, this.obstacles, this.onCarCrash, null, this);
         this.physics.add.overlap(this.player, this.powerUps, this.onPowerUpCollected, null, this);
         this.physics.add.overlap(this.player, this.bonusTexts, this.onBonusTextCollected, null, this);
       }
-      
       setupControls() {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.wasd = this.input.keyboard.addKeys('W,S,A,D');
         this.input.on('pointerdown', (pointer) => {
           const centerX = this.scale.width * 0.5;
-          if (pointer.x < centerX - 50) this.moveLeft();
-          else if (pointer.x > centerX + 50) this.moveRight();
+          if (pointer.x < centerX - 50 && !this.isGameOver) this.moveLeft();
+          else if (pointer.x > centerX + 50 && !this.isGameOver) this.moveRight();
         });
         let startX = 0;
         this.input.on('pointerdown', (pointer) => { startX = pointer.x; });
         this.input.on('pointerup', (pointer) => {
           const deltaX = pointer.x - startX;
-          if (Math.abs(deltaX) > 50) {
-            if (deltaX < 0) this.moveLeft();
-            else this.moveRight();
+          if (Math.abs(deltaX) > 50 && !this.isGameOver) {
+            if (deltaX < 0) this.moveLeft(); else this.moveRight();
           }
         });
       }
-      
       initializeGameState() {
-        this.score = 0;
-        this.lives = 3;
-        this.maxLives = 3;
-        this.speed = 2.0; // Changed from 1.0 to 2.0 for double initial speed
-        this.baseObstacleSpeed = 360; // Changed from 180 to 360 for double speed
-        this.maxSpeed = 9.0; // Changed from 4.5 to 9.0 for double max speed
-        this.scoreMultiplier = 1;
-        this.powerUpActive = false;
-        this.powerUpTimeRemaining = 0;
-        this.difficultyLevel = 1;
-        this.obstaclesAvoided = 0;
-        this.moveCooldown = false;
-        this.invulnerabilityTime = 0;
+        this.score = 0; this.lives = 3; this.maxLives = 3; this.speed = 2.0;
+        this.baseObstacleSpeed = 360; this.maxSpeed = 9.0; this.scoreMultiplier = 1;
+        this.powerUpActive = false; this.powerUpTimeRemaining = 0; this.difficultyLevel = 1;
+        this.obstaclesAvoided = 0; this.moveCooldown = false; this.invulnerabilityTime = 0; this.isGameOver = false;
       }
-      
       setupSpawners() {
         this.obstacleSpawnDelay = 1800;
-        this.obstacleTimer = this.time.addEvent({
-          delay: this.obstacleSpawnDelay,
-          startAt: 3000,
-          loop: true,
-          callback: this.spawnObstacle,
-          callbackScope: this
-        });
-        this.powerUpTimer = this.time.addEvent({
-          delay: 1700,
-          loop: true,
-          callback: this.spawnPowerUp,
-          callbackScope: this
-        });
-        this.speedTimer = this.time.addEvent({
-          delay: 6000,
-          loop: true,
-          callback: this.increaseSpeed,
-          callbackScope: this
-        });
-        this.bonusTextTimer = this.time.addEvent({
-          delay: 12000,
-          loop: true,
-          callback: this.spawnBonusText,
-          callbackScope: this
-        });
+        this.obstacleTimer = this.time.addEvent({ delay: this.obstacleSpawnDelay, startAt: 3000, loop: true, callback: this.spawnObstacle, callbackScope: this });
+        this.powerUpTimer = this.time.addEvent({ delay: 1000, loop: true, callback: this.spawnPowerUp, callbackScope: this });
+        this.speedTimer = this.time.addEvent({ delay: 6000, loop: true, callback: this.increaseSpeed, callbackScope: this });
+        this.bonusTextTimer = this.time.addEvent({ delay: 12000, loop: true, callback: this.spawnBonusText, callbackScope: this });
       }
-      
-update(time, delta) {
-  if (this.cursors.left.isDown || this.wasd.A.isDown) this.moveLeft();
-  else if (this.cursors.right.isDown || this.wasd.D.isDown) this.moveRight();
-
-  // ✨ چشمک زدن در حالت invulnerability
-  if (this.invulnerabilityTime > 0) {
-    this.invulnerabilityTime -= delta;
-    this.player.setAlpha(Math.sin(time * 0.01) > 0 ? 0.5 : 1.0);
-  } else {
-    this.player.setAlpha(1.0);
-  }
-
-  // ✨ تایمر پاورآپ
-  if (this.powerUpActive && this.powerUpTimeRemaining > 0) {
-    this.powerUpTimeRemaining -= delta;
-    if (this.powerUpTimeRemaining <= 0) this.deactivatePowerUp();
-  }
-
-  // 🛣 سرعت مشترک - حالا همه چیز با این سرعت حرکت می‌کند
-  const worldSpeed = this.baseObstacleSpeed * (delta / 800);
-
-  // حرکت جاده
-  this.roadTexture.tilePositionY += -worldSpeed*2 ;
-
-  // حرکت موانع - حالا مستقیماً با worldSpeed
-  this.obstacles.getChildren().forEach(obstacle => {
-    obstacle.y += worldSpeed/1.05;
-    if (obstacle.y > this.scale.height ) {
-      this.obstaclesAvoided++;
-      this._updateUI();
-      obstacle.destroy();
-    }
-  });
-
-  // حرکت powerups با همان سرعت جاده و موانع
-  this.powerUps.getChildren().forEach(powerUp => {
-    powerUp.y += worldSpeed/1.1;
-    if (powerUp.y > this.scale.height ) {
-      powerUp.destroy();
-    }
-  });
-
-  // حرکت bonus texts
-  this.bonusTexts.getChildren().forEach(bonusText => {
-    bonusText.y += worldSpeed;
-    if (bonusText.y > this.scale.height + 100) {
-      bonusText.destroy();
-    }
-  });
-
-  // ✨ سختی مرحله
-  this.updateDifficulty();
-}
-
-moveLeft() {
-  if (this.moveCooldown || this.laneIndex <= 0) return;
-  this.laneIndex--;
-  this.tweenPlayerToLane();
-  this.setMoveCooldown();
-}
-
-moveRight() {
-  if (this.moveCooldown || this.laneIndex >= this.lanes.length - 1) return;
-  this.laneIndex++;
-  this.tweenPlayerToLane();
-  this.setMoveCooldown();
-}
-
-tweenPlayerToLane() {
-  this.tweens.add({
-    targets: this.player,
-    x: this.lanes[this.laneIndex],
-    duration: 150,
-    ease: 'Back.easeOut'
-  });
-}
-
-setMoveCooldown() {
-  this.moveCooldown = true;
-  this.time.delayedCall(200, () => this.moveCooldown = false);
-}
-
-spawnObstacle() {
-  const activeObstacles = this.obstacles.getChildren()
-    .filter(o => o.y > -100 && o.y < this.scale.height + 100);
-
-  // حداکثر 2 مانع همزمان
-  if (activeObstacles.length >= 2) return;
-
-  // بررسی فاصله با آخرین مانع
-  const lastObstacle = activeObstacles[activeObstacles.length - 1];
-  if (lastObstacle && (this.scale.height - lastObstacle.y) < 200) {
-    return; // فاصله کافی نیست
-  }
-
-  // انتخاب لاین
-  let availableLanes = [0, 1];
-  // ❌ نذار دو مانع همزمان دو طرف بیان
-  if (activeObstacles.length === 1) {
-    availableLanes = [activeObstacles[0].laneIndex]; // فقط همون سمت تکرار شه
-  }
-
-  const laneIndex = Phaser.Math.RND.pick(availableLanes);
-  const x = this.lanes[laneIndex];
-
-  const obstacleType = Phaser.Math.Between(1, 2);
-  const obstacleKey = `obstacle-${obstacleType}`;
-
-  const carWidth = Math.min(55, this.scale.width * 0.11) * 1.7;
-  const carHeight = carWidth * 1.7;
-
-  let obstacle;
-  if (this.textures.exists(obstacleKey)) {
-    obstacle = this.obstacles.create(x, -120, obstacleKey);
-    obstacle.setDisplaySize(carWidth, carHeight);
-  } else {
-    obstacle = this.obstacles.create(x, -120, 'obstacle-fallback');
-  }
-
-  obstacle.setDepth(4);
-  obstacle.laneIndex = laneIndex;
-}
-
-spawnPowerUp() {
-  const activeObstacles = this.obstacles.getChildren()
-    .filter(o => o.y > -100 && o.y < this.scale.height + 100);
-
-  const activePowerUps = this.powerUps.getChildren()
-    .filter(p => p.y > -100 && p.y < this.scale.height + 100);
-
-  // حداکثر 1 پاورآپ همزمان
-  if (activePowerUps.length >= 2) return;
-
-  // فاصله از آخرین مانع
-  const lastObstacle = activeObstacles[activeObstacles.length - 1];
-  if (lastObstacle && (-120 - lastObstacle.y) < 200) {
-    return; // نزدیک مانع نباشه
-  }
-
-  // انتخاب لاین → لاینی که مانع توش نباشه
-  let availableLanes = [0, 1];
-  activeObstacles.forEach(o => {
-    availableLanes = availableLanes.filter(l => l !== o.laneIndex);
-  });
-
-  if (availableLanes.length === 0) return;
-
-  const laneIndex = Phaser.Math.RND.pick(availableLanes);
-  const x = this.lanes[laneIndex];
-
-  const powerUpType = Math.random() < 0.4 ? 'star' : 'text';
-  let powerUp;
-
-  if (powerUpType === 'star') {
-    const starType = Phaser.Math.Between(1, 5);
-    const starKey = `powerup-${starType}`;
-
-    if (this.textures.exists(starKey)) {
-      powerUp = this.powerUps.create(x, -120, starKey);
-      powerUp.setDisplaySize(25, 25);
-      powerUp.powerUpType = starType;
-    } else {
-      powerUp = this.powerUps.create(x, -120, 'powerup-fallback');
-      powerUp.powerUpType = 1;
-    }
-
-    powerUp.setDepth(3);
-    powerUp.laneIndex = laneIndex;
-
-    this.tweens.add({ 
-      targets: powerUp, 
-      scaleX: 0.20,
-      scaleY: 0.20,
-      duration: 1500, 
-      yoyo: true, 
-      repeat: -1, 
-      ease: 'Sine.easeInOut' 
-    });
-  }
-}
-
-spawnBonusText() {
-  const textType = Phaser.Math.Between(1, 4);
-  const textKey = `text-${textType}`;
-  const laneIndex = Phaser.Math.Between(0, 1);
-  const x = this.lanes[laneIndex];
-  let bonusText;
-  
-  if (this.textures.exists(textKey)) {
-    bonusText = this.bonusTexts.create(x, -120, textKey);
-    bonusText.setDisplaySize(70, 35);
-  } else {
-    bonusText = this.add.text(x, -120, 'BONUS!', { 
-      fontSize: '22px', 
-      fill: '#f1c40f', 
-      fontWeight: 'bold', 
-      stroke: '#000', 
-      strokeThickness: 2 
-    });
-    bonusText.setOrigin(0.5);
-    this.physics.add.existing(bonusText);
-    this.bonusTexts.add(bonusText);
-  }
-  
-  bonusText.setDepth(3);
-  // ❌ حذف velocity - حالا در update() با worldSpeed حرکت می‌کند
-  
-  this.tweens.add({ 
-    targets: bonusText, 
-    y: bonusText.y - 15, 
-    duration: 1000, 
-    yoyo: true, 
-    repeat: -1, 
-    ease: 'Sine.easeInOut' 
-  });
-}
-
-// ✨ تابع جدید برای مدیریت تایمرهای spawn
-setupSpawnTimers() {
-  // تایمر موانع
-  this.obstacleTimer = this.time.addEvent({
-    delay: this.obstacleSpawnDelay,
-    loop: true,
-    callback: this.spawnObstacle,
-    callbackScope: this
-  });
-
-  // ✨ تایمر PowerUp - حالا مجزا و بیشتر spawn می‌شود
-  this.powerUpTimer = this.time.addEvent({
-    delay: 2000, // هر 2 ثانیه شانس spawn
-    loop: true,
-    callback: () => {
-      // 60% شانس spawn کردن PowerUp
-      if (Math.random() < 0.6) {
-        this.spawnPowerUp();
+      update(time, delta) {
+        if (this.isGameOver) return;
+        const activeElement = document.activeElement;
+        const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA');
+        if (!isInputFocused) {
+          if (this.cursors.left.isDown || this.wasd.A.isDown) this.moveLeft();
+          else if (this.cursors.right.isDown || this.wasd.D.isDown) this.moveRight();
+        }
+        if (this.invulnerabilityTime > 0) { this.invulnerabilityTime -= delta; this.player.setAlpha(Math.sin(time * 0.01) > 0 ? 0.5 : 1.0); } else this.player.setAlpha(1.0);
+        if (this.powerUpActive && this.powerUpTimeRemaining > 0) { this.powerUpTimeRemaining -= delta; if (this.powerUpTimeRemaining <= 0) this.deactivatePowerUp(); }
+        const worldSpeed = this.baseObstacleSpeed * (delta / 800);
+        this.roadTexture.tilePositionY += -worldSpeed * 2;
+        this.obstacles.getChildren().forEach(obstacle => { obstacle.y += worldSpeed / 1.05; if (obstacle.y > this.scale.height) { this.obstaclesAvoided++; this._updateUI(); obstacle.destroy(); } });
+        this.powerUps.getChildren().forEach(powerUp => { powerUp.y += worldSpeed / 1.1; if (powerUp.y > this.scale.height) powerUp.destroy(); });
+        this.bonusTexts.getChildren().forEach(bonusText => { bonusText.y += worldSpeed; if (bonusText.y > this.scale.height + 100) bonusText.destroy(); });
+        this.updateDifficulty();
       }
-    },
-    callbackScope: this
-  });
-
-  // تایمر BonusText
-  this.bonusTextTimer = this.time.addEvent({
-    delay: 4000, // هر 4 ثانیه
-    loop: true,
-    callback: () => {
-      // 40% شانس spawn کردن BonusText
-      if (Math.random() < 0.4) {
-        this.spawnBonusText();
+      moveLeft() { if (this.moveCooldown || this.laneIndex <= 0) return; this.laneIndex--; this.tweenPlayerToLane(); this.setMoveCooldown(); }
+      moveRight() { if (this.moveCooldown || this.laneIndex >= this.lanes.length - 1) return; this.laneIndex++; this.tweenPlayerToLane(); this.setMoveCooldown(); }
+      tweenPlayerToLane() { this.tweens.add({ targets: this.player, x: this.lanes[this.laneIndex], duration: 150, ease: 'Back.easeOut' }); }
+      setMoveCooldown() { this.moveCooldown = true; this.time.delayedCall(200, () => this.moveCooldown = false); }
+      spawnObstacle() {
+        const activeObstacles = this.obstacles.getChildren().filter(o => o.y > -100 && o.y < this.scale.height + 100);
+        if (activeObstacles.length >= 2) return;
+        const lastObstacle = activeObstacles[activeObstacles.length - 1];
+        if (lastObstacle && (this.scale.height - lastObstacle.y) < 200) return;
+        let availableLanes = [0, 1];
+        if (activeObstacles.length === 1) availableLanes = [activeObstacles[0].laneIndex];
+        const laneIndex = Phaser.Math.RND.pick(availableLanes); const x = this.lanes[laneIndex];
+        const obstacleType = Phaser.Math.Between(1, 2); const obstacleKey = `obstacle-${obstacleType}`;
+        const carWidth = Math.min(55, this.scale.width * 0.11) * 1.7; const carHeight = carWidth * 1.7;
+        let obstacle;
+        if (this.textures.exists(obstacleKey)) { obstacle = this.obstacles.create(x, -120, obstacleKey); obstacle.setDisplaySize(carWidth, carHeight); }
+        else obstacle = this.obstacles.create(x, -120, 'obstacle-fallback');
+        obstacle.setDepth(4); obstacle.laneIndex = laneIndex;
       }
-    },
-    callbackScope: this
-  });
-}
-
-onCarCrash(player, obstacle) {
-  if (this.invulnerabilityTime > 0) return;
-  obstacle.destroy();
-  this.lives--;
-  this._updateUI();
-  this.invulnerabilityTime = 2000;
-  this.cameras.main.shake(400, 0.03);
-  const flash = this.add.graphics();
-  flash.fillStyle(0xff0000, 0.5);
-  flash.fillRect(0, 0, this.scale.width, this.scale.height);
-  flash.setDepth(10);
-  this.tweens.add({ targets: flash, alpha: 0, duration: 300, onComplete: () => flash.destroy() });
-  player.setTint(0xff0000);
-  this.time.delayedCall(300, () => player.clearTint());
-  this.showFloatingText('-1 جان', player.x, player.y - 50, 0xff0000);
-  this.sound.play('obstacle-sound', { volume: 0.8 });
-  this.time.delayedCall(200, () => { if (this.lives <= 0) this.gameOver(); });
-}
-
-onPowerUpCollected(player, powerUp) {
-  const key = powerUp.texture.key;
-  console.log('Collected:', powerUp.texture.key);
-  powerUp.destroy();
-
-  let points = 1;
-
-  if (key === 'powerup-1') {
-    points = 2;
-    this.activatePowerUp();
-  } else {
-    points = 1;
-    this.showRandomTextEffect();
-  }
-
-  this.score += points;
-
-  this.showFloatingText('+' + points, powerUp.x, powerUp.y, 0xf1c40f);
-  this.showPowerUpEffect(powerUp.x, powerUp.y);
-  this.sound.play('powerup-sound', { volume: 0.8 });
-  this._updateUI();
-}
-
-onBonusTextCollected(player, bonusText) {
-  bonusText.destroy();
-  const points = 3;
-  this.score += points;
-  this.showFloatingText('+' + points, bonusText.x, bonusText.y, 0x00ff88);
-  this.showPowerUpEffect(bonusText.x, bonusText.y);
-  this.sound.play('powerup-sound', { volume: 0.8 });
-  this._updateUI();
-}
-
-activatePowerUp() {
-  this.scoreMultiplier = 2;
-  this.powerUpActive = true;
-  this.powerUpTimeRemaining = 1500;
-  this.player.setTint(0xf1c40f);
-  this.showRandomTextEffect();
-  document.getElementById('ui-powerup').style.display = 'block';
-}
-
-deactivatePowerUp() {
-  this.scoreMultiplier = 1;
-  this.powerUpActive = false;
-  this.powerUpTimeRemaining = 0;
-  this.player.clearTint();
-  document.getElementById('ui-powerup').style.display = 'none';
-}
-
-showRandomTextEffect() {
-  const x = this.player.x;
-  const y = this.player.y - 100;
-  const textTypes = [1, 2, 3, 4];
-  const randomText = `text-${Phaser.Math.RND.pick(textTypes)}`;
-  const textSprite = this.add.image(x, y, randomText);
-  textSprite.setDepth(10);
-  textSprite.setDisplaySize(120, 140);
-
-  this.tweens.add({
-    targets: textSprite,
-    y: y - 50,
-    alpha: 0,
-    duration: 1500,
-    onComplete: () => textSprite.destroy()
-  });
-}
-
-showFloatingText(text, x, y, color) {
-  const floatingText = this.add.text(x, y, text, { 
-    fontSize: '18px', 
-    fill: `#${color.toString(16).padStart(6, '0')}`, 
-    fontWeight: 'bold', 
-    stroke: '#000', 
-    strokeThickness: 2, 
-    fontFamily: 'DigiSarvenaz, Arial' 
-  });
-  floatingText.setOrigin(0.5);
-  floatingText.setDepth(10);
-  this.tweens.add({ 
-    targets: floatingText, 
-    y: y - 80, 
-    alpha: 0, 
-    duration: 1500, 
-    ease: 'Power2', 
-    onComplete: () => floatingText.destroy() 
-  });
-}
-
-showPowerUpEffect(x, y) {
-  for (let i = 0; i < 8; i++) {
-    const sparkle = this.add.graphics();
-    sparkle.fillStyle(0xf1c40f, 1);
-    sparkle.fillCircle(0, 0, 4);
-    sparkle.x = x;
-    sparkle.y = y;
-    sparkle.setDepth(8);
-    const angle = (i / 8) * Math.PI * 2;
-    const distance = Phaser.Math.Between(30, 60);
-    this.tweens.add({ 
-      targets: sparkle, 
-      x: x + Math.cos(angle) * distance, 
-      y: y + Math.sin(angle) * distance, 
-      alpha: 0, 
-      scaleX: 0, 
-      scaleY: 0, 
-      duration: 800, 
-      ease: 'Power2', 
-      onComplete: () => sparkle.destroy() 
-    });
-  }
-}
-
-increaseSpeed() {
-  if (this.speed < this.maxSpeed) {
-    this.speed += 0.15;
-    if (this.obstacleSpawnDelay > 600) {
-      this.obstacleSpawnDelay = Math.max(600, this.obstacleSpawnDelay - 150);
-      this.obstacleTimer.reset({ 
-        delay: this.obstacleSpawnDelay, 
-        loop: true, 
-        callback: this.spawnObstacle, 
-        callbackScope: this 
-      });
-    }
-    this._updateUI();
-  }
-}
-
-updateDifficulty() {
-  const newDifficultyLevel = Math.floor(this.obstaclesAvoided / 6) + 1;
-
-  if (newDifficultyLevel > this.difficultyLevel) {
-    this.difficultyLevel = newDifficultyLevel;
-
-    // ✨ نمایش متن
-    this.showFloatingText(
-      `سطح ${this.difficultyLevel}`,
-      this.scale.width / 2,
-      this.scale.height / 2,
-      0x00ff88
-    );
-
-    // 🚀 افزایش سرعت پایه - همه چیز باهم سریع‌تر می‌شود
-    this.baseObstacleSpeed += 60;
-
-    // ⏱ کوتاه‌تر کردن فاصله‌ی اسپاون موانع
-    this.obstacleSpawnDelay = Math.max(300, this.obstacleSpawnDelay - 80);
-
-    // ✨ PowerUp spawn خیلی سریع‌تر در سطوح بالاتر
-    const newPowerUpDelay = Math.max(200, 400 - (this.difficultyLevel * 50)); // حداقل 200ms
-    const newExtraPowerUpDelay = Math.max(250, 600 - (this.difficultyLevel * 60)); // تایمر دوم
-
-    // ریست تایمرها با زمان جدید
-    if (this.obstacleTimer) {
-      this.obstacleTimer.reset({
-        delay: this.obstacleSpawnDelay,
-        loop: true,
-        callback: this.spawnObstacle,
-        callbackScope: this
-      });
-    }
-
-    // تایمر اول PowerUp
-    if (this.powerUpTimer) {
-      this.powerUpTimer.reset({
-        delay: newPowerUpDelay,
-        loop: true,
-        callback: () => {
-          // در سطوح بالاتر تقریباً همیشه spawn می‌شود
-          const spawnChance = Math.min(0.98, 0.95 + (this.difficultyLevel * 0.01));
-          if (Math.random() < spawnChance) this.spawnPowerUp();
-        },
-        callbackScope: this
-      });
-    }
-
-    // ✨ تایمر دوم PowerUp
-    if (this.extraPowerUpTimer) {
-      this.extraPowerUpTimer.reset({
-        delay: newExtraPowerUpDelay,
-        loop: true,
-        callback: () => {
-          const extraSpawnChance = Math.min(0.9, 0.8 + (this.difficultyLevel * 0.02));
-          if (Math.random() < extraSpawnChance) this.spawnPowerUp();
-        },
-        callbackScope: this
-      });
-    }
-
-    // BonusText هم خیلی سریع‌تر spawn شود
-    const newBonusDelay = Math.max(800, 1800 - (this.difficultyLevel * 100));
-    if (this.bonusTextTimer) {
-      this.bonusTextTimer.reset({
-        delay: newBonusDelay,
-        loop: true,
-        callback: () => {
-          const bonusChance = Math.min(0.9, 0.75 + (this.difficultyLevel * 0.03));
-          if (Math.random() < bonusChance) this.spawnBonusText();
-        },
-        callbackScope: this
-      });
-    }
-  }
-}
-
-
+      spawnPowerUp() {
+        const activeObstacles = this.obstacles.getChildren().filter(o => o.y > -100 && o.y < this.scale.height + 100);
+        const activePowerUps = this.powerUps.getChildren().filter(p => p.y > -100 && p.y < this.scale.height + 100);
+        if (activePowerUps.length >= 3) return;
+        const lastObstacle = activeObstacles[activeObstacles.length - 1];
+        if (lastObstacle && (-120 - lastObstacle.y) < 200) return;
+        let availableLanes = [0, 1];
+        activeObstacles.forEach(o => availableLanes = availableLanes.filter(l => l !== o.laneIndex));
+        if (availableLanes.length === 0) return;
+        const laneIndex = Phaser.Math.RND.pick(availableLanes); const x = this.lanes[laneIndex];
+        const powerUpType = Math.random() < 0.9 ? 'star' : 'text';
+        let powerUp;
+        if (powerUpType === 'star') {
+          const starType = Phaser.Math.Between(1, 5); const starKey = `powerup-${starType}`;
+          if (this.textures.exists(starKey)) { powerUp = this.powerUps.create(x, -120, starKey); powerUp.setDisplaySize(25, 25); powerUp.powerUpType = starType; }
+          else { powerUp = this.powerUps.create(x, -120, 'powerup-fallback'); powerUp.powerUpType = 1; }
+          powerUp.setDepth(3); powerUp.laneIndex = laneIndex;
+          this.tweens.add({ targets: powerUp, scaleX: 0.20, scaleY: 0.20, duration: 1500, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+        }
+      }
+      spawnBonusText() {
+        const textType = Phaser.Math.Between(1, 4); const textKey = `text-${textType}`;
+        const laneIndex = Phaser.Math.Between(0, 1); const x = this.lanes[laneIndex];
+        let bonusText;
+        if (this.textures.exists(textKey)) { bonusText = this.bonusTexts.create(x, -120, textKey); bonusText.setDisplaySize(70, 35); }
+        else { bonusText = this.add.text(x, -120, 'BONUS!', { fontSize: '22px', fill: '#f1c40f', fontWeight: 'bold', stroke: '#000', strokeThickness: 2 });
+          bonusText.setOrigin(0.5); this.physics.add.existing(bonusText); this.bonusTexts.add(bonusText);
+        }
+        bonusText.setDepth(3);
+        this.tweens.add({ targets: bonusText, y: bonusText.y - 15, duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      }
+      setupSpawnTimers() {
+        this.obstacleTimer = this.time.addEvent({ delay: this.obstacleSpawnDelay, loop: true, callback: this.spawnObstacle, callbackScope: this });
+        this.powerUpTimer = this.time.addEvent({ delay: 1000, loop: true, callback: () => { if (Math.random() < 0.85) this.spawnPowerUp(); }, callbackScope: this });
+        this.bonusTextTimer = this.time.addEvent({ delay: 4000, loop: true, callback: () => { if (Math.random() < 0.4) this.spawnBonusText(); }, callbackScope: this });
+      }
+      onCarCrash(player, obstacle) {
+        if (this.invulnerabilityTime > 0) return;
+        obstacle.destroy(); this.lives--; this._updateUI(); this.invulnerabilityTime = 2000;
+        this.cameras.main.shake(400, 0.03); const flash = this.add.graphics();
+        flash.fillStyle(0xff0000, 0.5); flash.fillRect(0, 0, this.scale.width, this.scale.height); flash.setDepth(10);
+        this.tweens.add({ targets: flash, alpha: 0, duration: 300, onComplete: () => flash.destroy() });
+        player.setTint(0xff0000); this.time.delayedCall(300, () => player.clearTint());
+        this.showFloatingText('-1 جان', player.x, player.y - 50, 0xff0000);
+        this.sound.play('obstacle-sound', { volume: 0.8 });
+        this.time.delayedCall(200, () => { if (this.lives <= 0) this.gameOver(); });
+      }
+      onPowerUpCollected(player, powerUp) {
+        const key = powerUp.texture.key; console.log('Collected:', powerUp.texture.key); powerUp.destroy();
+        let points = 1; if (key === 'powerup-1') { points = 2; this.activatePowerUp(); } else { points = 1; this.showRandomTextEffect(); }
+        this.score += points; this.showFloatingText('+' + points, powerUp.x, powerUp.y, 0xf1c40f);
+        this.showPowerUpEffect(powerUp.x, powerUp.y); this.sound.play('powerup-sound', { volume: 0.8 }); this._updateUI();
+      }
+      onBonusTextCollected(player, bonusText) {
+        bonusText.destroy(); const points = 3; this.score += points;
+        this.showFloatingText('+' + points, bonusText.x, bonusText.y, 0x00ff88);
+        this.showPowerUpEffect(bonusText.x, bonusText.y); this.sound.play('powerup-sound', { volume: 0.8 }); this._updateUI();
+      }
+      activatePowerUp() { this.scoreMultiplier = 2; this.powerUpActive = true; this.powerUpTimeRemaining = 1500; this.player.setTint(0xf1c40f);
+        this.showRandomTextEffect(); document.getElementById('ui-powerup').style.display = 'block';
+      }
+      deactivatePowerUp() { this.scoreMultiplier = 1; this.powerUpActive = false; this.powerUpTimeRemaining = 0; this.player.clearTint();
+        document.getElementById('ui-powerup').style.display = 'none';
+      }
+      showRandomTextEffect() {
+        const x = this.player.x; const y = this.player.y - 100;
+        const textTypes = [1, 2, 3, 4]; const randomText = `text-${Phaser.Math.RND.pick(textTypes)}`;
+        const textSprite = this.add.image(x, y, randomText); textSprite.setDepth(10); textSprite.setDisplaySize(120, 140);
+        this.tweens.add({ targets: textSprite, y: y - 50, alpha: 0, duration: 1500, onComplete: () => textSprite.destroy() });
+      }
+      showFloatingText(text, x, y, color) {
+        const floatingText = this.add.text(x, y, text, { fontSize: '18px', fill: `#${color.toString(16).padStart(6, '0')}`, fontWeight: 'bold',
+          stroke: '#000', strokeThickness: 2, fontFamily: 'DigiSarvenaz, Arial' });
+        floatingText.setOrigin(0.5); floatingText.setDepth(10);
+        this.tweens.add({ targets: floatingText, y: y - 80, alpha: 0, duration: 1500, ease: 'Power2', onComplete: () => floatingText.destroy() });
+      }
+      showPowerUpEffect(x, y) {
+        for (let i = 0; i < 8; i++) {
+          const sparkle = this.add.graphics(); sparkle.fillStyle(0xf1c40f, 1); sparkle.fillCircle(0, 0, 4);
+          sparkle.x = x; sparkle.y = y; sparkle.setDepth(8); const angle = (i / 8) * Math.PI * 2;
+          const distance = Phaser.Math.Between(30, 60);
+          this.tweens.add({ targets: sparkle, x: x + Math.cos(angle) * distance, y: y + Math.sin(angle) * distance, alpha: 0, scaleX: 0, scaleY: 0,
+            duration: 800, ease: 'Power2', onComplete: () => sparkle.destroy() });
+        }
+      }
+      increaseSpeed() { if (this.speed < this.maxSpeed) { this.speed += 0.15;
+        if (this.obstacleSpawnDelay > 600) { this.obstacleSpawnDelay = Math.max(600, this.obstacleSpawnDelay - 150);
+          this.obstacleTimer.reset({ delay: this.obstacleSpawnDelay, loop: true, callback: this.spawnObstacle, callbackScope: this });
+        } this._updateUI(); }
+      }
+      updateDifficulty() {
+        const newDifficultyLevel = Math.floor(this.obstaclesAvoided / 6) + 1;
+        if (newDifficultyLevel > this.difficultyLevel) {
+          this.difficultyLevel = newDifficultyLevel;
+          this.showFloatingText(`سطح ${this.difficultyLevel}`, this.scale.width / 2, this.scale.height / 2, 0x00ff88);
+          this.baseObstacleSpeed += 60; this.obstacleSpawnDelay = Math.max(300, this.obstacleSpawnDelay - 80);
+          const newPowerUpDelay = Math.max(200, 400 - (this.difficultyLevel * 50));
+          const newExtraPowerUpDelay = Math.max(250, 600 - (this.difficultyLevel * 60));
+          if (this.obstacleTimer) this.obstacleTimer.reset({ delay: this.obstacleSpawnDelay, loop: true, callback: this.spawnObstacle, callbackScope: this });
+          if (this.powerUpTimer) this.powerUpTimer.reset({ delay: newPowerUpDelay, loop: true, callback: () => {
+            const spawnChance = Math.min(0.98, 0.95 + (this.difficultyLevel * 0.01));
+            if (Math.random() < spawnChance) this.spawnPowerUp();
+          }, callbackScope: this });
+          if (this.extraPowerUpTimer) this.extraPowerUpTimer.reset({ delay: newExtraPowerUpDelay, loop: true, callback: () => {
+            if (Math.random() < 0.7) this.spawnPowerUp();
+          }, callbackScope: this });
+          const newBonusDelay = Math.max(800, 1800 - (this.difficultyLevel * 100));
+          if (this.bonusTextTimer) this.bonusTextTimer.reset({ delay: newBonusDelay, loop: true, callback: () => {
+            const bonusChance = Math.min(0.9, 0.75 + (this.difficultyLevel * 0.03));
+            if (Math.random() < bonusChance) this.spawnBonusText();
+          }, callbackScope: this });
+        }
+      }
       gameOver() {
         [this.obstacleTimer, this.powerUpTimer, this.speedTimer, this.bonusTextTimer].forEach(timer => { if (timer) timer.remove(false); });
-        this.physics.pause();
-        this.music.stop();
-        currentPlayerScore = this.score;
-        showGameOver(this.score);
+        this.physics.pause(); this.music.stop(); this.isGameOver = true;
+        if (this.wasd) Object.values(this.wasd).forEach(key => { if (key) key.enabled = false; });
+        if (this.cursors) Object.values(this.cursors).forEach(key => { if (key) key.enabled = false; });
+        currentPlayerScore = this.score; showGameOver(this.score);
       }
-
       _updateUI() {
         document.getElementById('ui-score').textContent = `امتیاز: ${this.score.toLocaleString()}${this.powerUpActive ? ' (دوبرابر!)' : ''}`;
         document.getElementById('ui-speed').textContent = `سرعت: ${this.speed.toFixed(1)}`;
-        document.getElementById('lives-count').textContent = this.lives;
-        this.updateHeartsDisplay();
+        document.getElementById('lives-count').textContent = this.lives; this.updateHeartsDisplay();
       }
-
       updateHeartsDisplay() {
         const heartsContainer = document.getElementById('hearts-container');
         heartsContainer.innerHTML = '';
         for (let i = 0; i < this.maxLives; i++) {
-          const heart = document.createElement('div');
-          heart.className = 'heart';
-          if (i >= this.lives) heart.classList.add('empty');
-          heartsContainer.appendChild(heart);
+          const heart = document.createElement('div'); heart.className = 'heart';
+          if (i >= this.lives) heart.classList.add('empty'); heartsContainer.appendChild(heart);
         }
       }
-
       createFallbackTextures() {
-        const carG = this.add.graphics();
-        carG.fillStyle(0xe74c3c, 1);
-        carG.fillRoundedRect(0, 0, 60, 96, 8);
-        carG.fillStyle(0xffffff, 1);
-        carG.fillRoundedRect(8, 15, 44, 25, 4);
-        carG.fillRoundedRect(8, 50, 44, 20, 4);
-        carG.fillStyle(0x2c3e50, 1);
-        carG.fillCircle(15, 10, 6);
-        carG.fillCircle(45, 10, 6);
-        carG.fillCircle(15, 86, 6);
-        carG.fillCircle(45, 86, 6);
-        carG.generateTexture('player-car-fallback', 60, 96);
-        carG.destroy();
-        const obsG = this.add.graphics();
-        obsG.fillStyle(0x34495e, 1);
-       obsG.fillRoundedRect(0, 0, 55 * 1.3, 94 * 1.3, 6);
-       obsG.fillStyle(0xffffff, 1);
-       obsG.fillRoundedRect(6 * 1.3, 12 * 1.3, 43 * 1.3, 22 * 1.3, 3);
-       obsG.fillRoundedRect(6 * 1.3, 45 * 1.3, 43 * 1.3, 18 * 1.3, 3);
-       obsG.fillStyle(0x2c3e50, 1);
-       obsG.fillCircle(13 * 1.3, 8 * 1.3, 5 * 1.3);
-       obsG.fillCircle(42 * 1.3, 8 * 1.3, 5 * 1.3);
-       obsG.fillCircle(13 * 1.3, 86 * 1.3, 5 * 1.3);
-       obsG.fillCircle(42 * 1.3, 86 * 1.3, 5 * 1.3);
-       obsG.generateTexture('obstacle-fallback', 55 * 1.3, 94 * 1.3);
-        obsG.destroy();
-        const powerG = this.add.graphics();
-        powerG.fillStyle(0xf1c40f, 1);
-        powerG.fillStar(20, 20, 5, 15, 10, 0);
-        powerG.fillStyle(0xffffff, 0.6);
-        powerG.fillStar(20, 20, 5, 8, 6, 0);
-        powerG.generateTexture('powerup-fallback', 40, 40);
-        powerG.destroy();
+        const carG = this.add.graphics(); carG.fillStyle(0xe74c3c, 1); carG.fillRoundedRect(0, 0, 60, 96, 8);
+        carG.fillStyle(0xffffff, 1); carG.fillRoundedRect(8, 15, 44, 25, 4); carG.fillRoundedRect(8, 50, 44, 20, 4);
+        carG.fillStyle(0x2c3e50, 1); carG.fillCircle(15, 10, 6); carG.fillCircle(45, 10, 6); carG.fillCircle(15, 86, 6); carG.fillCircle(45, 86, 6);
+        carG.generateTexture('player-car-fallback', 60, 96); carG.destroy();
+        const obsG = this.add.graphics(); obsG.fillStyle(0x34495e, 1); obsG.fillRoundedRect(0, 0, 55 * 1.3, 94 * 1.3, 6);
+        obsG.fillStyle(0xffffff, 1); obsG.fillRoundedRect(6 * 1.3, 12 * 1.3, 43 * 1.3, 22 * 1.3, 3); obsG.fillRoundedRect(6 * 1.3, 45 * 1.3, 43 * 1.3, 18 * 1.3, 3);
+        obsG.fillStyle(0x2c3e50, 1); obsG.fillCircle(13 * 1.3, 8 * 1.3, 5 * 1.3); obsG.fillCircle(42 * 1.3, 8 * 1.3, 5 * 1.3);
+        obsG.fillCircle(13 * 1.3, 86 * 1.3, 5 * 1.3); obsG.fillCircle(42 * 1.3, 86 * 1.3, 5 * 1.3); obsG.generateTexture('obstacle-fallback', 55 * 1.3, 94 * 1.3); obsG.destroy();
+        const powerG = this.add.graphics(); powerG.fillStyle(0xf1c40f, 1); powerG.fillStar(20, 20, 5, 15, 10, 0);
+        powerG.fillStyle(0xffffff, 0.6); powerG.fillStar(20, 20, 5, 8, 6, 0); powerG.generateTexture('powerup-fallback', 40, 40); powerG.destroy();
       }
     }
 
     let game;
 
-async function initializeGame() {
-  const isFirstLoad = !localStorage.getItem('gameLoaded');
-  const loadingManager = new LoadingManager();
-  await loadingManager.start(isFirstLoad);
-  
-  const size = getGameSize();
-  
-  const config = {
-    type: Phaser.AUTO,
-    parent: 'game-container',
-    width: size.width,
-    height: size.height,
-    backgroundColor: '#000000',
-    physics: { 
-      default: 'arcade', 
-      arcade: { debug: false, gravity: { y: 0 } } 
-    },
-    scene: MainScene,
-    scale: {
-      mode: Phaser.Scale.RESIZE,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
-      width: size.width,
-      height: size.height
-    }
-  };
-
-  game = new Phaser.Game(config);
-  setupResizeHandler();
-}
-
-function setupResizeHandler() {
-  window.addEventListener('resize', () => {
-    const size = getGameSize();
-    const gameContainer = document.getElementById('game-container');
-    const gameWrapper = document.getElementById('game-wrapper');
-    
-    gameContainer.style.width = size.width + 'px';
-    gameContainer.style.height = size.height + 'px';
-    
-    if (window.innerWidth > 768) {
-      gameWrapper.style.width = size.width + 'px';
-      gameWrapper.style.height = size.height + 'px';
-      gameWrapper.style.top = '50%';
-      gameWrapper.style.left = '50%';
-      gameWrapper.style.transform = 'translate(-50%, -50%)';
-    } else {
-      gameWrapper.style.width = size.width + 'px';
-      gameWrapper.style.height = size.height + 'px';
-      gameWrapper.style.top = '0';
-      gameWrapper.style.left = '0';
-      gameWrapper.style.transform = 'none';
-    }
-
-    if (game && game.scale) {
-      game.scale.resize(size.width, size.height);
+    async function initializeGame() {
+      const isFirstLoad = !localStorage.getItem('gameLoaded');
+      const loadingManager = new LoadingManager();
+      await loadingManager.start(isFirstLoad);
+      const size = getGameSize();
+      const config = {
+        type: Phaser.AUTO, parent: 'game-container', width: size.width, height: size.height,
+        backgroundColor: '#000000', physics: { default: 'arcade', arcade: { debug: false, gravity: { y: 0 } } },
+        scene: MainScene, scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH, width: size.width, height: size.height }
+      };
       
-      const scene = game.scene.getScene('MainScene');
-      if (scene && scene.roadTexture) {
-        scene.roadTexture.setDisplaySize(size.width, size.height);
-        scene.roadTexture.setTileScale(
-          size.width / scene.textures.get('road-texture').getSourceImage().width,
-          size.height / scene.textures.get('road-texture').getSourceImage().height
-        );
-      }
+      game = new Phaser.Game(config); setupResizeHandler();
     }
-  });
 
-  window.dispatchEvent(new Event('resize'));
-}
+    function setupResizeHandler() {
+      window.addEventListener('resize', () => {
+        const size = getGameSize(); const gameContainer = document.getElementById('game-container');
+        const gameWrapper = document.getElementById('game-wrapper');
+        gameContainer.style.width = size.width + 'px'; gameContainer.style.height = size.height + 'px';
+        if (window.innerWidth > 768) { gameWrapper.style.width = size.width + 'px'; gameWrapper.style.height = size.height + 'px';
+          gameWrapper.style.top = '50%'; gameWrapper.style.left = '50%'; gameWrapper.style.transform = 'translate(-50%, -50%)';
+        } else { gameWrapper.style.width = size.width + 'px'; gameWrapper.style.height = size.height + 'px';
+          gameWrapper.style.top = '0'; gameWrapper.style.left = '0'; gameWrapper.style.transform = 'none';
+        }
+        if (game && game.scale) { game.scale.resize(size.width, size.height);
+          const scene = game.scene.getScene('MainScene');
+          if (scene && scene.roadTexture) { scene.roadTexture.setDisplaySize(size.width, size.height);
+            scene.roadTexture.setTileScale(size.width / scene.textures.get('road-texture').getSourceImage().width,
+              size.height / scene.textures.get('road-texture').getSourceImage().height);
+          }
+        }
+      }); window.dispatchEvent(new Event('resize'));
+    }
 
     const gameOverModal = document.getElementById('game-over');
     const finalScoreEl = document.getElementById('final-score');
     const playerRankEl = document.getElementById('player-rank-display');
+    const nameInputContainer = document.getElementById('name-input-container');
+    const firstNameInput = document.getElementById('first-name');
+    const lastNameInput = document.getElementById('last-name');
+    const saveBtn = document.getElementById('save-btn');
 
-    document.getElementById('save-btn').addEventListener('click', async () => {
-      const name = prompt('نام خود را وارد کنید (حداکثر 20 کاراکتر):') || 'بازیکن ناشناس';
-      const trimmedName = name.trim().substring(0, 20);
-      const scene = game.scene.keys['MainScene'];
-      const score = scene ? scene.score : currentPlayerScore;
-      const saveBtn = document.getElementById('save-btn');
-      const originalText = saveBtn.textContent;
-      saveBtn.textContent = '⏳ در حال ذخیره...';
-      saveBtn.disabled = true;
-      try {
-        await saveLeaderboardEntry(trimmedName, score);
-        saveBtn.textContent = '✅ ذخیره شد!';
-        // Show completion message instead of restart option
-        setTimeout(() => {
-          gameOverModal.innerHTML = `
-            <div class="game-over-logo"></div>
-            <h2 style="color: #f1c40f;">🎉 تبریک!</h2>
-            <p>امتیاز شما با موفقیت ذخیره شد</p>
-            <p style="color: #95a5a6;">از بازی کردن متشکریم</p>
-          `;
-          gameOverModal.className = 'game-completed';
-        }, 1000);
-      } catch (error) {
-        saveBtn.textContent = '❌ خطا! دوباره تلاش کنید';
-        setTimeout(() => { saveBtn.textContent = originalText; saveBtn.disabled = false; }, 2000);
-      }
-    });
-
-    function showGameOver(score) {
-      finalScoreEl.textContent = `امتیاز نهایی: ${score.toLocaleString()}`;
-      const rank = getPlayerRank(score);
-      const totalPlayers = leaderboard.length + 1;
-      let rankText = '';
-      if (rank === 1) rankText = '🥇 رکورد جدید! رتبه 1';
-      else if (rank <= 3) rankText = `🏆 عالی! رتبه ${rank} از ${totalPlayers}`;
-      else if (rank <= 10) rankText = `👍 خوب! رتبه ${rank} از ${totalPlayers}`;
-      else if (score > 100) rankText = `رتبه ${rank} از ${totalPlayers}`;
-      playerRankEl.textContent = rankText;
-      gameOverModal.style.display = 'block';
-      updateGameOverLeaderboard();
+saveBtn.addEventListener('click', async () => {
+  const name = firstNameInput.value.trim();
+  const lastName = lastNameInput.value.trim();
+  const fullName = `${name} ${lastName}`.trim();
+  if (!fullName) { alert('لطفاً نام و نام خانوادگی را وارد کنید'); return; }
+  const score = currentPlayerScore;
+  saveBtn.textContent = '⏳ در حال ذخیره...'; saveBtn.disabled = true;
+  try {
+    const success = await saveScoreToServer(fullName, playerPhone, score);
+    if (success) {
+      saveBtn.textContent = '✅ ذخیره شد!';
+      nameInputContainer.style.display = 'none';
+      document.getElementById('game-over-leaderboard').style.display = 'block';
+      saveBtn.style.display = 'none';
+      currentPlayerName = fullName; // به‌روزرسانی نام کاربر
+      await updateGameOverLeaderboard(playerPhone);
+    } else {
+      saveBtn.textContent = '❌ ارسال ناموفق بود، دوباره تلاش کنید';
+      setTimeout(() => { saveBtn.textContent = '💾 ذخیره امتیاز'; saveBtn.disabled = false; }, 2000);
     }
+  } catch (error) {
+    saveBtn.textContent = '❌ ارسال ناموفق بود، دوباره تلاش کنید';
+    setTimeout(() => { saveBtn.textContent = '💾 ذخیره امتیاز'; saveBtn.disabled = false; }, 2000);
+  }
+});
 
-    document.addEventListener('DOMContentLoaded', () => {
-      loadLeaderboard();
-    });
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadLeaderboard();
+  applyUpdatedCSS();
+});    document.addEventListener('keydown', function(e) {
+      const activeElement = document.activeElement;
+      const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.contentEditable === 'true');
+      if (isInputFocused && ['KeyW', 'KeyA', 'KeyS', 'KeyD'].includes(e.code)) { e.stopPropagation(); return; }
+    }, true);
   </script>
 </body>
 </html>
