@@ -1134,7 +1134,10 @@ saveBtn.addEventListener('click', async () => {
         localStorage.setItem('hasPlayedGame', 'true');
       } else {
         // هنوز میتونه بازی کنه → دکمه تلاش دوباره
-        makeRetryButton();
+         setTimeout(() => { 
+     makeRetryButton();
+    }, 2000);
+      
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
       }
