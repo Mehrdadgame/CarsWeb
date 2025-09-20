@@ -1132,21 +1132,31 @@ saveBtn.addEventListener('click', async () => {
         document.getElementById('game-over-leaderboard').style.display = 'block';
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
-      } else {
-    saveBtn.textContent = '🔄 تلاش دوباره';
-saveBtn.onclick = () => {
-  gameOverModal.style.display = 'none';
+      }} else {
+  // بار دوم: دکمه تلاش دوباره
+  saveBtn.textContent = '🔄 تلاش دوباره';
   
-  // نابود کردن بازی فعلی
-  if (game) {
-    game.destroy(true);
-  }
+  // حذف event listener قبلی
+  saveBtn.removeEventListener('click', saveBtn.clickHandler);
   
-  // ایجاد بازی جدید
-  setTimeout(() => {
-    initializeGame();
-  }, 100);
-};
+  // اضافه کردن event listener جدید
+  saveBtn.clickHandler = async () => {
+    gameOverModal.style.display = 'none';
+    
+    // نابود کردن بازی فعلی
+    if (game) {
+      game.destroy(true);
+      game = null;
+    }
+    
+    // صبر کمی و ایجاد بازی جدید
+    setTimeout(async () => {
+      await initializeGame();
+    }, 100);
+  };
+  
+  saveBtn.addEventListener('click', saveBtn.clickHandler);
+}
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
       }
