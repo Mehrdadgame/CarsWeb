@@ -1100,7 +1100,7 @@ setupSpawners() {
 saveBtn.addEventListener('click', async () => {
   const gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
   let fullName = playerName;
-  
+
   // اگر بار اول است، نام و نام خانوادگی بگیر
   if (gameCount === 0) {
     const name = firstNameInput.value.trim();
@@ -1113,18 +1113,18 @@ saveBtn.addEventListener('click', async () => {
     localStorage.setItem('playerName', fullName);
     playerName = fullName;
   }
-  
+
   const score = currentPlayerScore;
   saveBtn.textContent = '⏳ در حال ذخیره...'; 
   saveBtn.disabled = true;
-  
+
   try {
     const success = await saveScoreToServer(fullName, playerPhone, score);
     if (success) {
       // افزایش شمارنده بازی
       let newGameCount = gameCount + 1;
       localStorage.setItem('gamePlayCount', newGameCount.toString());
-      
+
       if (newGameCount >= 3) {
         // سه بار بازی کرده، فقط لیدربورد نشان بده
         saveBtn.textContent = '✅ ذخیره شد!';
@@ -1133,41 +1133,39 @@ saveBtn.addEventListener('click', async () => {
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
       } else {
-        // هنوز میتونه بازی کنه، دکمه تلاش دوباره نشان بده
-        saveBtn.textContent = '🔄 تلاش دوباره';
-         saveBtn.removeEventListener('click', saveBtn.clickHandler);
-          saveBtn.disabled = false;
-        saveBtn.onclick = () => {
-           saveBtn.disabled = true;
-             setTimeout(async () => {
-        window.location.reload();
-    }, 300);
-         
-          gameOverModal.style.display = 'none';
-
-       
-        };
+        // هنوز میتونه بازی کنه → دکمه تلاش دوباره
+        makeRetryButton();
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
       }
-      
+
       currentPlayerName = fullName;
       await updateGameOverLeaderboard(playerPhone);
+
     } else {
-      saveBtn.textContent = '❌ ارسال ناموفق بود، دوباره تلاش کنید';
+      // ذخیره ناموفق
+      saveBtn.textContent = '❌ ارسال ناموفق بود';
       setTimeout(() => { 
-        saveBtn.textContent = gameCount === 0 ? '💾 ذخیره امتیاز' : '🔄 تلاش دوباره'; 
-        saveBtn.disabled = false; 
+        makeRetryButton();
       }, 2000);
     }
+
   } catch (error) {
-    saveBtn.textContent = '❌ ارسال ناموفق بود، دوباره تلاش کنید';
+    saveBtn.textContent = '❌ ارسال ناموفق بود';
     setTimeout(() => { 
-      saveBtn.textContent = gameCount === 0 ? '💾 ذخیره امتیاز' : '🔄 تلاش دوباره'; 
-      saveBtn.disabled = false; 
+      makeRetryButton();
     }, 2000);
   }
 });
+function makeRetryButton() {
+  saveBtn.textContent = '🔄 تلاش دوباره';
+  saveBtn.disabled = false;
+  saveBtn.onclick = () => {
+    saveBtn.disabled = true;
+    gameOverModal.style.display = 'none';
+    window.location.reload();
+  };
+}
 
 
 
