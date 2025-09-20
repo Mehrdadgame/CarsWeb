@@ -1133,13 +1133,20 @@ saveBtn.addEventListener('click', async () => {
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
       } else {
-       saveBtn.textContent = '🔄 تلاش دوباره';
+saveBtn.textContent = '🔄 تلاش دوباره';
 saveBtn.onclick = () => {
-  // ریلود کامل صفحه
-  window.location.reload();
+  gameOverModal.style.display = 'none';
+  
+  // نابود کردن بازی فعلی
+  if (game) {
+    game.destroy(true);
+  }
+  
+  // ایجاد بازی جدید
+  setTimeout(() => {
+    initializeGame();
+  }, 100);
 };
-        nameInputContainer.style.display = 'none';
-        document.getElementById('game-over-leaderboard').style.display = 'block';
       }
       
       currentPlayerName = fullName;
