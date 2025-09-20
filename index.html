@@ -1132,8 +1132,8 @@ saveBtn.addEventListener('click', async () => {
         document.getElementById('game-over-leaderboard').style.display = 'block';
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
-      }} else {
-  // بار دوم: دکمه تلاش دوباره
+      } else {
+    // بار دوم: دکمه تلاش دوباره
   saveBtn.textContent = '🔄 تلاش دوباره';
   
   // حذف event listener قبلی
@@ -1155,8 +1155,8 @@ saveBtn.addEventListener('click', async () => {
     }, 100);
   };
   
+
   saveBtn.addEventListener('click', saveBtn.clickHandler);
-}
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
       }
