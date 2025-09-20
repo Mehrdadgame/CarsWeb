@@ -1163,7 +1163,7 @@ function makeRetryButton() {
   saveBtn.onclick = () => {
     saveBtn.disabled = true;
     gameOverModal.style.display = 'none';
-    window.location.reload();
+    scene.scene.restart();
   };
 }
 
