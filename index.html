@@ -1133,29 +1133,11 @@ saveBtn.addEventListener('click', async () => {
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
       } else {
-   // وقتی ذخیره شد و خواستی دکمه تلاش دوباره بذاری:
-saveBtn.textContent = '🔄 تلاش دوباره';
-
-// برای اینکه لیسنرهای قبلی تداخلی نکنن:
-saveBtn.replaceWith(saveBtn.cloneNode(true));
-const newSaveBtn = document.querySelector('#id-saveBtn'); // همون id دکمه‌ات
-
-newSaveBtn.addEventListener('click', () => {
-  gameOverModal.style.display = 'none';
-
-  if (game) {
-    game.destroy(true); // بازی فعلی رو کامل نابود کن
-    game = null;
-  }
-
-  setTimeout(() => {
-    game = new Phaser.Game(config); // بازی جدید بساز
-  }, 100);
-});
-
-  
-
-  //saveBtn.addEventListener('click', saveBtn.clickHandler);
+       saveBtn.textContent = '🔄 تلاش دوباره';
+        saveBtn.removeEventListener('click', saveBtn.clickHandler);
+        saveBtn.onclick = () => {
+       window.location.reload();
+};
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
       }
