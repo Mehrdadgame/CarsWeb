@@ -1166,7 +1166,7 @@ function makeRetryButton() {
   saveBtn.onclick = () => {
     saveBtn.disabled = true;
     gameOverModal.style.display = 'none';
-    scene.scene.restart();
+     window.location.reload(); // رفرش کل صفحه
   };
 }
 
