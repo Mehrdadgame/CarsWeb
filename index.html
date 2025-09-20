@@ -1132,15 +1132,37 @@ saveBtn.addEventListener('click', async () => {
         document.getElementById('game-over-leaderboard').style.display = 'block';
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
-      } else {
-       saveBtn.textContent = '🔄 تلاش دوباره';
-        saveBtn.removeEventListener('click', saveBtn.clickHandler);
-        saveBtn.onclick = () => {
-       window.location.reload();
-};
-        nameInputContainer.style.display = 'none';
-        document.getElementById('game-over-leaderboard').style.display = 'block';
-      }
+      } 
+      else {
+  saveBtn.textContent = '🔄 تلاش دوباره';
+
+  // اگر قبلاً دکمه غیرفعال شده بود، دوباره فعالش کن
+  saveBtn.disabled = false;
+
+  // حذف تمام لیسنرهای قبلی - مطمئن‌ترین روش
+  const newBtn = saveBtn.cloneNode(true);
+  saveBtn.parentNode.replaceChild(newBtn, saveBtn);
+  // حالا newBtn رو به متغیر saveBtn اختصاص بده (اگر از متغیرهای بیرون استفاده می‌کنی)
+  saveBtn = newBtn;
+
+  // اگه داخل فرم هستی، مطمئن شو type="button"
+  // <button id="saveBtn" type="button">...
+
+  saveBtn.addEventListener('click', (e) => {
+    // اگر لازم شد جلوگیری از رفتار پیش‌فرض
+    if (e && e.preventDefault) e.preventDefault();
+
+    // اختیاری: جلوگیری از دبل کلیک
+    saveBtn.disabled = true;
+
+    // برای بررسی: console.log('retry clicked');
+    window.location.reload();
+  });
+
+  nameInputContainer.style.display = 'none';
+  document.getElementById('game-over-leaderboard').style.display = 'block';
+}
+
       
       currentPlayerName = fullName;
       await updateGameOverLeaderboard(playerPhone);
