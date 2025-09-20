@@ -305,9 +305,9 @@
 
   <script>
     
-    // ذخیره شماره تلفن و وضعیت بازی
     let playerPhone = localStorage.getItem('playerPhone');
-    let hasPlayedGame = localStorage.getItem('hasPlayedGame');
+    let gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
+    let hasPlayedGame = gameCount >= 3 ? 'true' : null;
 
     // تابع برای درخواست API
     async function fetchAPI(url, options) {
@@ -1073,8 +1073,12 @@ saveBtn.addEventListener('click', async () => {
       saveBtn.style.display = 'none';
       currentPlayerName = fullName;
       
-      // ذخیره اینکه بازی انجام شده است
-      localStorage.setItem('hasPlayedGame', 'true');
+     let gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
+gameCount++;
+localStorage.setItem('gamePlayCount', gameCount.toString());
+if (gameCount >= 3) {
+  localStorage.setItem('hasPlayedGame', 'true');
+}
       
       await updateGameOverLeaderboard(playerPhone);
     } else {
@@ -1096,15 +1100,15 @@ saveBtn.addEventListener('click', async () => {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const hasPlayedGame = localStorage.getItem('hasPlayedGame');
+  const gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
+  const hasPlayedGame = gameCount >= 3;
   
-  if (hasPlayedGame === 'true') {
-    // مخفی کردن دکمه شروع و نمایش پیام
+  if (hasPlayedGame) {
     document.getElementById('start-game-btn').style.display = 'none';
     document.getElementById('phone-container').style.display = 'none';
     
     const welcomeTitle = document.querySelector('.welcome-title');
-    welcomeTitle.textContent = 'شما قبلاً این بازی را انجام داده‌اید';
+    welcomeTitle.textContent = 'شما سه بار این بازی را انجام داده‌اید و دیگر امکان بازی ندارید';
     welcomeTitle.style.color = '#f1c40f';
   }
   
