@@ -311,16 +311,32 @@ let gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
 let hasPlayedGame = gameCount >= 3;
 
     // تابع برای درخواست API
-    async function fetchAPI(url, options) {
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) throw new Error('خطا در ارتباط با سرور');
-        return await response.json();
-      } catch (error) {
-        console.error('API Error:', error);
-        throw error;
-      }
+  async function fetchAPI(url, options) {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('درخواست زمان زیادی طول کشید');
+    }
+    console.error('API Error:', error);
+    throw new Error('خطا در ارتباط با سرور');
+  }
+}
 
     // چک کردن شماره تلفن در صفحه خوش‌آمدگویی
     document.getElementById('start-game-btn').addEventListener('click', async () => {
@@ -1097,11 +1113,13 @@ setupSpawners() {
     const lastNameInput = document.getElementById('last-name');
     const saveBtn = document.getElementById('save-btn');
 
-saveBtn.addEventListener('click', async () => {
+saveBtn.addEventListener('click', async (event) => {
+  // جلوگیری از اجرای چندباره
+  if (saveBtn.disabled) return;
+  
   const gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
   let fullName = playerName;
 
-  // اگر بار اول است، نام و نام خانوادگی بگیر
   if (gameCount === 0) {
     const name = firstNameInput.value.trim();
     const lastName = lastNameInput.value.trim();
@@ -1121,23 +1139,21 @@ saveBtn.addEventListener('click', async () => {
   try {
     const success = await saveScoreToServer(fullName, playerPhone, score);
     if (success) {
-      // افزایش شمارنده بازی
       let newGameCount = gameCount + 1;
       localStorage.setItem('gamePlayCount', newGameCount.toString());
 
       if (newGameCount >= 3) {
-        // سه بار بازی کرده، فقط لیدربورد نشان بده
         saveBtn.textContent = '✅ ذخیره شد!';
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
       } else {
-        // هنوز میتونه بازی کنه → دکمه تلاش دوباره
-         setTimeout(() => { 
-     makeRetryButton();
-    }, 2000);
-      
+        saveBtn.textContent = '✅ ذخیره شد!';
+        setTimeout(() => { 
+          makeRetryButton();
+        }, 1500); // تاخیر بیشتر برای نمایش پیام موفقیت
+        
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
       }
@@ -1146,29 +1162,44 @@ saveBtn.addEventListener('click', async () => {
       await updateGameOverLeaderboard(playerPhone);
 
     } else {
-      // ذخیره ناموفق
       saveBtn.textContent = '❌ ارسال ناموفق بود';
       setTimeout(() => { 
         makeRetryButton();
-      }, 2000);
+      }, 1500);
     }
 
   } catch (error) {
-    saveBtn.textContent = '❌ ارسال ناموفق بود';
+    console.error('Save error:', error);
+    saveBtn.textContent = '❌ خطا در ارتباط با سرور';
     setTimeout(() => { 
       makeRetryButton();
-    }, 2000);
+    }, 1500);
   }
 });
 function makeRetryButton() {
-  saveBtn.textContent = '🔄 تلاش دوباره';
-  saveBtn.disabled = false;
-  saveBtn.onclick = () => {
-    saveBtn.disabled = true;
-    gameOverModal.style.display = 'none';
-     window.location.reload(); // رفرش کل صفحه
-  };
+  // حذف تمام event listener های قبلی
+  const newSaveBtn = saveBtn.cloneNode(true);
+  saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+  
+  // به‌روزرسانی reference
+  const retryBtn = document.getElementById('save-btn');
+  
+  retryBtn.textContent = '🔄 تلاش دوباره';
+  retryBtn.disabled = false;
+  
+  // اضافه کردن event listener جدید
+  retryBtn.addEventListener('click', () => {
+    retryBtn.disabled = true;
+    retryBtn.textContent = '⏳ در حال بارگذاری...';
+    
+    // تاخیر کوتاه برای نمایش پیام
+    setTimeout(() => {
+      gameOverModal.style.display = 'none';
+      window.location.reload();
+    }, 500);
+  });
 }
+
 
 
 
