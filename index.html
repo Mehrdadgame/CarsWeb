@@ -1133,27 +1133,26 @@ saveBtn.addEventListener('click', async () => {
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
       } else {
-    // بار دوم: دکمه تلاش دوباره
-  saveBtn.textContent = '🔄 تلاش دوباره';
-  
-  // حذف event listener قبلی
-  saveBtn.removeEventListener('click', saveBtn.clickHandler);
-  
-  // اضافه کردن event listener جدید
-  saveBtn.clickHandler = async () => {
-    gameOverModal.style.display = 'none';
-    
-    // نابود کردن بازی فعلی
-    if (game) {
-      game.destroy(true);
-      game = null;
-    }
-    
-    // صبر کمی و ایجاد بازی جدید
-    setTimeout(async () => {
-      await initializeGame();
-    }, 100);
-  };
+   // وقتی ذخیره شد و خواستی دکمه تلاش دوباره بذاری:
+saveBtn.textContent = '🔄 تلاش دوباره';
+
+// برای اینکه لیسنرهای قبلی تداخلی نکنن:
+saveBtn.replaceWith(saveBtn.cloneNode(true));
+const newSaveBtn = document.querySelector('#id-saveBtn'); // همون id دکمه‌ات
+
+newSaveBtn.addEventListener('click', () => {
+  gameOverModal.style.display = 'none';
+
+  if (game) {
+    game.destroy(true); // بازی فعلی رو کامل نابود کن
+    game = null;
+  }
+
+  setTimeout(() => {
+    game = new Phaser.Game(config); // بازی جدید بساز
+  }, 100);
+});
+
   
 
   saveBtn.addEventListener('click', saveBtn.clickHandler);
