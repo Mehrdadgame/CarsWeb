@@ -1135,19 +1135,8 @@ saveBtn.addEventListener('click', async () => {
       } else {
        saveBtn.textContent = '🔄 تلاش دوباره';
 saveBtn.onclick = () => {
-  // مخفی کردن مودال
-  gameOverModal.style.display = 'none';
-  
-  // ریست کردن متغیرهای بازی
-  currentPlayerScore = 0;
-  
-  // ریستارت صحیح scene در Phaser
-  if (game && game.scene) {
-    const scene = game.scene.getScene('MainScene');
-    if (scene) {
-      scene.scene.restart();
-    }
-  }
+  // ریلود کامل صفحه
+  window.location.reload();
 };
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
