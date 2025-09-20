@@ -305,9 +305,10 @@
 
   <script>
     
-    let playerPhone = localStorage.getItem('playerPhone');
-    let gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
-    let hasPlayedGame = gameCount >= 3 ? 'true' : null;
+let playerPhone = localStorage.getItem('playerPhone');
+let playerName = localStorage.getItem('playerName');
+let gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
+let hasPlayedGame = gameCount >= 3;
 
     // تابع برای درخواست API
     async function fetchAPI(url, options) {
@@ -659,8 +660,52 @@ function showGameOver(score) {
   
   playerRankEl.textContent = rankText;
   gameOverModal.style.display = 'block';
-  nameInputContainer.style.display = 'block';
+  
+  const gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
+  const isThirdGame = gameCount >= 2; // سومین بازی
+  
+  if (gameCount === 0) {
+    // بار اول: نام بگیر
+    nameInputContainer.style.display = 'block';
+    saveBtn.textContent = '💾 ذخیره امتیاز';
+  } else {
+    // بار دوم یا سوم: نام نگیر
+    nameInputContainer.style.display = 'none';
+    if (isThirdGame) {
+      // سومین بار: امتیاز رو خودکار ارسال کن
+      saveBtn.textContent = '⏳ در حال ذخیره...';
+      saveBtn.disabled = true;
+      autoSaveScore(score);
+    } else {
+      // بار دوم: دکمه تلاش دوباره
+      saveBtn.textContent = '🔄 تلاش دوباره';
+    }
+  }
+  
   document.getElementById('game-over-leaderboard').style.display = 'none';
+}
+
+// تابع جدید برای ذخیره خودکار در بازی سوم
+async function autoSaveScore(score) {
+  try {
+    const success = await saveScoreToServer(playerName, playerPhone, score);
+    if (success) {
+      let newGameCount = parseInt(localStorage.getItem('gamePlayCount')) + 1;
+      localStorage.setItem('gamePlayCount', newGameCount.toString());
+      localStorage.setItem('hasPlayedGame', 'true');
+      
+      saveBtn.textContent = '✅ ذخیره شد!';
+      saveBtn.style.display = 'none';
+      document.getElementById('game-over-leaderboard').style.display = 'block';
+      await updateGameOverLeaderboard(playerPhone);
+    } else {
+      saveBtn.textContent = '❌ ارسال ناموفق بود';
+      saveBtn.disabled = false;
+    }
+  } catch (error) {
+    saveBtn.textContent = '❌ ارسال ناموفق بود';
+    saveBtn.disabled = false;
+  }
 }
 
     function escapeHtml(str) { return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[s])); }
@@ -1053,13 +1098,22 @@ setupSpawners() {
     const saveBtn = document.getElementById('save-btn');
 
 saveBtn.addEventListener('click', async () => {
-  const name = firstNameInput.value.trim();
-  const lastName = lastNameInput.value.trim();
-  const fullName = `${name} ${lastName}`.trim();
-  if (!fullName) { 
-    alert('لطفاً نام و نام خانوادگی را وارد کنید'); 
-    return; 
+  const gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
+  let fullName = playerName;
+  
+  // اگر بار اول است، نام و نام خانوادگی بگیر
+  if (gameCount === 0) {
+    const name = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+    fullName = `${name} ${lastName}`.trim();
+    if (!fullName) { 
+      alert('لطفاً نام و نام خانوادگی را وارد کنید'); 
+      return; 
+    }
+    localStorage.setItem('playerName', fullName);
+    playerName = fullName;
   }
+  
   const score = currentPlayerScore;
   saveBtn.textContent = '⏳ در حال ذخیره...'; 
   saveBtn.disabled = true;
@@ -1067,31 +1121,43 @@ saveBtn.addEventListener('click', async () => {
   try {
     const success = await saveScoreToServer(fullName, playerPhone, score);
     if (success) {
-      saveBtn.textContent = '✅ ذخیره شد!';
-      nameInputContainer.style.display = 'none';
-      document.getElementById('game-over-leaderboard').style.display = 'block';
-      saveBtn.style.display = 'none';
+      // افزایش شمارنده بازی
+      let newGameCount = gameCount + 1;
+      localStorage.setItem('gamePlayCount', newGameCount.toString());
+      
+      if (newGameCount >= 3) {
+        // سه بار بازی کرده، فقط لیدربورد نشان بده
+        saveBtn.textContent = '✅ ذخیره شد!';
+        nameInputContainer.style.display = 'none';
+        document.getElementById('game-over-leaderboard').style.display = 'block';
+        saveBtn.style.display = 'none';
+        localStorage.setItem('hasPlayedGame', 'true');
+      } else {
+        // هنوز میتونه بازی کنه، دکمه تلاش دوباره نشان بده
+        saveBtn.textContent = '🔄 تلاش دوباره';
+        saveBtn.onclick = () => {
+          gameOverModal.style.display = 'none';
+          if (game && game.scene) {
+            game.scene.restart('MainScene');
+          }
+        };
+        nameInputContainer.style.display = 'none';
+        document.getElementById('game-over-leaderboard').style.display = 'block';
+      }
+      
       currentPlayerName = fullName;
-      
-     let gameCount = parseInt(localStorage.getItem('gamePlayCount')) || 0;
-gameCount++;
-localStorage.setItem('gamePlayCount', gameCount.toString());
-if (gameCount >= 3) {
-  localStorage.setItem('hasPlayedGame', 'true');
-}
-      
       await updateGameOverLeaderboard(playerPhone);
     } else {
       saveBtn.textContent = '❌ ارسال ناموفق بود، دوباره تلاش کنید';
       setTimeout(() => { 
-        saveBtn.textContent = '💾 ذخیره امتیاز'; 
+        saveBtn.textContent = gameCount === 0 ? '💾 ذخیره امتیاز' : '🔄 تلاش دوباره'; 
         saveBtn.disabled = false; 
       }, 2000);
     }
   } catch (error) {
     saveBtn.textContent = '❌ ارسال ناموفق بود، دوباره تلاش کنید';
     setTimeout(() => { 
-      saveBtn.textContent = '💾 ذخیره امتیاز'; 
+      saveBtn.textContent = gameCount === 0 ? '💾 ذخیره امتیاز' : '🔄 تلاش دوباره'; 
       saveBtn.disabled = false; 
     }, 2000);
   }
