@@ -1139,7 +1139,10 @@ saveBtn.addEventListener('click', async () => {
           saveBtn.disabled = false;
         saveBtn.onclick = () => {
            saveBtn.disabled = true;
-           window.location.reload();
+             setTimeout(async () => {
+        window.location.reload();
+    }, 300);
+         
           gameOverModal.style.display = 'none';
 
        
