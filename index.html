@@ -1133,14 +1133,22 @@ saveBtn.addEventListener('click', async () => {
         saveBtn.style.display = 'none';
         localStorage.setItem('hasPlayedGame', 'true');
       } else {
-        // هنوز میتونه بازی کنه، دکمه تلاش دوباره نشان بده
-        saveBtn.textContent = '🔄 تلاش دوباره';
-        saveBtn.onclick = () => {
-          gameOverModal.style.display = 'none';
-          if (game && game.scene) {
-            game.scene.restart('MainScene');
-          }
-        };
+       saveBtn.textContent = '🔄 تلاش دوباره';
+saveBtn.onclick = () => {
+  // مخفی کردن مودال
+  gameOverModal.style.display = 'none';
+  
+  // ریست کردن متغیرهای بازی
+  currentPlayerScore = 0;
+  
+  // ریستارت صحیح scene در Phaser
+  if (game && game.scene) {
+    const scene = game.scene.getScene('MainScene');
+    if (scene) {
+      scene.scene.restart();
+    }
+  }
+};
         nameInputContainer.style.display = 'none';
         document.getElementById('game-over-leaderboard').style.display = 'block';
       }
